@@ -28,6 +28,8 @@ The minimum score is `0.95` for performance, accessibility, best practices, and 
 
 Each page normally receives one sample. If the first sample misses any budget, the runner collects two more samples for that page, preserves all raw reports, and evaluates the three-run median. A persistent regression still fails; retries do not lower the threshold.
 
+GitHub's ephemeral Linux runner starts Chromium with `--no-sandbox` and `--disable-dev-shm-usage` to avoid runner sandbox and shared-memory startup failures. Local runs retain Chromium's sandbox. The browser profile stays in the operating system's temporary directory and is cleaned only after the process exits. WSL launches the installed Linux Chromium directly because `chrome-launcher` otherwise assumes a Windows Chrome executable and rewrites Linux paths. If Chromium still cannot start, the final bounded stderr excerpt is saved with the Lighthouse artifacts.
+
 Reports are written under ignored `test-results/`.
 
 ## Visual snapshots

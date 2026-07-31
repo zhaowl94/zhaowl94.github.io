@@ -1,12 +1,19 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createServer } from "node:net";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 import * as chromeLauncher from "chrome-launcher";
 import lighthouse from "lighthouse";
+import {
+  chromeFlagsForEnvironment,
+  isWslEnvironment,
+  stopProcessAndWait,
+} from "./lighthouse-runtime.mjs";
 import { collectScoreSamples } from "./lighthouse-scores.mjs";
 
 const projectRoot = path.resolve(
@@ -34,7 +41,13 @@ const thresholds = {
   seo: 0.95,
 };
 const auditTimeout = 90_000;
+const chromeDebuggerTimeout = 30_000;
 const confirmationSampleCount = 3;
+const maximumLaunchLogCharacters = 4_000;
+const chromeProfilePrefix = path.join(
+  path.resolve(tmpdir()),
+  "zhaowl94-lighthouse-",
+);
 
 function startServer() {
   return spawn(
@@ -136,6 +149,216 @@ async function runAndSaveAudit(url, chromePort, name, sampleNumber) {
   return scoresFor(result.lhr);
 }
 
+async function getAvailablePort() {
+  const portServer = createServer();
+
+  await new Promise((resolve, reject) => {
+    const handleError = (error) => reject(error);
+    portServer.once("error", handleError);
+    portServer.listen(0, "127.0.0.1", () => {
+      portServer.off("error", handleError);
+      resolve();
+    });
+  });
+
+  const address = portServer.address();
+  if (!address || typeof address === "string") {
+    portServer.close();
+    throw new Error("Could not reserve a Chromium debugging port.");
+  }
+
+  await new Promise((resolve, reject) => {
+    portServer.close((error) => (error ? reject(error) : resolve()));
+  });
+
+  return address.port;
+}
+
+async function waitForChromeDebugger(childProcess, port, getSpawnError) {
+  const deadline = Date.now() + chromeDebuggerTimeout;
+
+  while (Date.now() < deadline) {
+    const spawnError = getSpawnError();
+    if (spawnError) {
+      throw spawnError;
+    }
+
+    if (childProcess.exitCode !== null || childProcess.signalCode !== null) {
+      throw new Error(`Chromium exited before opening debugging port ${port}.`);
+    }
+
+    try {
+      const response = await fetch(`http://127.0.0.1:${port}/json/version`);
+      if (response.ok) {
+        return;
+      }
+    } catch {
+      // Chromium may still be binding its debugging port.
+    }
+
+    await delay(200);
+  }
+
+  throw new Error(`Timed out waiting for Chromium debugging port ${port}.`);
+}
+
+async function launchWslChrome(
+  chromePath,
+  chromeProfileDirectory,
+  chromeFlags,
+) {
+  if (!chromePath) {
+    throw new Error(
+      "Playwright Chromium must be installed for Lighthouse inside WSL.",
+    );
+  }
+
+  const port = await getAvailablePort();
+  const childProcess = spawn(
+    chromePath,
+    [
+      ...chromeLauncher.Launcher.defaultFlags(),
+      "--disable-setuid-sandbox",
+      ...chromeFlags,
+      `--remote-debugging-port=${port}`,
+      `--user-data-dir=${chromeProfileDirectory}`,
+      "about:blank",
+    ],
+    {
+      cwd: path.dirname(chromeProfileDirectory),
+      detached: true,
+      env: process.env,
+      stdio: ["ignore", "ignore", "pipe"],
+    },
+  );
+  let spawnError;
+  let stderrTail = "";
+
+  childProcess.once("error", (error) => {
+    spawnError = error;
+  });
+  childProcess.stderr.on("data", (chunk) => {
+    stderrTail = `${stderrTail}${chunk}`.slice(-maximumLaunchLogCharacters);
+  });
+
+  const kill = () => {
+    if (
+      !childProcess.pid ||
+      childProcess.exitCode !== null ||
+      childProcess.signalCode !== null
+    ) {
+      return;
+    }
+
+    try {
+      process.kill(-childProcess.pid, "SIGKILL");
+    } catch {
+      childProcess.kill("SIGKILL");
+    }
+  };
+
+  try {
+    await waitForChromeDebugger(childProcess, port, () => spawnError);
+  } catch (error) {
+    await stopProcessAndWait(childProcess, kill);
+    const stderr = stderrTail.trim();
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      stderr ? `${message}\nChromium stderr:\n${stderr}` : message,
+      { cause: error },
+    );
+  }
+
+  return {
+    kill,
+    pid: childProcess.pid,
+    port,
+    process: childProcess,
+    remoteDebuggingPipes: null,
+  };
+}
+
+async function launchChrome(chromePath, chromeProfileDirectory) {
+  const chromeFlags = chromeFlagsForEnvironment();
+  const isWsl = isWslEnvironment();
+
+  try {
+    if (isWsl) {
+      return await launchWslChrome(
+        chromePath,
+        chromeProfileDirectory,
+        chromeFlags,
+      );
+    }
+
+    return await chromeLauncher.launch({
+      chromeFlags,
+      chromePath,
+      logLevel: "error",
+      userDataDir: chromeProfileDirectory,
+    });
+  } catch (error) {
+    const errorLog = !isWsl
+      ? await readFile(
+          path.join(chromeProfileDirectory, "chrome-err.log"),
+          "utf8",
+        ).catch(() => "")
+      : "";
+    const boundedErrorLog = errorLog.trim().slice(-maximumLaunchLogCharacters);
+    const originalMessage =
+      error instanceof Error ? error.message : String(error);
+    const diagnostics = [
+      `Chromium launch failed: ${originalMessage}`,
+      boundedErrorLog
+        ? `Chromium stderr (last ${boundedErrorLog.length} characters):\n${boundedErrorLog}`
+        : "Chromium stderr log was unavailable.",
+    ].join("\n");
+
+    await writeFile(
+      path.join(reportDirectory, "chrome-launch-error.log"),
+      `${diagnostics}\n`,
+    );
+
+    if (error instanceof Error) {
+      error.message = diagnostics;
+      throw error;
+    }
+
+    throw new Error(diagnostics, { cause: error });
+  }
+}
+
+async function removeChromeProfile(chromeProfileDirectory) {
+  if (
+    path.dirname(chromeProfileDirectory) !==
+      path.dirname(chromeProfilePrefix) ||
+    !path
+      .basename(chromeProfileDirectory)
+      .startsWith(path.basename(chromeProfilePrefix))
+  ) {
+    throw new Error(
+      `Refusing to clean unexpected Chrome profile: ${chromeProfileDirectory}`,
+    );
+  }
+
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    await rm(chromeProfileDirectory, {
+      force: true,
+      maxRetries: 10,
+      recursive: true,
+      retryDelay: 250,
+    });
+    await delay(250);
+  }
+
+  await rm(chromeProfileDirectory, {
+    force: true,
+    maxRetries: 10,
+    recursive: true,
+    retryDelay: 250,
+  });
+}
+
 async function main() {
   if (
     path.dirname(reportDirectory) !== testResultsDirectory ||
@@ -147,24 +370,19 @@ async function main() {
   await rm(reportDirectory, { force: true, recursive: true });
   await mkdir(reportDirectory, { recursive: true });
 
-  const server = startServer();
-  const chromeProfileDirectory = path.join(
-    reportDirectory,
-    `chrome-profile-${process.pid}`,
-  );
+  const chromeProfileDirectory = await mkdtemp(chromeProfilePrefix);
+  let server;
   let chrome;
 
   try {
+    server = startServer();
     await waitForServer(server);
-    await mkdir(chromeProfileDirectory, { recursive: true });
 
     const bundledChromium = chromium.executablePath();
-    chrome = await chromeLauncher.launch({
-      chromeFlags: ["--headless=new", "--disable-gpu"],
-      chromePath: existsSync(bundledChromium) ? bundledChromium : undefined,
-      logLevel: "error",
-      userDataDir: chromeProfileDirectory,
-    });
+    chrome = await launchChrome(
+      existsSync(bundledChromium) ? bundledChromium : undefined,
+      chromeProfileDirectory,
+    );
 
     const summary = {};
     const failures = [];
@@ -210,16 +428,10 @@ async function main() {
       throw new Error(`Lighthouse budgets failed:\n${failures.join("\n")}`);
     }
   } finally {
-    chrome?.kill();
-    server.kill();
-    await delay(250);
+    await stopProcessAndWait(chrome?.process, () => chrome?.kill());
+    await stopProcessAndWait(server, () => server?.kill());
     try {
-      await rm(chromeProfileDirectory, {
-        force: true,
-        maxRetries: 10,
-        recursive: true,
-        retryDelay: 250,
-      });
+      await removeChromeProfile(chromeProfileDirectory);
     } catch (error) {
       console.warn(
         `Could not remove temporary Chrome profile: ${error.message}`,
