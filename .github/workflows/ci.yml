@@ -1,0 +1,198 @@
+name: Verify and deploy
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zhaowl94-portfolio-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies (Ubuntu)
+        if: runner.os != 'Windows'
+        run: npm ci
+
+      - name: Install locked dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: npm.cmd ci
+
+      - name: Run static checks (Ubuntu)
+        if: runner.os != 'Windows'
+        run: npm run check
+
+      - name: Run static checks (Windows)
+        if: runner.os == 'Windows'
+        run: npm.cmd run check
+
+      - name: Run unit tests (Ubuntu)
+        if: runner.os != 'Windows'
+        run: npm run test:unit
+
+      - name: Run unit tests (Windows)
+        if: runner.os == 'Windows'
+        run: npm.cmd run test:unit
+
+      - name: Check external links
+        if: runner.os != 'Windows'
+        run: npm run check:external-links
+
+      - name: Audit high-severity dependencies (Ubuntu)
+        if: runner.os != 'Windows'
+        run: npm audit --audit-level=high
+
+      - name: Audit high-severity dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: npm.cmd audit --audit-level=high
+
+  browser-linux:
+    name: Browser tests (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Run Linux browser and visual tests
+        run: npm run test:e2e:linux
+
+      - name: Upload browser diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: playwright-ubuntu
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  browser-windows:
+    name: Browser tests (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm.cmd ci
+
+      - name: Install browser engines
+        run: npx.cmd playwright install chromium firefox
+
+      - name: Run Windows browser tests
+        run: npm.cmd run test:e2e:windows
+
+      - name: Upload browser diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: playwright-windows
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse budgets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Lighthouse
+        run: npm run test:lighthouse
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: lighthouse
+          path: test-results/lighthouse/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs:
+      - validate
+      - browser-linux
+      - browser-windows
+      - lighthouse
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+        with:
+          enablement: true
+
+      - name: Upload repository source as Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: .
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

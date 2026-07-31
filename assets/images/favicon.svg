@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">zhaowl94</title>
+  <rect width="64" height="64" rx="10" fill="#151511"/>
+  <path d="M13 18h22v9H22v10h13v9H13V18Z" fill="#f2efe5"/>
+  <path d="m33 37 7 7 13-18" fill="none" stroke="#47b7ad" stroke-linecap="square" stroke-width="7"/>
+  <rect x="45" y="12" width="8" height="8" fill="#f1782f"/>
+</svg>

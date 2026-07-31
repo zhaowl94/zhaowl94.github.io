@@ -1,0 +1,46 @@
+{
+  "name": "zhaowl94-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A framework-free, privacy-first open-source engineering portfolio.",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "serve": "http-server . -p 4173 -c-1",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:html": "html-validate \"index.html\" \"404.html\"",
+    "lint:css": "stylelint \"assets/styles/**/*.css\"",
+    "lint:js": "eslint \"assets/scripts/**/*.js\" \"scripts/**/*.mjs\" \"test/**/*.mjs\" \"*.config.mjs\"",
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "check:static": "node test/scripts/check-static.mjs",
+    "check:privacy": "node test/scripts/check-privacy.mjs",
+    "check:external-links": "node test/scripts/check-external-links.mjs",
+    "check": "npm run format:check && npm run lint && npm run check:static && npm run check:privacy",
+    "test:unit": "node --test --test-isolation=none test/unit/*.test.mjs",
+    "test:e2e": "playwright test --project=chromium --project=firefox --project=webkit --project=mobile-chromium --project=chrome --project=msedge",
+    "test:e2e:linux": "playwright test --project=chromium --project=firefox --project=webkit --project=mobile-chromium --project=visual",
+    "test:e2e:windows": "playwright test --project=chrome --project=msedge --project=firefox --project=mobile-chromium --workers=2",
+    "test:visual:update": "playwright test test/e2e/visual.spec.mjs --project=visual --update-snapshots",
+    "test:lighthouse": "node scripts/run-lighthouse.mjs",
+    "test": "npm run check && npm run test:unit && npm run test:e2e",
+    "test:full": "npm run check && npm run test:unit && npm run test:e2e && npm run test:lighthouse"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
+    "chrome-launcher": "^1.2.1",
+    "eslint": "^10.8.0",
+    "globals": "^17.8.0",
+    "html-validate": "^11.6.0",
+    "http-server": "^14.1.1",
+    "lighthouse": "^13.4.1",
+    "postcss": "^8.5.25",
+    "prettier": "^3.9.6",
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0"
+  }
+}
