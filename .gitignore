@@ -1,0 +1,12 @@
+node_modules/
+playwright-report/
+test-results/
+
+.DS_Store
+Thumbs.db
+
+.env
+.env.*
+!.env.example
+*.local.json
+*.local.toml

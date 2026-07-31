@@ -1,0 +1,18 @@
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "attribute-boolean-style": ["error", { "style": "omit" }],
+    "attribute-empty-style": ["error", { "style": "omit" }],
+    "doctype-style": ["error", { "style": "lowercase" }],
+    "long-title": "off",
+    "no-inline-style": "error",
+    "no-redundant-role": "error",
+    "prefer-native-element": "error",
+    "void-style": ["error", { "style": "selfclosing" }],
+    "wcag/h30": "error",
+    "wcag/h32": "error",
+    "wcag/h37": "error",
+    "wcag/h63": "error",
+    "wcag/h71": "error"
+  }
+}

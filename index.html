@@ -1,0 +1,753 @@
+<!doctype html>
+<html class="no-js" lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#121210" />
+    <meta
+      name="description"
+      content="zhaowl94 的开源工程作品集：把遗留脚本变成可验证、可迁移的开源工具。"
+      data-meta-zh="zhaowl94 的开源工程作品集：把遗留脚本变成可验证、可迁移的开源工具。"
+      data-meta-en="zhaowl94's open-source engineering portfolio: turning legacy scripts into verifiable, portable tools."
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="index, follow" />
+
+    <title
+      data-title-zh="zhaowl94 · 可验证、可迁移的开源工具"
+      data-title-en="zhaowl94 · Verifiable, portable open-source tools"
+    >
+      zhaowl94 · 可验证、可迁移的开源工具
+    </title>
+    <link rel="canonical" href="https://zhaowl94.github.io/" />
+    <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/styles/site.css" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://zhaowl94.github.io/" />
+    <meta property="og:site_name" content="zhaowl94" />
+    <meta property="og:title" content="zhaowl94 · 可验证、可迁移的开源工具" />
+    <meta
+      property="og:description"
+      content="开源工程作品集：兼容迁移、数据工具与可访问静态前端。"
+    />
+    <meta
+      property="og:image"
+      content="https://zhaowl94.github.io/assets/images/social-preview.png"
+    />
+    <meta property="og:image:width" content="1731" />
+    <meta property="og:image:height" content="909" />
+    <meta
+      property="og:image:alt"
+      content="zhaowl94 — Verifiable, Portable, Open"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "name": "zhaowl94 open-source engineering portfolio",
+        "url": "https://zhaowl94.github.io/",
+        "mainEntity": {
+          "@type": "Person",
+          "name": "zhaowl94",
+          "url": "https://github.com/zhaowl94",
+          "sameAs": ["https://github.com/zhaowl94"]
+        },
+        "hasPart": {
+          "@type": "ItemList",
+          "itemListElement": [
+            {
+              "@type": "SoftwareSourceCode",
+              "position": 1,
+              "name": "ttjjCrawler",
+              "codeRepository": "https://github.com/zhaowl94/ttjjCrawler",
+              "programmingLanguage": "Python"
+            },
+            {
+              "@type": "SoftwareSourceCode",
+              "position": 2,
+              "name": "ReadWechatMessage",
+              "codeRepository": "https://github.com/zhaowl94/ReadWechatMessage",
+              "programmingLanguage": "Python"
+            },
+            {
+              "@type": "SoftwareSourceCode",
+              "position": 3,
+              "name": "yuanshen",
+              "codeRepository": "https://github.com/zhaowl94/yuanshen",
+              "programmingLanguage": "Python"
+            },
+            {
+              "@type": "SoftwareSourceCode",
+              "position": 4,
+              "name": "html_sample",
+              "codeRepository": "https://github.com/zhaowl94/html_sample",
+              "programmingLanguage": "HTML"
+            },
+            {
+              "@type": "SoftwareSourceCode",
+              "position": 5,
+              "name": "ProcessSqlData-TS",
+              "codeRepository": "https://github.com/zhaowl94/ProcessSqlData-TS",
+              "programmingLanguage": "Python"
+            }
+          ]
+        }
+      }
+    </script>
+    <script src="assets/scripts/site.js" defer></script>
+    <noscript>
+      <style>
+        [data-lang-content][hidden] {
+          display: revert !important;
+        }
+
+        .language-switch {
+          display: none !important;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">
+      <span data-lang-content="zh">跳到主要内容</span>
+      <span data-lang-content="en" lang="en" hidden>Skip to main content</span>
+    </a>
+
+    <header class="site-header">
+      <div class="shell header-layout">
+        <a class="wordmark" href="#top" aria-label="zhaowl94 首页">
+          <span class="wordmark-mark" aria-hidden="true"></span>
+          <span>zhaowl94</span>
+        </a>
+
+        <nav class="primary-nav" aria-label="主要导航">
+          <a href="#capabilities">
+            <span data-lang-content="zh">能力</span>
+            <span data-lang-content="en" lang="en" hidden>Capabilities</span>
+          </a>
+          <a href="#projects">
+            <span data-lang-content="zh">项目</span>
+            <span data-lang-content="en" lang="en" hidden>Projects</span>
+          </a>
+          <a href="#principles">
+            <span data-lang-content="zh">原则</span>
+            <span data-lang-content="en" lang="en" hidden>Principles</span>
+          </a>
+        </nav>
+
+        <nav class="language-switch" aria-label="语言选择">
+          <a href="?lang=zh" data-language-link="zh" lang="zh-CN">中</a>
+          <span aria-hidden="true">/</span>
+          <a href="?lang=en" data-language-link="en" lang="en">EN</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero shell" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span data-lang-content="zh">开源工程实践 / 2026</span>
+            <span data-lang-content="en" lang="en" hidden
+              >Open-source engineering / 2026</span
+            >
+          </p>
+          <h1 id="hero-title">
+            <span data-lang-content="zh"
+              >把遗留脚本变成<br />可验证、可迁移<br />的开源工具。</span
+            >
+            <span data-lang-content="en" lang="en" hidden
+              >Turning legacy scripts into<br />verifiable, portable<br />open-source
+              tools.</span
+            >
+          </h1>
+          <p class="hero-intro">
+            <span data-lang-content="zh"
+              >我关注兼容迁移、数据工具和可访问前端。每个公开结论都应有代码、测试或发布记录作为证据。</span
+            >
+            <span data-lang-content="en" lang="en" hidden
+              >I work on compatible migrations, data tools, and accessible front
+              ends. Every public claim should be backed by code, tests, or a
+              release.</span
+            >
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#projects">
+              <span data-lang-content="zh">查看项目</span>
+              <span data-lang-content="en" lang="en" hidden>View projects</span>
+              <span aria-hidden="true">↘</span>
+            </a>
+            <a
+              class="button button-secondary"
+              href="https://github.com/zhaowl94"
+              rel="me noreferrer"
+            >
+              GitHub
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-system" role="group" aria-label="工程方法概览">
+          <div class="system-grid" aria-hidden="true">
+            <span class="system-node node-input"></span>
+            <span class="system-node node-migrate"></span>
+            <span class="system-node node-test"></span>
+            <span class="system-node node-release"></span>
+            <span class="system-path path-one"></span>
+            <span class="system-path path-two"></span>
+            <span class="system-check">✓</span>
+          </div>
+          <ol class="proof-list">
+            <li>
+              <span class="proof-index">01</span>
+              <div>
+                <strong>
+                  <span data-lang-content="zh">兼容是契约</span>
+                  <span data-lang-content="en" lang="en" hidden
+                    >Compatibility is a contract</span
+                  >
+                </strong>
+                <p>
+                  <span data-lang-content="zh"
+                    >保留有效输入、输出和调用路径。</span
+                  >
+                  <span data-lang-content="en" lang="en" hidden
+                    >Preserve valid inputs, outputs, and invocation paths.</span
+                  >
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="proof-index">02</span>
+              <div>
+                <strong>
+                  <span data-lang-content="zh">验证优先于承诺</span>
+                  <span data-lang-content="en" lang="en" hidden
+                    >Evidence before promises</span
+                  >
+                </strong>
+                <p>
+                  <span data-lang-content="zh"
+                    >Windows、Linux、浏览器和真实发布共同验收。</span
+                  >
+                  <span data-lang-content="en" lang="en" hidden
+                    >Validate on Windows, Linux, browsers, and real
+                    releases.</span
+                  >
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="proof-index">03</span>
+              <div>
+                <strong>
+                  <span data-lang-content="zh">边界也是功能</span>
+                  <span data-lang-content="en" lang="en" hidden
+                    >Boundaries are features</span
+                  >
+                </strong>
+                <p>
+                  <span data-lang-content="zh"
+                    >明确不采集什么、不推断什么、不自动做什么。</span
+                  >
+                  <span data-lang-content="en" lang="en" hidden
+                    >State what is not collected, inferred, or automated.</span
+                  >
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section
+        class="section shell"
+        id="capabilities"
+        aria-labelledby="capabilities-title"
+      >
+        <div class="section-heading">
+          <p class="section-number">01 / 03</p>
+          <div>
+            <p class="eyebrow">
+              <span data-lang-content="zh">可由公开仓库证明</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Backed by public repositories</span
+              >
+            </p>
+            <h2 id="capabilities-title">
+              <span data-lang-content="zh">能力，不是关键词。</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Capabilities, not keywords.</span
+              >
+            </h2>
+          </div>
+        </div>
+
+        <div class="capability-grid">
+          <article class="capability-card">
+            <p class="card-index">A</p>
+            <h3>
+              <span data-lang-content="zh">数据处理与采集</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Data processing and collection</span
+              >
+            </h3>
+            <p>
+              <span data-lang-content="zh"
+                >把网页、CSV、XLSX
+                与数据库数据转化为来源清晰、可恢复、可复现的结果。</span
+              >
+              <span data-lang-content="en" lang="en" hidden
+                >Turn web, CSV, XLSX, and database inputs into traceable,
+                resumable, and reproducible results.</span
+              >
+            </p>
+          </article>
+          <article class="capability-card">
+            <p class="card-index">B</p>
+            <h3>
+              <span data-lang-content="zh">兼容性与迁移</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Compatibility and migration</span
+              >
+            </h3>
+            <p>
+              <span data-lang-content="zh"
+                >先冻结有效行为，再替换语言、依赖与内部结构，让旧用户能够无缝迁移。</span
+              >
+              <span data-lang-content="en" lang="en" hidden
+                >Freeze valid behavior before replacing languages, dependencies,
+                and internals so existing users can migrate safely.</span
+              >
+            </p>
+          </article>
+          <article class="capability-card">
+            <p class="card-index">C</p>
+            <h3>
+              <span data-lang-content="zh">可访问前端与验证</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Accessible front ends and verification</span
+              >
+            </h3>
+            <p>
+              <span data-lang-content="zh"
+                >用语义化
+                HTML、渐进增强和跨平台测试构建无需框架即可长期维护的页面。</span
+              >
+              <span data-lang-content="en" lang="en" hidden
+                >Build durable, framework-free pages with semantic HTML,
+                progressive enhancement, and cross-platform tests.</span
+              >
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="section projects-section"
+        id="projects"
+        aria-labelledby="projects-title"
+      >
+        <div class="shell">
+          <div class="section-heading">
+            <p class="section-number">02 / 03</p>
+            <div>
+              <p class="eyebrow">
+                <span data-lang-content="zh">精选公开项目</span>
+                <span data-lang-content="en" lang="en" hidden
+                  >Selected public work</span
+                >
+              </p>
+              <h2 id="projects-title">
+                <span data-lang-content="zh">五个项目，五种边界。</span>
+                <span data-lang-content="en" lang="en" hidden
+                  >Five projects, five explicit boundaries.</span
+                >
+              </h2>
+              <p class="section-intro">
+                <span data-lang-content="zh"
+                  >状态来自 2026 年 7
+                  月完成的仓库验证。深入命令、限制和迁移说明以各项目 README
+                  为准。</span
+                >
+                <span data-lang-content="en" lang="en" hidden
+                  >Statuses reflect repository verification completed in July
+                  2026. Each project README remains the source of truth for
+                  commands, limits, and migrations.</span
+                >
+              </p>
+            </div>
+          </div>
+
+          <ol class="project-list">
+            <li>
+              <article class="project-card project-featured">
+                <div class="project-meta">
+                  <p class="project-index">01</p>
+                  <p class="status status-release">
+                    <span aria-hidden="true"></span>
+                    <span data-lang-content="zh">稳定版 · v1.0.0</span>
+                    <span data-lang-content="en" lang="en" hidden
+                      >Stable · v1.0.0</span
+                    >
+                  </p>
+                </div>
+                <div class="project-body">
+                  <p class="project-kind">Python / Data collection</p>
+                  <h3>ttjjCrawler</h3>
+                  <p class="project-description">
+                    <span data-lang-content="zh"
+                      >面向中国公募基金公开数据的保守型、多来源、可恢复采集器。来源始终分开保存，不自动猜测哪个来源“正确”。</span
+                    >
+                    <span data-lang-content="en" lang="en" hidden
+                      >A conservative, multi-source, resumable collector for
+                      public Chinese mutual-fund data. Sources remain separate;
+                      the tool never guesses which one is “correct.”</span
+                    >
+                  </p>
+                  <ul class="tag-list" aria-label="项目特性">
+                    <li>Windows + Linux</li>
+                    <li>Python 3.11–3.14</li>
+                    <li>Resumable</li>
+                    <li>CI</li>
+                  </ul>
+                </div>
+                <div class="project-links">
+                  <a
+                    href="https://github.com/zhaowl94/ttjjCrawler"
+                    rel="noreferrer"
+                    >Repository <span aria-hidden="true">↗</span></a
+                  >
+                  <a
+                    href="https://github.com/zhaowl94/ttjjCrawler/releases/tag/v1.0.0"
+                    rel="noreferrer"
+                    >Release <span aria-hidden="true">↗</span></a
+                  >
+                </div>
+              </article>
+            </li>
+
+            <li>
+              <article class="project-card">
+                <div class="project-meta">
+                  <p class="project-index">02</p>
+                  <p class="status status-verified">
+                    <span aria-hidden="true"></span>
+                    <span data-lang-content="zh">已验证工具</span>
+                    <span data-lang-content="en" lang="en" hidden
+                      >Verified tool</span
+                    >
+                  </p>
+                </div>
+                <div class="project-body">
+                  <p class="project-kind">Python / Privacy</p>
+                  <h3>ReadWechatMessage</h3>
+                  <p class="project-description">
+                    <span data-lang-content="zh"
+                      >完全离线的一对一聊天记录统计工具，兼容旧 MATLAB
+                      输入列位与核心输出名称，同时不连接微信、不解密数据库、不上传内容。</span
+                    >
+                    <span data-lang-content="en" lang="en" hidden
+                      >A fully offline one-to-one chat statistics tool that
+                      preserves legacy MATLAB column positions and output names
+                      without connecting to WeChat, decrypting databases, or
+                      uploading content.</span
+                    >
+                  </p>
+                  <ul class="tag-list" aria-label="项目特性">
+                    <li>CSV + XLSX</li>
+                    <li>Offline</li>
+                    <li>Legacy compatible</li>
+                    <li>Streaming</li>
+                  </ul>
+                </div>
+                <div class="project-links">
+                  <a
+                    href="https://github.com/zhaowl94/ReadWechatMessage"
+                    rel="noreferrer"
+                    >Repository <span aria-hidden="true">↗</span></a
+                  >
+                </div>
+              </article>
+            </li>
+
+            <li>
+              <article class="project-card">
+                <div class="project-meta">
+                  <p class="project-index">03</p>
+                  <p class="status status-experiment">
+                    <span aria-hidden="true"></span>
+                    <span data-lang-content="zh">版本化实验 · v1.0.0</span>
+                    <span data-lang-content="en" lang="en" hidden
+                      >Versioned experiment · v1.0.0</span
+                    >
+                  </p>
+                </div>
+                <div class="project-body">
+                  <p class="project-kind">Python / OCR + Simulation</p>
+                  <h3>yuanshen</h3>
+                  <p class="project-description">
+                    <span data-lang-content="zh"
+                      >可复现、可批处理、兼容旧输入的五星圣遗物副词条评分实验，支持结构化
+                      JSON 与可选 OCR，并明确限定为非官方研究工具。</span
+                    >
+                    <span data-lang-content="en" lang="en" hidden
+                      >A reproducible, batchable artifact sub-stat scoring
+                      experiment with legacy JSON compatibility and optional
+                      OCR, explicitly scoped as an unofficial research
+                      tool.</span
+                    >
+                  </p>
+                  <ul class="tag-list" aria-label="项目特性">
+                    <li>Reproducible</li>
+                    <li>Optional OCR</li>
+                    <li>Versioned weights</li>
+                    <li>Seeded simulation</li>
+                  </ul>
+                </div>
+                <div class="project-links">
+                  <a
+                    href="https://github.com/zhaowl94/yuanshen"
+                    rel="noreferrer"
+                    >Repository <span aria-hidden="true">↗</span></a
+                  >
+                  <a
+                    href="https://github.com/zhaowl94/yuanshen/releases/tag/v1.0.0"
+                    rel="noreferrer"
+                    >Release <span aria-hidden="true">↗</span></a
+                  >
+                </div>
+              </article>
+            </li>
+
+            <li>
+              <article class="project-card">
+                <div class="project-meta">
+                  <p class="project-index">04</p>
+                  <p class="status status-live">
+                    <span aria-hidden="true"></span>
+                    <span data-lang-content="zh">已上线 · v1.0.0</span>
+                    <span data-lang-content="en" lang="en" hidden
+                      >Live · v1.0.0</span
+                    >
+                  </p>
+                </div>
+                <div class="project-body">
+                  <p class="project-kind">HTML / CSS / Accessibility</p>
+                  <h3>html_sample</h3>
+                  <p class="project-description">
+                    <span data-lang-content="zh"
+                      >无需框架或运行时构建的静态学习示例集，覆盖语义化
+                      HTML、响应式
+                      CSS、无障碍、表单交互和自动化浏览器测试。</span
+                    >
+                    <span data-lang-content="en" lang="en" hidden
+                      >A framework-free static learning gallery covering
+                      semantic HTML, responsive CSS, accessibility, form
+                      behavior, and automated browser testing.</span
+                    >
+                  </p>
+                  <ul class="tag-list" aria-label="项目特性">
+                    <li>WCAG</li>
+                    <li>Direct file</li>
+                    <li>Cross-browser</li>
+                    <li>GitHub Pages</li>
+                  </ul>
+                </div>
+                <div class="project-links">
+                  <a
+                    href="https://github.com/zhaowl94/html_sample"
+                    rel="noreferrer"
+                    >Repository <span aria-hidden="true">↗</span></a
+                  >
+                  <a
+                    href="https://zhaowl94.github.io/html_sample/"
+                    rel="noreferrer"
+                    >Live site <span aria-hidden="true">↗</span></a
+                  >
+                  <a
+                    href="https://github.com/zhaowl94/html_sample/releases/tag/v1.0.0"
+                    rel="noreferrer"
+                    >Release <span aria-hidden="true">↗</span></a
+                  >
+                </div>
+              </article>
+            </li>
+
+            <li>
+              <article class="project-card">
+                <div class="project-meta">
+                  <p class="project-index">05</p>
+                  <p class="status status-migration">
+                    <span aria-hidden="true"></span>
+                    <span data-lang-content="zh">迁移与安全框架</span>
+                    <span data-lang-content="en" lang="en" hidden
+                      >Migration and safety framework</span
+                    >
+                  </p>
+                </div>
+                <div class="project-body">
+                  <p class="project-kind">Python / Time series / Legacy</p>
+                  <h3>ProcessSqlData-TS</h3>
+                  <p class="project-description">
+                    <span data-lang-content="zh"
+                      >对 Python 2
+                      时序研究原型进行风险隔离、行为记录和迁移规划。仓库明确禁止把遗留脚本直接当作生产任务运行。</span
+                    >
+                    <span data-lang-content="en" lang="en" hidden
+                      >A safety and migration framework around a Python 2
+                      time-series research prototype. The repository explicitly
+                      warns against running the legacy script as a production
+                      job.</span
+                    >
+                  </p>
+                  <ul class="tag-list" aria-label="项目特性">
+                    <li>Risk isolation</li>
+                    <li>Behavior inventory</li>
+                    <li>Python 3.12 path</li>
+                    <li>Not production-ready</li>
+                  </ul>
+                </div>
+                <div class="project-links">
+                  <a
+                    href="https://github.com/zhaowl94/ProcessSqlData-TS"
+                    rel="noreferrer"
+                    >Repository <span aria-hidden="true">↗</span></a
+                  >
+                </div>
+              </article>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section
+        class="section shell principles-section"
+        id="principles"
+        aria-labelledby="principles-title"
+      >
+        <div class="section-heading">
+          <p class="section-number">03 / 03</p>
+          <div>
+            <p class="eyebrow">
+              <span data-lang-content="zh">工作方式</span>
+              <span data-lang-content="en" lang="en" hidden>How I work</span>
+            </p>
+            <h2 id="principles-title">
+              <span data-lang-content="zh">先定义边界，再写实现。</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Define the boundary before writing the implementation.</span
+              >
+            </h2>
+          </div>
+        </div>
+
+        <div class="principle-grid">
+          <article>
+            <p class="principle-mark" aria-hidden="true">→</p>
+            <h3>
+              <span data-lang-content="zh">冻结有效行为</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Freeze valid behavior</span
+              >
+            </h3>
+            <p>
+              <span data-lang-content="zh"
+                >把输入、输出、错误和调用路径写成兼容契约。</span
+              >
+              <span data-lang-content="en" lang="en" hidden
+                >Turn inputs, outputs, errors, and invocation paths into a
+                compatibility contract.</span
+              >
+            </p>
+          </article>
+          <article>
+            <p class="principle-mark" aria-hidden="true">□</p>
+            <h3>
+              <span data-lang-content="zh">拒绝静默猜测</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Refuse silent guesses</span
+              >
+            </h3>
+            <p>
+              <span data-lang-content="zh"
+                >来源冲突、无效输入和结构变化应该可见地失败。</span
+              >
+              <span data-lang-content="en" lang="en" hidden
+                >Source conflicts, invalid inputs, and structural changes should
+                fail visibly.</span
+              >
+            </p>
+          </article>
+          <article>
+            <p class="principle-mark" aria-hidden="true">✓</p>
+            <h3>
+              <span data-lang-content="zh">让证据随代码发布</span>
+              <span data-lang-content="en" lang="en" hidden
+                >Ship evidence with the code</span
+              >
+            </h3>
+            <p>
+              <span data-lang-content="zh"
+                >测试、文档、Release 和部署结果共同定义“完成”。</span
+              >
+              <span data-lang-content="en" lang="en" hidden
+                >Tests, documentation, releases, and deployment results define
+                “done” together.</span
+              >
+            </p>
+          </article>
+        </div>
+
+        <div class="privacy-note">
+          <p class="eyebrow">
+            <span data-lang-content="zh">本页的隐私承诺</span>
+            <span data-lang-content="en" lang="en" hidden
+              >This page's privacy promise</span
+            >
+          </p>
+          <p>
+            <span data-lang-content="zh"
+              >不使用
+              Cookie，不接入统计，不加载第三方脚本，也不收集任何访客输入。</span
+            >
+            <span data-lang-content="en" lang="en" hidden
+              >No cookies, analytics, third-party scripts, or visitor input
+              collection.</span
+            >
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-layout">
+        <div>
+          <p class="footer-wordmark">zhaowl94</p>
+          <p>
+            <span data-lang-content="zh">可验证 · 可迁移 · 开源</span>
+            <span data-lang-content="en" lang="en" hidden
+              >Verifiable · Portable · Open</span
+            >
+          </p>
+        </div>
+        <a href="https://github.com/zhaowl94" rel="me noreferrer">
+          github.com/zhaowl94 <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </footer>
+
+    <p class="sr-only" id="language-status" aria-live="polite"></p>
+    <noscript>
+      <p class="noscript-note">
+        JavaScript is disabled. Both language versions are shown, and all
+        project links remain available.
+      </p>
+    </noscript>
+  </body>
+</html>
