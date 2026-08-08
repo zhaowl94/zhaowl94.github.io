@@ -6,6 +6,8 @@ A framework-free, tracking-free open-source engineering portfolio that works as 
 
 Live site: [https://zhaowl94.github.io/](https://zhaowl94.github.io/)
 
+Cross-border ETF premium dashboard: [https://zhaowl94.github.io/etf-premium/](https://zhaowl94.github.io/etf-premium/)
+
 ## Boundaries
 
 - The site uses only the public handle `zhaowl94`; it does not publish a legal name, email address, phone number, location, or private history.
@@ -24,8 +26,15 @@ Live site: [https://zhaowl94.github.io/](https://zhaowl94.github.io/)
 │   ├── images/
 │   ├── scripts/
 │   └── styles/
+├── etf-premium/
+│   ├── data/
+│   ├── vendor/
+│   ├── app.js
+│   ├── index.html
+│   └── styles.css
 ├── scripts/
-│   └── Lighthouse checks
+│   ├── Lighthouse checks
+│   └── ETF premium snapshot generator
 ├── test/
 │   ├── e2e/
 │   ├── scripts/
@@ -47,6 +56,8 @@ npm.cmd run serve
 ```
 
 Then visit [http://127.0.0.1:4173/](http://127.0.0.1:4173/).
+
+The ETF dashboard reads its JSON snapshot over HTTP and is available at [http://127.0.0.1:4173/etf-premium/](http://127.0.0.1:4173/etf-premium/). Historical premiums use unadjusted closing price divided by the official unit NAV published for the same valuation date, minus one. GitHub Actions attempts to refresh the static dataset at 18:30 China Standard Time every weekday and keeps the last successful snapshot if upstream data is temporarily unavailable.
 
 The project requires Node.js 24 LTS. Every tool is installed inside the repository. The setup does not require global npm packages or modify Windows environment variables, execution policy, or global Git configuration.
 
@@ -73,7 +84,7 @@ The performance, accessibility, best-practices, and SEO Lighthouse thresholds ar
 
 ## Deployment
 
-Every pull request must pass Windows, Ubuntu, the browser matrix, and Lighthouse. After a merge to `master`, GitHub Actions repeats the verification and deploys the repository's static source directly to GitHub Pages without generating or committing a second copy of the site.
+Every pull request must pass Windows, Ubuntu, the browser matrix, and Lighthouse. After a merge to `master`, GitHub Actions repeats the verification and deploys the repository's static source directly to GitHub Pages without generating or committing a second copy of the site. The ETF data refresh workflow can also be dispatched manually from Actions.
 
 ## Development note
 

@@ -12,10 +12,13 @@ export default [
   },
   js.configs.recommended,
   {
-    files: ["assets/scripts/**/*.js"],
+    files: ["assets/scripts/**/*.js", "etf-premium/app.js"],
     languageOptions: {
       ecmaVersion: "latest",
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        Chart: "readonly",
+      },
       sourceType: "script",
     },
   },

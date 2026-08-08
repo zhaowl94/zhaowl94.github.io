@@ -13,6 +13,12 @@ const requiredFiles = [
   "assets/images/social-preview.png",
   "assets/scripts/site.js",
   "assets/styles/site.css",
+  "etf-premium/app.js",
+  "etf-premium/data/dashboard.json",
+  "etf-premium/index.html",
+  "etf-premium/styles.css",
+  "etf-premium/vendor/chart.umd.min.js",
+  "etf-premium/vendor/LICENSE.chartjs.md",
   "index.html",
   "robots.txt",
   "sitemap.xml",
@@ -164,17 +170,18 @@ async function criticalPayloadSize() {
 }
 
 await assertRequiredFiles();
-const [indexHtml, notFoundHtml, browserScript, robots, sitemap] =
+const [indexHtml, notFoundHtml, premiumHtml, browserScript, robots, sitemap] =
   await Promise.all([
     assertLocalReferences("index.html"),
     assertLocalReferences("404.html"),
+    assertLocalReferences("etf-premium/index.html"),
     readFile(path.join(projectRoot, "assets/scripts/site.js"), "utf8"),
     readFile(path.join(projectRoot, "robots.txt"), "utf8"),
     readFile(path.join(projectRoot, "sitemap.xml"), "utf8"),
   ]);
 
 assertProjectOrder(indexHtml);
-assertSafeMarkup(indexHtml, notFoundHtml, browserScript);
+assertSafeMarkup(`${indexHtml}\n${premiumHtml}`, notFoundHtml, browserScript);
 assertStructuredData(indexHtml);
 
 if (
