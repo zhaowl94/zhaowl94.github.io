@@ -9,6 +9,7 @@ const pages = [
   "/index.html?lang=en",
   "/404.html?lang=zh",
   "/404.html?lang=en",
+  "/etf-premium/",
 ];
 
 for (const path of pages) {
@@ -16,6 +17,11 @@ for (const path of pages) {
     page,
   }) => {
     await page.goto(path);
+    if (path === "/etf-premium/") {
+      await expect(page.locator("#update-indicator")).toContainText(
+        "静态快照已就绪",
+      );
+    }
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
       .analyze();
@@ -35,13 +41,20 @@ test("home remains usable at 400 percent zoom", async ({ page }) => {
   await expect(page.locator(".project-card")).toHaveCount(5);
 });
 
-test("home and not-found pages do not overflow at 320 CSS pixels", async ({
-  page,
-}) => {
+test("public pages do not overflow at 320 CSS pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
 
-  for (const path of ["/index.html?lang=zh", "/404.html?lang=en"]) {
+  for (const path of [
+    "/index.html?lang=zh",
+    "/404.html?lang=en",
+    "/etf-premium/",
+  ]) {
     await page.goto(path);
+    if (path === "/etf-premium/") {
+      await expect(page.locator("#update-indicator")).toContainText(
+        "静态快照已就绪",
+      );
+    }
     const dimensions = await page.evaluate(() => ({
       clientWidth: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,

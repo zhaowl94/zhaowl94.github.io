@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#12232c" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="index, follow" />
+    <meta
+      name="description"
+      content="A股上市纳斯达克100与标普500 ETF 的实时及历史溢价率对比看板。"
+    />
+    <link rel="canonical" href="https://zhaowl94.github.io/etf-premium/" />
+    <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>跨境 ETF 溢价温度计 · zhaowl94</title>
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://zhaowl94.github.io/etf-premium/" />
+    <meta property="og:site_name" content="zhaowl94" />
+    <meta property="og:title" content="跨境 ETF 溢价温度计" />
+    <meta
+      property="og:description"
+      content="纳指100与标普500 ETF 的实时价差、历史走势和横向比较。"
+    />
+    <meta
+      property="og:image"
+      content="https://zhaowl94.github.io/assets/images/social-preview.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script src="vendor/chart.umd.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <div class="progress-track" aria-hidden="true">
+      <span id="global-progress"></span>
+    </div>
+
+    <header class="hero">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <a class="back-link" href="../">← 返回 zhaowl94 首页</a>
+          <p class="eyebrow">
+            <span class="pulse-dot"></span>A股跨境 ETF · 价差监测
+          </p>
+          <h1>溢价不是情绪，<br /><em>是你多付的钱。</em></h1>
+          <p class="lede">
+            把纳斯达克 100 与标普 500 的境内 ETF 放到同一把尺子上。盘中看
+            IOPV，收盘看同日官方净值。
+          </p>
+          <div class="hero-actions">
+            <button
+              id="refresh-button"
+              class="button button-primary"
+              type="button"
+            >
+              <span class="button-icon" aria-hidden="true">↻</span>
+              <span>重新载入</span>
+            </button>
+            <a id="export-link" class="button button-secondary" href="#">
+              <span class="button-icon" aria-hidden="true">↓</span>
+              <span>导出明细</span>
+            </a>
+          </div>
+        </div>
+
+        <section class="snapshot" aria-label="市场快照">
+          <div class="snapshot-heading">
+            <span>当前快照</span>
+            <span id="quote-date" class="data-stamp">等待数据</span>
+          </div>
+          <div class="metric-grid">
+            <article class="metric metric-wide">
+              <span class="metric-label">覆盖产品</span>
+              <strong id="metric-count">—</strong>
+              <span class="metric-unit">只 ETF</span>
+            </article>
+            <article class="metric">
+              <span class="metric-label">IOPV 溢价中位数</span>
+              <strong id="metric-median">—</strong>
+            </article>
+            <article class="metric">
+              <span class="metric-label">最高实时溢价</span>
+              <strong id="metric-high">—</strong>
+              <span id="metric-high-name" class="metric-caption">—</span>
+            </article>
+            <article class="metric">
+              <span class="metric-label">近一年低于当前</span>
+              <strong id="metric-percentile">—</strong>
+              <span class="metric-caption">全市场中位数</span>
+            </article>
+          </div>
+          <div class="snapshot-foot">
+            <span id="update-indicator" class="status-chip">
+              <i></i><span>正在读取快照</span>
+            </span>
+            <span id="generated-at">—</span>
+          </div>
+        </section>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="control-strip" aria-label="图表筛选">
+        <div class="control-group">
+          <span class="control-label">标的指数</span>
+          <div
+            id="group-switch"
+            class="segmented"
+            role="group"
+            aria-label="选择标的指数"
+          >
+            <button type="button" class="active" data-group="all">全部</button>
+            <button type="button" data-group="nasdaq100">纳指 100</button>
+            <button type="button" data-group="sp500">标普 500</button>
+          </div>
+        </div>
+        <div class="control-group control-group-right">
+          <span class="control-label">观察区间</span>
+          <div
+            id="range-switch"
+            class="range-tabs"
+            role="group"
+            aria-label="选择观察区间"
+          >
+            <button type="button" data-range="1m">1月</button>
+            <button type="button" data-range="3m">3月</button>
+            <button type="button" data-range="6m">6月</button>
+            <button type="button" class="active" data-range="1y">1年</button>
+            <button type="button" data-range="3y">3年</button>
+            <button type="button" data-range="all">全部</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="visual-grid">
+        <article class="chart-card">
+          <header class="card-heading">
+            <div>
+              <p class="section-kicker">同日收盘价 ÷ 官方单位净值</p>
+              <h2>历史收盘溢价率</h2>
+            </div>
+            <div class="chart-tools">
+              <span id="selected-summary" class="selection-count"
+                >已选 0 只</span
+              >
+              <button id="select-all" class="text-button" type="button">
+                全选
+              </button>
+              <button id="select-none" class="text-button" type="button">
+                清空
+              </button>
+            </div>
+          </header>
+          <div class="chart-stage">
+            <div id="chart-loading" class="chart-loading">
+              <span class="loader-ring"></span>
+              <strong>正在读取每日价差快照</strong>
+              <small>数据由 GitHub Actions 定时生成</small>
+            </div>
+            <canvas
+              id="premium-chart"
+              aria-label="ETF 历史溢价率折线图"
+              role="img"
+            ></canvas>
+            <div id="chart-empty" class="chart-empty hidden">
+              请选择至少一只 ETF
+            </div>
+          </div>
+          <footer class="chart-foot">
+            <span><i class="legend-line median-line"></i>同组中位数</span>
+            <span><i class="legend-line zero-line"></i>零溢价线</span>
+            <span class="chart-hint">
+              点击右侧产品可显示或隐藏；悬停查看当日收盘价与净值
+            </span>
+          </footer>
+        </article>
+
+        <aside class="fund-picker" aria-label="ETF 选择器">
+          <div class="picker-head">
+            <div>
+              <p class="section-kicker">产品列表</p>
+              <h2>逐只比较</h2>
+            </div>
+            <span id="visible-count" class="tiny-badge">0 / 0</span>
+          </div>
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input
+              id="fund-search"
+              type="search"
+              placeholder="输入代码或名称"
+              autocomplete="off"
+            />
+          </label>
+          <div id="fund-list" class="fund-list"></div>
+        </aside>
+      </section>
+
+      <section class="ranking-card">
+        <header class="card-heading ranking-heading">
+          <div>
+            <p class="section-kicker">横向扫描</p>
+            <h2>ETF 溢价排行</h2>
+          </div>
+          <div class="ranking-note">
+            <span class="live-dot"></span>
+            实时列基于 IOPV；其余列基于已公布净值
+          </div>
+        </header>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" data-sort="name">ETF <span>↕</span></th>
+                <th scope="col" class="number" data-sort="live_premium">
+                  实时溢价 <span>↕</span>
+                </th>
+                <th scope="col" class="number active-sort" data-sort="latest">
+                  最近收盘 <span>↓</span>
+                </th>
+                <th scope="col" class="number" data-sort="avg20">
+                  20日均值 <span>↕</span>
+                </th>
+                <th scope="col" class="number" data-sort="avg60">
+                  60日均值 <span>↕</span>
+                </th>
+                <th scope="col" class="number" data-sort="percentile252">
+                  近1年分位 <span>↕</span>
+                </th>
+                <th scope="col" class="number" data-sort="turnover">
+                  成交额 <span>↕</span>
+                </th>
+                <th scope="col" class="number" data-sort="end_date">
+                  净值日期 <span>↕</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="ranking-body">
+              <tr>
+                <td colspan="8" class="table-empty">等待数据…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="method-card">
+        <div class="method-number">01</div>
+        <div class="method-copy">
+          <p class="section-kicker">计算口径</p>
+          <h2>盘中和收盘，分开看。</h2>
+          <p>
+            实时卡片使用最新成交价与
+            IOPV，适合观察当下价差；历史曲线使用未复权收盘价与同一净值日期的官方单位净值，避免把
+            T 日价格和 T−1 日净值硬拼在一起。
+          </p>
+        </div>
+        <div class="formula-block">
+          <span>历史收盘溢价率</span>
+          <strong>( 收盘价 ÷ 单位净值 − 1 ) × 100%</strong>
+          <small>仅保留日期完全匹配的数据点</small>
+        </div>
+        <details class="method-details">
+          <summary>数据与风险说明</summary>
+          <div>
+            <p>
+              数据来自东方财富 ETF 行情与天天基金公开净值，由 GitHub Actions
+              定时生成静态快照。QDII
+              净值披露存在时差，最近一个历史点通常会落后于实时行情。
+            </p>
+            <p>
+              IOPV
+              是参考估值，不等同于最终基金净值；跨时区、汇率、申赎限制和市场供求都可能放大价差。本工具仅用于研究与技术验证，不构成投资建议。
+            </p>
+          </div>
+        </details>
+      </section>
+
+      <section
+        id="warning-panel"
+        class="warning-panel hidden"
+        aria-live="polite"
+      >
+        <strong>部分数据使用了上次成功快照</strong>
+        <ul id="warning-list"></ul>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <a href="../">zhaowl94</a>
+      <span>GitHub Pages 静态托管 · 不采集访客数据</span>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

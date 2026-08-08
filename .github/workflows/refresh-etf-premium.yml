@@ -1,0 +1,58 @@
+name: Refresh ETF premium data
+
+on:
+  schedule:
+    - cron: "30 10 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  pages: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  refresh-and-deploy:
+    name: Refresh and deploy ETF data
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Install data dependency
+        run: python -m pip install "requests>=2.31,<3.0"
+
+      - name: Generate ETF premium snapshot
+        run: python scripts/update-etf-premium-data.py
+
+      - name: Validate generated snapshot
+        run: >-
+          python -c "import json, pathlib;
+          p=json.loads(pathlib.Path('etf-premium/data/dashboard.json').read_text(encoding='utf-8'));
+          assert p.get('ready') and len(p.get('funds', [])) >= 12"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+        with:
+          enablement: true
+
+      - name: Upload refreshed site
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: .
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
