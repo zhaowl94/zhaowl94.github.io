@@ -11,6 +11,7 @@ function assert(condition, message) {
 const premium = readJson("etf-premium/data/dashboard.json");
 const qdii = readJson("qdii-similarity/data/dashboard.json");
 const bubble = readJson("bubble-monitor/bubble_data.json");
+const marketPulse = readJson("market-pulse/data/state.json");
 const status = readJson("data/tool-status.json");
 const strategy = fs.readFileSync("strategy-monitor/strategy_data.js", "utf8");
 const backtest = fs.readFileSync("backtest-lab/backtest_lab_data.js", "utf8");
@@ -41,8 +42,16 @@ assert(
   "Valuation snapshot is incomplete",
 );
 assert(
-  Object.keys(status.tools || {}).length === 6,
-  "Home status must describe all six public tools",
+  marketPulse.method?.model_used === false &&
+    marketPulse.top10?.length === 10 &&
+    marketPulse.indices?.length === 2 &&
+    marketPulse.candidate_count >= 60 &&
+    marketPulse.sources?.length >= 3,
+  "Market Pulse snapshot is incomplete or unexpectedly uses a model",
+);
+assert(
+  Object.keys(status.tools || {}).length === 7,
+  "Home status must describe all seven public tools",
 );
 
 console.log(
@@ -50,6 +59,7 @@ console.log(
     premiumFunds: premium.funds.length,
     qdiiFunds: qdii.funds.length,
     bubbleDate: bubble.updated_at,
+    marketPulseCandidates: marketPulse.candidate_count,
     tools: Object.keys(status.tools).length,
   }),
 );

@@ -12,3 +12,5 @@ Thumbs.db
 !.env.example
 *.local.json
 *.local.toml
+
+scripts/market-pulse-cache/

@@ -5,11 +5,15 @@ test("desktop tool grid keeps the featured dashboard full width", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/index.html");
-  await expect(page.locator(".tool-card")).toHaveCount(6);
+  await expect(page.locator(".tool-card")).toHaveCount(7);
   const featured = await page
     .locator(".tool-card-featured")
     .evaluate((element) => getComputedStyle(element).gridColumn);
   expect(featured).toBe("1 / -1");
+  const pulse = await page
+    .locator(".tool-card-pulse")
+    .evaluate((element) => getComputedStyle(element).gridColumn);
+  expect(pulse).toBe("1 / -1");
 });
 
 test("mobile tool grid collapses to one column without horizontal overflow", async ({

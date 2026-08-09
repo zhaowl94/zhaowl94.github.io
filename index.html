@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="zhaowl94 的市场研究工具台：跨境 ETF 溢价、纳指估值、泡沫指标、趋势策略、动态回测与 QDII 相似度。"
+      content="zhaowl94 的市场研究工具台：美股市场脉搏、跨境 ETF 溢价、纳指估值、泡沫指标、趋势策略、动态回测与 QDII 相似度。"
     />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#f2efe7" />
@@ -35,7 +35,7 @@
         "description": "跨境 ETF、纳指估值与量化策略研究工具集合。",
         "mainEntity": {
           "@type": "ItemList",
-          "numberOfItems": 6,
+          "numberOfItems": 7,
           "itemListElement": [
             {
               "@type": "ListItem",
@@ -72,6 +72,12 @@
               "position": 6,
               "url": "https://zhaowl94.github.io/qdii-similarity/",
               "name": "QDII 基金相似度"
+            },
+            {
+              "@type": "ListItem",
+              "position": 7,
+              "url": "https://zhaowl94.github.io/market-pulse/",
+              "name": "美股市场脉搏"
             }
           ]
         }
@@ -108,7 +114,8 @@
           </h1>
           <p class="hero-lede">
             一张个人研究桌，集中查看跨境 ETF
-            溢价、纳指估值、泡沫温度、趋势信号、动态配置回测和 QDII 基金相似度。
+            溢价、纳指估值、泡沫温度、趋势信号、动态配置回测、QDII
+            基金相似度和无需模型的美股市场脉搏。
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#tools">打开研究工具</a>
@@ -123,7 +130,7 @@
           </div>
           <div class="desk-metric desk-metric-primary">
             <span>已上线工具</span>
-            <strong>06</strong>
+            <strong>07</strong>
             <small>独立子页面 / 可直接访问</small>
           </div>
           <div class="desk-grid">
@@ -166,7 +173,7 @@
         <div class="section-heading">
           <div>
             <p class="section-index">01 / RESEARCH TOOLS</p>
-            <h2 id="tools-title">六个工具，各回答一个问题。</h2>
+            <h2 id="tools-title">七个工具，各回答一个问题。</h2>
           </div>
           <p>每个工具都保留自己的交互与指标口径，并提供“刷新最新快照”按钮。</p>
         </div>
@@ -303,6 +310,38 @@
             <div class="tool-footer">
               <span>更新：<b data-tool-updated>读取中</b></span
               ><strong>浏览基金地图 →</strong>
+            </div>
+          </a>
+
+          <a
+            class="tool-card tool-card-dark tool-card-pulse"
+            href="market-pulse/"
+            data-tool="market-pulse"
+          >
+            <div class="tool-topline">
+              <span class="tool-number">07</span
+              ><span class="tool-state">15 MIN SNAPSHOT</span>
+            </div>
+            <div class="tool-copy">
+              <p class="tool-kicker">US MARKET PULSE · NO LLM</p>
+              <h3>美股市场脉搏</h3>
+              <p>
+                跟踪纳指 100、标普 500 与核心成分异动，用固定四维规则生成 Top 10
+                和滚动播报，不调用大模型。
+              </p>
+              <ul class="tool-tags" aria-label="主要功能">
+                <li>规则 Top 10</li>
+                <li>指数快照</li>
+                <li>来源健康</li>
+              </ul>
+            </div>
+            <div class="pulse-motif" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+              ><i></i>
+            </div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span
+              ><strong>查看市场脉搏 →</strong>
             </div>
           </a>
         </div>

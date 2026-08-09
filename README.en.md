@@ -4,7 +4,7 @@ A framework-free, tracking-free personal market research desk hosted on GitHub P
 
 Live site: [https://zhaowl94.github.io/](https://zhaowl94.github.io/)
 
-The home page links six public tools: cross-border ETF premiums, Nasdaq-100 valuation, a multi-source bubble monitor, an ETF trend strategy, an interactive allocation backtest, and QDII fund similarity.
+The home page links seven public tools: cross-border ETF premiums, Nasdaq-100 valuation, a multi-source bubble monitor, an ETF trend strategy, an interactive allocation backtest, QDII fund similarity, and a deterministic US Market Pulse.
 
 GitHub Pages is static, so page-level refresh buttons fetch the newest published snapshot without browser caching. Scheduled GitHub Actions perform the upstream collection and computation, retain last-known-good values when a source fails, validate all outputs, and deploy the complete site.
 
@@ -13,6 +13,17 @@ GitHub Pages is static, so page-level refresh buttons fetch the newest published
 - No analytics, cookies, ads, remote fonts, or third-party runtime scripts.
 - Only public market and fund data is included in deployable snapshots.
 - The local asset and investment ledgers are intentionally excluded from this repository's public routes, sitemap, and Pages artifact.
+- Market Pulse uses no LLM or API key. Its public snapshot contains two index summaries, a deterministic Top 10, rolling bulletins, and source health rather than the full raw quote universe.
+
+## Market Pulse refresh
+
+The `Refresh Market Pulse` workflow runs roughly every 15 minutes across the regular US trading window and can also be started manually from GitHub Actions. It restores the latest valid snapshot before collecting new data, so a transient source outage does not publish an empty page.
+
+To rebuild the same no-LLM snapshot locally:
+
+```powershell
+python scripts\update-market-pulse-data.py
+```
 
 ## Local development
 

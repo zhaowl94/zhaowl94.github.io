@@ -12,7 +12,11 @@ export default [
   },
   js.configs.recommended,
   {
-    files: ["assets/scripts/**/*.js", "etf-premium/app.js"],
+    files: [
+      "assets/scripts/**/*.js",
+      "etf-premium/app.js",
+      "market-pulse/app.js",
+    ],
     languageOptions: {
       ecmaVersion: "latest",
       globals: {

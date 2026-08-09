@@ -12,6 +12,7 @@ const pages = [
   "/strategy-monitor/",
   "/backtest-lab/",
   "/qdii-similarity/",
+  "/market-pulse/",
 ];
 
 for (const path of pages) {
@@ -25,6 +26,8 @@ for (const path of pages) {
       );
     if (path === "/qdii-similarity/")
       await expect(page.locator("#progress-pct")).toHaveText("100%");
+    if (path === "/market-pulse/")
+      await expect(page.locator("#rankingRows tr")).toHaveCount(10);
     let audit = new AxeBuilder({ page }).withTags([
       "wcag2a",
       "wcag2aa",
@@ -51,7 +54,7 @@ test("home reflows at the 400 percent zoom equivalent", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/index.html");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(6);
+  await expect(page.locator(".tool-card")).toHaveCount(7);
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,
@@ -61,12 +64,19 @@ test("home reflows at the 400 percent zoom equivalent", async ({ page }) => {
 
 test("public hub pages do not overflow at 320 CSS pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  for (const path of ["/index.html", "/404.html", "/etf-premium/"]) {
+  for (const path of [
+    "/index.html",
+    "/404.html",
+    "/etf-premium/",
+    "/market-pulse/",
+  ]) {
     await page.goto(path);
     if (path === "/etf-premium/")
       await expect(page.locator("#update-indicator")).toContainText(
         "静态快照已就绪",
       );
+    if (path === "/market-pulse/")
+      await expect(page.locator("#rankingRows tr")).toHaveCount(10);
     const dimensions = await page.evaluate(() => ({
       clientWidth: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,
