@@ -43,7 +43,7 @@ jobs:
       RUN_NDX100: ${{ github.event.schedule == '20 22 * * 1-5' || (github.event_name == 'workflow_dispatch' && inputs.refresh_ndx100 == true) }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Restore latest Market Pulse snapshot
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -72,7 +72,7 @@ jobs:
             ndx100-data-${{ runner.os }}-
 
       - name: Set up Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
 
