@@ -1,752 +1,414 @@
 <!doctype html>
-<html class="no-js" lang="zh-CN">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#121210" />
     <meta
       name="description"
-      content="zhaowl94 的开源工程作品集：把遗留脚本变成可验证、可迁移的开源工具。"
-      data-meta-zh="zhaowl94 的开源工程作品集：把遗留脚本变成可验证、可迁移的开源工具。"
-      data-meta-en="zhaowl94's open-source engineering portfolio: turning legacy scripts into verifiable, portable tools."
+      content="zhaowl94 的市场研究工具台：跨境 ETF 溢价、纳指估值、泡沫指标、趋势策略、动态回测与 QDII 相似度。"
     />
-    <meta name="referrer" content="no-referrer" />
     <meta name="robots" content="index, follow" />
-
-    <title
-      data-title-zh="zhaowl94 · 可验证、可迁移的开源工具"
-      data-title-en="zhaowl94 · Verifiable, portable open-source tools"
-    >
-      zhaowl94 · 可验证、可迁移的开源工具
-    </title>
+    <meta name="theme-color" content="#f2efe7" />
     <link rel="canonical" href="https://zhaowl94.github.io/" />
     <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="assets/styles/site.css" />
-
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zhaowl94.github.io/" />
-    <meta property="og:site_name" content="zhaowl94" />
-    <meta property="og:title" content="zhaowl94 · 可验证、可迁移的开源工具" />
+    <meta property="og:site_name" content="zhaowl94 Research Desk" />
+    <meta property="og:title" content="zhaowl94 · 市场研究工具台" />
     <meta
       property="og:description"
-      content="开源工程作品集：兼容迁移、数据工具与可访问静态前端。"
+      content="把跨境 ETF 溢价、纳指估值、泡沫指标与策略回测放在同一张研究桌上。"
     />
     <meta
       property="og:image"
       content="https://zhaowl94.github.io/assets/images/social-preview.png"
     />
-    <meta property="og:image:width" content="1731" />
-    <meta property="og:image:height" content="909" />
-    <meta
-      property="og:image:alt"
-      content="zhaowl94 — Verifiable, Portable, Open"
-    />
     <meta name="twitter:card" content="summary_large_image" />
-
+    <title>zhaowl94 · 市场研究工具台</title>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "ProfilePage",
-        "name": "zhaowl94 open-source engineering portfolio",
+        "@type": "CollectionPage",
+        "name": "zhaowl94 市场研究工具台",
         "url": "https://zhaowl94.github.io/",
+        "description": "跨境 ETF、纳指估值与量化策略研究工具集合。",
         "mainEntity": {
-          "@type": "Person",
-          "name": "zhaowl94",
-          "url": "https://github.com/zhaowl94",
-          "sameAs": ["https://github.com/zhaowl94"]
-        },
-        "hasPart": {
           "@type": "ItemList",
+          "numberOfItems": 6,
           "itemListElement": [
             {
-              "@type": "SoftwareSourceCode",
+              "@type": "ListItem",
               "position": 1,
-              "name": "ttjjCrawler",
-              "codeRepository": "https://github.com/zhaowl94/ttjjCrawler",
-              "programmingLanguage": "Python"
+              "url": "https://zhaowl94.github.io/etf-premium/",
+              "name": "跨境 ETF 溢价温度计"
             },
             {
-              "@type": "SoftwareSourceCode",
+              "@type": "ListItem",
               "position": 2,
-              "name": "ReadWechatMessage",
-              "codeRepository": "https://github.com/zhaowl94/ReadWechatMessage",
-              "programmingLanguage": "Python"
+              "url": "https://zhaowl94.github.io/ndx-valuation/",
+              "name": "纳指 100 估值图"
             },
             {
-              "@type": "SoftwareSourceCode",
+              "@type": "ListItem",
               "position": 3,
-              "name": "yuanshen",
-              "codeRepository": "https://github.com/zhaowl94/yuanshen",
-              "programmingLanguage": "Python"
+              "url": "https://zhaowl94.github.io/bubble-monitor/",
+              "name": "NDX 泡沫监控"
             },
             {
-              "@type": "SoftwareSourceCode",
+              "@type": "ListItem",
               "position": 4,
-              "name": "html_sample",
-              "codeRepository": "https://github.com/zhaowl94/html_sample",
-              "programmingLanguage": "HTML"
+              "url": "https://zhaowl94.github.io/strategy-monitor/",
+              "name": "纳指 ETF 趋势策略"
             },
             {
-              "@type": "SoftwareSourceCode",
+              "@type": "ListItem",
               "position": 5,
-              "name": "ProcessSqlData-TS",
-              "codeRepository": "https://github.com/zhaowl94/ProcessSqlData-TS",
-              "programmingLanguage": "Python"
+              "url": "https://zhaowl94.github.io/backtest-lab/",
+              "name": "纳指动态配置回测台"
+            },
+            {
+              "@type": "ListItem",
+              "position": 6,
+              "url": "https://zhaowl94.github.io/qdii-similarity/",
+              "name": "QDII 基金相似度"
             }
           ]
         }
       }
     </script>
     <script src="assets/scripts/site.js" defer></script>
-    <noscript>
-      <style>
-        [data-lang-content][hidden] {
-          display: revert !important;
-        }
-
-        .language-switch {
-          display: none !important;
-        }
-      </style>
-    </noscript>
   </head>
-  <body>
-    <a class="skip-link" href="#main-content">
-      <span data-lang-content="zh">跳到主要内容</span>
-      <span data-lang-content="en" lang="en" hidden>Skip to main content</span>
-    </a>
+  <body id="top">
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
 
-    <header class="site-header">
-      <div class="shell header-layout">
-        <a class="wordmark" href="#top" aria-label="zhaowl94 首页">
-          <span class="wordmark-mark" aria-hidden="true"></span>
-          <span>zhaowl94</span>
-        </a>
-
-        <nav class="primary-nav" aria-label="主要导航">
-          <a href="#capabilities">
-            <span data-lang-content="zh">能力</span>
-            <span data-lang-content="en" lang="en" hidden>Capabilities</span>
-          </a>
-          <a href="#projects">
-            <span data-lang-content="zh">项目</span>
-            <span data-lang-content="en" lang="en" hidden>Projects</span>
-          </a>
-          <a href="#principles">
-            <span data-lang-content="zh">原则</span>
-            <span data-lang-content="en" lang="en" hidden>Principles</span>
-          </a>
-        </nav>
-
-        <nav class="language-switch" aria-label="语言选择">
-          <a href="?lang=zh" data-language-link="zh" lang="zh-CN">中</a>
-          <span aria-hidden="true">/</span>
-          <a href="?lang=en" data-language-link="en" lang="en">EN</a>
-        </nav>
-      </div>
+    <header class="site-header" aria-label="网站导航">
+      <a class="wordmark" href="#top" aria-label="zhaowl94 首页">
+        <span class="wordmark-mark" aria-hidden="true">Z94</span>
+        <span>
+          <strong>zhaowl94</strong>
+          <small>MARKET RESEARCH DESK</small>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="主要导航">
+        <a href="#tools">研究工具</a>
+        <a href="#pipeline">数据机制</a>
+        <a href="#projects">开源项目</a>
+        <a href="https://github.com/zhaowl94" rel="me noreferrer">GitHub ↗</a>
+      </nav>
     </header>
 
     <main id="main-content">
-      <section class="hero shell" id="top" aria-labelledby="hero-title">
+      <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow">
-            <span data-lang-content="zh">开源工程实践 / 2026</span>
-            <span data-lang-content="en" lang="en" hidden
-              >Open-source engineering / 2026</span
-            >
-          </p>
+          <p class="kicker"><span>RESEARCH / 01</span> 数据先于判断</p>
           <h1 id="hero-title">
-            <span data-lang-content="zh"
-              >把遗留脚本变成<br />可验证、可迁移<br />的开源工具。</span
-            >
-            <span data-lang-content="en" lang="en" hidden
-              >Turning legacy scripts into<br />verifiable, portable<br />open-source
-              tools.</span
-            >
+            把市场噪音，整理成<br />
+            <em>能操作的证据。</em>
           </h1>
-          <p class="hero-intro">
-            <span data-lang-content="zh"
-              >我关注兼容迁移、数据工具和可访问前端。每个公开结论都应有代码、测试或发布记录作为证据。</span
-            >
-            <span data-lang-content="en" lang="en" hidden
-              >I work on compatible migrations, data tools, and accessible front
-              ends. Every public claim should be backed by code, tests, or a
-              release.</span
-            >
+          <p class="hero-lede">
+            一张个人研究桌，集中查看跨境 ETF
+            溢价、纳指估值、泡沫温度、趋势信号、动态配置回测和 QDII 基金相似度。
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#projects">
-              <span data-lang-content="zh">查看项目</span>
-              <span data-lang-content="en" lang="en" hidden>View projects</span>
-              <span aria-hidden="true">↘</span>
-            </a>
-            <a
-              class="button button-secondary"
-              href="https://github.com/zhaowl94"
-              rel="me noreferrer"
-            >
-              GitHub
-              <span aria-hidden="true">↗</span>
-            </a>
+            <a class="button button-primary" href="#tools">打开研究工具</a>
+            <a class="button button-secondary" href="#pipeline">数据怎么更新</a>
           </div>
         </div>
 
-        <div class="hero-system" role="group" aria-label="工程方法概览">
-          <div class="system-grid" aria-hidden="true">
-            <span class="system-node node-input"></span>
-            <span class="system-node node-migrate"></span>
-            <span class="system-node node-test"></span>
-            <span class="system-node node-release"></span>
-            <span class="system-path path-one"></span>
-            <span class="system-path path-two"></span>
-            <span class="system-check">✓</span>
+        <aside class="desk-card" aria-label="研究台摘要">
+          <div class="desk-card-head">
+            <span>DESK STATUS</span>
+            <span class="live-dot">ONLINE</span>
           </div>
-          <ol class="proof-list">
-            <li>
-              <span class="proof-index">01</span>
-              <div>
-                <strong>
-                  <span data-lang-content="zh">兼容是契约</span>
-                  <span data-lang-content="en" lang="en" hidden
-                    >Compatibility is a contract</span
-                  >
-                </strong>
-                <p>
-                  <span data-lang-content="zh"
-                    >保留有效输入、输出和调用路径。</span
-                  >
-                  <span data-lang-content="en" lang="en" hidden
-                    >Preserve valid inputs, outputs, and invocation paths.</span
-                  >
-                </p>
-              </div>
-            </li>
-            <li>
-              <span class="proof-index">02</span>
-              <div>
-                <strong>
-                  <span data-lang-content="zh">验证优先于承诺</span>
-                  <span data-lang-content="en" lang="en" hidden
-                    >Evidence before promises</span
-                  >
-                </strong>
-                <p>
-                  <span data-lang-content="zh"
-                    >Windows、Linux、浏览器和真实发布共同验收。</span
-                  >
-                  <span data-lang-content="en" lang="en" hidden
-                    >Validate on Windows, Linux, browsers, and real
-                    releases.</span
-                  >
-                </p>
-              </div>
-            </li>
-            <li>
-              <span class="proof-index">03</span>
-              <div>
-                <strong>
-                  <span data-lang-content="zh">边界也是功能</span>
-                  <span data-lang-content="en" lang="en" hidden
-                    >Boundaries are features</span
-                  >
-                </strong>
-                <p>
-                  <span data-lang-content="zh"
-                    >明确不采集什么、不推断什么、不自动做什么。</span
-                  >
-                  <span data-lang-content="en" lang="en" hidden
-                    >State what is not collected, inferred, or automated.</span
-                  >
-                </p>
-              </div>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <section
-        class="section shell"
-        id="capabilities"
-        aria-labelledby="capabilities-title"
-      >
-        <div class="section-heading">
-          <p class="section-number">01 / 03</p>
-          <div>
-            <p class="eyebrow">
-              <span data-lang-content="zh">可由公开仓库证明</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Backed by public repositories</span
-              >
-            </p>
-            <h2 id="capabilities-title">
-              <span data-lang-content="zh">能力，不是关键词。</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Capabilities, not keywords.</span
-              >
-            </h2>
+          <div class="desk-metric desk-metric-primary">
+            <span>已上线工具</span>
+            <strong>06</strong>
+            <small>独立子页面 / 可直接访问</small>
           </div>
-        </div>
-
-        <div class="capability-grid">
-          <article class="capability-card">
-            <p class="card-index">A</p>
-            <h3>
-              <span data-lang-content="zh">数据处理与采集</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Data processing and collection</span
-              >
-            </h3>
-            <p>
-              <span data-lang-content="zh"
-                >把网页、CSV、XLSX
-                与数据库数据转化为来源清晰、可恢复、可复现的结果。</span
-              >
-              <span data-lang-content="en" lang="en" hidden
-                >Turn web, CSV, XLSX, and database inputs into traceable,
-                resumable, and reproducible results.</span
-              >
-            </p>
-          </article>
-          <article class="capability-card">
-            <p class="card-index">B</p>
-            <h3>
-              <span data-lang-content="zh">兼容性与迁移</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Compatibility and migration</span
-              >
-            </h3>
-            <p>
-              <span data-lang-content="zh"
-                >先冻结有效行为，再替换语言、依赖与内部结构，让旧用户能够无缝迁移。</span
-              >
-              <span data-lang-content="en" lang="en" hidden
-                >Freeze valid behavior before replacing languages, dependencies,
-                and internals so existing users can migrate safely.</span
-              >
-            </p>
-          </article>
-          <article class="capability-card">
-            <p class="card-index">C</p>
-            <h3>
-              <span data-lang-content="zh">可访问前端与验证</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Accessible front ends and verification</span
-              >
-            </h3>
-            <p>
-              <span data-lang-content="zh"
-                >用语义化
-                HTML、渐进增强和跨平台测试构建无需框架即可长期维护的页面。</span
-              >
-              <span data-lang-content="en" lang="en" hidden
-                >Build durable, framework-free pages with semantic HTML,
-                progressive enhancement, and cross-platform tests.</span
-              >
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section
-        class="section projects-section"
-        id="projects"
-        aria-labelledby="projects-title"
-      >
-        <div class="shell">
-          <div class="section-heading">
-            <p class="section-number">02 / 03</p>
-            <div>
-              <p class="eyebrow">
-                <span data-lang-content="zh">精选公开项目</span>
-                <span data-lang-content="en" lang="en" hidden
-                  >Selected public work</span
-                >
-              </p>
-              <h2 id="projects-title">
-                <span data-lang-content="zh">五个项目，五种边界。</span>
-                <span data-lang-content="en" lang="en" hidden
-                  >Five projects, five explicit boundaries.</span
-                >
-              </h2>
-              <p class="section-intro">
-                <span data-lang-content="zh"
-                  >状态来自 2026 年 7
-                  月完成的仓库验证。深入命令、限制和迁移说明以各项目 README
-                  为准。</span
-                >
-                <span data-lang-content="en" lang="en" hidden
-                  >Statuses reflect repository verification completed in July
-                  2026. Each project README remains the source of truth for
-                  commands, limits, and migrations.</span
-                >
-              </p>
+          <div class="desk-grid">
+            <div class="desk-metric">
+              <span>数据交付</span>
+              <strong>静态快照</strong>
+              <small>GitHub Actions 生成</small>
+            </div>
+            <div class="desk-metric">
+              <span>访问方式</span>
+              <strong>零登录</strong>
+              <small>无追踪 / 无 Cookie</small>
             </div>
           </div>
+          <div class="market-tape" aria-hidden="true">
+            <span>NDX</span><i></i><span>QDII</span><i></i><span>PREMIUM</span
+            ><i></i><span>BACKTEST</span>
+          </div>
+        </aside>
+      </section>
 
-          <ol class="project-list">
-            <li>
-              <article class="project-card project-featured">
-                <div class="project-meta">
-                  <p class="project-index">01</p>
-                  <p class="status status-release">
-                    <span aria-hidden="true"></span>
-                    <span data-lang-content="zh">稳定版 · v1.0.0</span>
-                    <span data-lang-content="en" lang="en" hidden
-                      >Stable · v1.0.0</span
-                    >
-                  </p>
-                </div>
-                <div class="project-body">
-                  <p class="project-kind">Python / Data collection</p>
-                  <h3>ttjjCrawler</h3>
-                  <p class="project-description">
-                    <span data-lang-content="zh"
-                      >面向中国公募基金公开数据的保守型、多来源、可恢复采集器。来源始终分开保存，不自动猜测哪个来源“正确”。</span
-                    >
-                    <span data-lang-content="en" lang="en" hidden
-                      >A conservative, multi-source, resumable collector for
-                      public Chinese mutual-fund data. Sources remain separate;
-                      the tool never guesses which one is “correct.”</span
-                    >
-                  </p>
-                  <ul class="tag-list" aria-label="项目特性">
-                    <li>Windows + Linux</li>
-                    <li>Python 3.11–3.14</li>
-                    <li>Resumable</li>
-                    <li>CI</li>
-                  </ul>
-                </div>
-                <div class="project-links">
-                  <a
-                    href="https://github.com/zhaowl94/ttjjCrawler"
-                    rel="noreferrer"
-                    >Repository <span aria-hidden="true">↗</span></a
-                  >
-                  <a
-                    href="https://github.com/zhaowl94/ttjjCrawler/releases/tag/v1.0.0"
-                    rel="noreferrer"
-                    >Release <span aria-hidden="true">↗</span></a
-                  >
-                </div>
-              </article>
-            </li>
+      <section class="status-ribbon" aria-label="数据状态">
+        <div>
+          <span class="status-label">LATEST PUBLISH</span>
+          <strong id="site-updated">正在读取站点快照…</strong>
+        </div>
+        <p>
+          按钮刷新只重新读取已发布快照；后台抓取由定时任务完成，页面不保存个人数据。
+        </p>
+        <button id="refresh-status" class="text-button" type="button">
+          刷新站点状态 ↻
+        </button>
+      </section>
 
-            <li>
-              <article class="project-card">
-                <div class="project-meta">
-                  <p class="project-index">02</p>
-                  <p class="status status-verified">
-                    <span aria-hidden="true"></span>
-                    <span data-lang-content="zh">已验证工具</span>
-                    <span data-lang-content="en" lang="en" hidden
-                      >Verified tool</span
-                    >
-                  </p>
-                </div>
-                <div class="project-body">
-                  <p class="project-kind">Python / Privacy</p>
-                  <h3>ReadWechatMessage</h3>
-                  <p class="project-description">
-                    <span data-lang-content="zh"
-                      >完全离线的一对一聊天记录统计工具，兼容旧 MATLAB
-                      输入列位与核心输出名称，同时不连接微信、不解密数据库、不上传内容。</span
-                    >
-                    <span data-lang-content="en" lang="en" hidden
-                      >A fully offline one-to-one chat statistics tool that
-                      preserves legacy MATLAB column positions and output names
-                      without connecting to WeChat, decrypting databases, or
-                      uploading content.</span
-                    >
-                  </p>
-                  <ul class="tag-list" aria-label="项目特性">
-                    <li>CSV + XLSX</li>
-                    <li>Offline</li>
-                    <li>Legacy compatible</li>
-                    <li>Streaming</li>
-                  </ul>
-                </div>
-                <div class="project-links">
-                  <a
-                    href="https://github.com/zhaowl94/ReadWechatMessage"
-                    rel="noreferrer"
-                    >Repository <span aria-hidden="true">↗</span></a
-                  >
-                </div>
-              </article>
-            </li>
+      <section
+        id="tools"
+        class="section tools-section"
+        aria-labelledby="tools-title"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="section-index">01 / RESEARCH TOOLS</p>
+            <h2 id="tools-title">六个工具，各回答一个问题。</h2>
+          </div>
+          <p>每个工具都保留自己的交互与指标口径，并提供“刷新最新快照”按钮。</p>
+        </div>
 
-            <li>
-              <article class="project-card">
-                <div class="project-meta">
-                  <p class="project-index">03</p>
-                  <p class="status status-experiment">
-                    <span aria-hidden="true"></span>
-                    <span data-lang-content="zh">版本化实验 · v1.0.0</span>
-                    <span data-lang-content="en" lang="en" hidden
-                      >Versioned experiment · v1.0.0</span
-                    >
-                  </p>
-                </div>
-                <div class="project-body">
-                  <p class="project-kind">Python / OCR + Simulation</p>
-                  <h3>yuanshen</h3>
-                  <p class="project-description">
-                    <span data-lang-content="zh"
-                      >可复现、可批处理、兼容旧输入的五星圣遗物副词条评分实验，支持结构化
-                      JSON 与可选 OCR，并明确限定为非官方研究工具。</span
-                    >
-                    <span data-lang-content="en" lang="en" hidden
-                      >A reproducible, batchable artifact sub-stat scoring
-                      experiment with legacy JSON compatibility and optional
-                      OCR, explicitly scoped as an unofficial research
-                      tool.</span
-                    >
-                  </p>
-                  <ul class="tag-list" aria-label="项目特性">
-                    <li>Reproducible</li>
-                    <li>Optional OCR</li>
-                    <li>Versioned weights</li>
-                    <li>Seeded simulation</li>
-                  </ul>
-                </div>
-                <div class="project-links">
-                  <a
-                    href="https://github.com/zhaowl94/yuanshen"
-                    rel="noreferrer"
-                    >Repository <span aria-hidden="true">↗</span></a
-                  >
-                  <a
-                    href="https://github.com/zhaowl94/yuanshen/releases/tag/v1.0.0"
-                    rel="noreferrer"
-                    >Release <span aria-hidden="true">↗</span></a
-                  >
-                </div>
-              </article>
-            </li>
+        <div class="tool-grid">
+          <a
+            class="tool-card tool-card-featured"
+            href="etf-premium/"
+            data-tool="etf-premium"
+          >
+            <div class="tool-topline">
+              <span class="tool-number">01</span>
+              <span class="tool-state">DAILY SNAPSHOT</span>
+            </div>
+            <div class="tool-copy">
+              <p class="tool-kicker">CROSS-BORDER ETF</p>
+              <h3>跨境 ETF 溢价温度计</h3>
+              <p>
+                横向比较 A 股纳指 100、标普 500 ETF
+                的盘中与历史收盘溢价，识别“多付了多少钱”。
+              </p>
+              <ul class="tool-tags" aria-label="主要功能">
+                <li>16 只产品</li>
+                <li>历史走势</li>
+                <li>盘中估算</li>
+              </ul>
+            </div>
+            <div class="thermometer" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span>
+              <strong>进入温度计 →</strong>
+            </div>
+          </a>
 
-            <li>
-              <article class="project-card">
-                <div class="project-meta">
-                  <p class="project-index">04</p>
-                  <p class="status status-live">
-                    <span aria-hidden="true"></span>
-                    <span data-lang-content="zh">已上线 · v1.0.0</span>
-                    <span data-lang-content="en" lang="en" hidden
-                      >Live · v1.0.0</span
-                    >
-                  </p>
-                </div>
-                <div class="project-body">
-                  <p class="project-kind">HTML / CSS / Accessibility</p>
-                  <h3>html_sample</h3>
-                  <p class="project-description">
-                    <span data-lang-content="zh"
-                      >无需框架或运行时构建的静态学习示例集，覆盖语义化
-                      HTML、响应式
-                      CSS、无障碍、表单交互和自动化浏览器测试。</span
-                    >
-                    <span data-lang-content="en" lang="en" hidden
-                      >A framework-free static learning gallery covering
-                      semantic HTML, responsive CSS, accessibility, form
-                      behavior, and automated browser testing.</span
-                    >
-                  </p>
-                  <ul class="tag-list" aria-label="项目特性">
-                    <li>WCAG</li>
-                    <li>Direct file</li>
-                    <li>Cross-browser</li>
-                    <li>GitHub Pages</li>
-                  </ul>
-                </div>
-                <div class="project-links">
-                  <a
-                    href="https://github.com/zhaowl94/html_sample"
-                    rel="noreferrer"
-                    >Repository <span aria-hidden="true">↗</span></a
-                  >
-                  <a
-                    href="https://zhaowl94.github.io/html_sample/"
-                    rel="noreferrer"
-                    >Live site <span aria-hidden="true">↗</span></a
-                  >
-                  <a
-                    href="https://github.com/zhaowl94/html_sample/releases/tag/v1.0.0"
-                    rel="noreferrer"
-                    >Release <span aria-hidden="true">↗</span></a
-                  >
-                </div>
-              </article>
-            </li>
+          <a class="tool-card" href="ndx-valuation/" data-tool="ndx-valuation">
+            <div class="tool-topline">
+              <span class="tool-number">02</span
+              ><span class="tool-state">CLIENT UPDATE</span>
+            </div>
+            <p class="tool-kicker">VALUATION</p>
+            <h3>纳指 100 估值图</h3>
+            <p>用长期对数趋势、MA200 偏离与历史分位观察当前估值位置。</p>
+            <div class="sparkline sparkline-rise" aria-hidden="true">
+              <i></i>
+            </div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span
+              ><strong>打开估值图 →</strong>
+            </div>
+          </a>
 
-            <li>
-              <article class="project-card">
-                <div class="project-meta">
-                  <p class="project-index">05</p>
-                  <p class="status status-migration">
-                    <span aria-hidden="true"></span>
-                    <span data-lang-content="zh">迁移与安全框架</span>
-                    <span data-lang-content="en" lang="en" hidden
-                      >Migration and safety framework</span
-                    >
-                  </p>
-                </div>
-                <div class="project-body">
-                  <p class="project-kind">Python / Time series / Legacy</p>
-                  <h3>ProcessSqlData-TS</h3>
-                  <p class="project-description">
-                    <span data-lang-content="zh"
-                      >对 Python 2
-                      时序研究原型进行风险隔离、行为记录和迁移规划。仓库明确禁止把遗留脚本直接当作生产任务运行。</span
-                    >
-                    <span data-lang-content="en" lang="en" hidden
-                      >A safety and migration framework around a Python 2
-                      time-series research prototype. The repository explicitly
-                      warns against running the legacy script as a production
-                      job.</span
-                    >
-                  </p>
-                  <ul class="tag-list" aria-label="项目特性">
-                    <li>Risk isolation</li>
-                    <li>Behavior inventory</li>
-                    <li>Python 3.12 path</li>
-                    <li>Not production-ready</li>
-                  </ul>
-                </div>
-                <div class="project-links">
-                  <a
-                    href="https://github.com/zhaowl94/ProcessSqlData-TS"
-                    rel="noreferrer"
-                    >Repository <span aria-hidden="true">↗</span></a
-                  >
-                </div>
-              </article>
-            </li>
-          </ol>
+          <a
+            class="tool-card tool-card-dark"
+            href="bubble-monitor/"
+            data-tool="bubble-monitor"
+          >
+            <div class="tool-topline">
+              <span class="tool-number">03</span
+              ><span class="tool-state">MULTI-SOURCE</span>
+            </div>
+            <p class="tool-kicker">RISK TEMPERATURE</p>
+            <h3>NDX 泡沫监控</h3>
+            <p>
+              把 VIX、Fear &amp;
+              Greed、估值、集中度和长期趋势放进同一块风险仪表盘。
+            </p>
+            <div class="bubble-gauge" aria-hidden="true">
+              <span>σ</span><i></i>
+            </div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span
+              ><strong>查看泡沫指标 →</strong>
+            </div>
+          </a>
+
+          <a
+            class="tool-card"
+            href="strategy-monitor/"
+            data-tool="strategy-monitor"
+          >
+            <div class="tool-topline">
+              <span class="tool-number">04</span
+              ><span class="tool-state">SIGNAL</span>
+            </div>
+            <p class="tool-kicker">TREND STRATEGY</p>
+            <h3>纳指 ETF 趋势策略</h3>
+            <p>基于均线、缓冲带和确认天数，输出可执行的 ETF / 债券目标仓位。</p>
+            <div class="signal-bars" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span
+              ><strong>查看当前信号 →</strong>
+            </div>
+          </a>
+
+          <a class="tool-card" href="backtest-lab/" data-tool="backtest-lab">
+            <div class="tool-topline">
+              <span class="tool-number">05</span
+              ><span class="tool-state">INTERACTIVE</span>
+            </div>
+            <p class="tool-kicker">BACKTEST LAB</p>
+            <h3>纳指动态配置回测台</h3>
+            <p>
+              调整 MA、仓位、确认阈值和定投参数，比较策略、固定仓位与全仓基准。
+            </p>
+            <div class="backtest-axis" aria-hidden="true"><i></i><b></b></div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span
+              ><strong>开始回测 →</strong>
+            </div>
+          </a>
+
+          <a
+            class="tool-card tool-card-cobalt"
+            href="qdii-similarity/"
+            data-tool="qdii-similarity"
+          >
+            <div class="tool-topline">
+              <span class="tool-number">06</span
+              ><span class="tool-state">FUND MAP</span>
+            </div>
+            <p class="tool-kicker">QDII UNIVERSE</p>
+            <h3>QDII 基金相似度</h3>
+            <p>
+              按持仓重合、收益相关和跟踪指数，对全市场 QDII
+              与三只基准基金做相似度排序。
+            </p>
+            <div class="matrix" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span
+              ><strong>浏览基金地图 →</strong>
+            </div>
+          </a>
         </div>
       </section>
 
       <section
-        class="section shell principles-section"
-        id="principles"
-        aria-labelledby="principles-title"
+        id="pipeline"
+        class="section pipeline-section"
+        aria-labelledby="pipeline-title"
       >
         <div class="section-heading">
-          <p class="section-number">03 / 03</p>
           <div>
-            <p class="eyebrow">
-              <span data-lang-content="zh">工作方式</span>
-              <span data-lang-content="en" lang="en" hidden>How I work</span>
-            </p>
-            <h2 id="principles-title">
-              <span data-lang-content="zh">先定义边界，再写实现。</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Define the boundary before writing the implementation.</span
-              >
-            </h2>
+            <p class="section-index">02 / DATA PIPELINE</p>
+            <h2 id="pipeline-title">刷新按钮背后，发生了什么？</h2>
           </div>
+          <p>GitHub Pages 是静态站，因此数据计算与页面读取被明确拆开。</p>
         </div>
+        <ol class="pipeline">
+          <li>
+            <span>01</span>
+            <div>
+              <h3>定时抓取</h3>
+              <p>GitHub Actions 从公开行情与基金数据源采集最新数据。</p>
+            </div>
+          </li>
+          <li>
+            <span>02</span>
+            <div>
+              <h3>离线计算</h3>
+              <p>生成溢价、估值、趋势、回测与相似度所需的版本化快照。</p>
+            </div>
+          </li>
+          <li>
+            <span>03</span>
+            <div>
+              <h3>质量校验</h3>
+              <p>静态检查、跨浏览器测试和可访问性检查通过后才部署。</p>
+            </div>
+          </li>
+          <li>
+            <span>04</span>
+            <div>
+              <h3>页面刷新</h3>
+              <p>你点击刷新时，浏览器绕过缓存读取最新已发布快照。</p>
+            </div>
+          </li>
+        </ol>
+        <p class="pipeline-note">
+          这也意味着：按钮不会在你的浏览器中运行 Python，更不会要求任何 GitHub
+          权限；若上游源暂时失败，页面会继续展示最近一次有效快照。
+        </p>
+      </section>
 
-        <div class="principle-grid">
-          <article>
-            <p class="principle-mark" aria-hidden="true">→</p>
-            <h3>
-              <span data-lang-content="zh">冻结有效行为</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Freeze valid behavior</span
-              >
-            </h3>
-            <p>
-              <span data-lang-content="zh"
-                >把输入、输出、错误和调用路径写成兼容契约。</span
-              >
-              <span data-lang-content="en" lang="en" hidden
-                >Turn inputs, outputs, errors, and invocation paths into a
-                compatibility contract.</span
-              >
-            </p>
-          </article>
-          <article>
-            <p class="principle-mark" aria-hidden="true">□</p>
-            <h3>
-              <span data-lang-content="zh">拒绝静默猜测</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Refuse silent guesses</span
-              >
-            </h3>
-            <p>
-              <span data-lang-content="zh"
-                >来源冲突、无效输入和结构变化应该可见地失败。</span
-              >
-              <span data-lang-content="en" lang="en" hidden
-                >Source conflicts, invalid inputs, and structural changes should
-                fail visibly.</span
-              >
-            </p>
-          </article>
-          <article>
-            <p class="principle-mark" aria-hidden="true">✓</p>
-            <h3>
-              <span data-lang-content="zh">让证据随代码发布</span>
-              <span data-lang-content="en" lang="en" hidden
-                >Ship evidence with the code</span
-              >
-            </h3>
-            <p>
-              <span data-lang-content="zh"
-                >测试、文档、Release 和部署结果共同定义“完成”。</span
-              >
-              <span data-lang-content="en" lang="en" hidden
-                >Tests, documentation, releases, and deployment results define
-                “done” together.</span
-              >
-            </p>
-          </article>
+      <section
+        id="projects"
+        class="section projects-section"
+        aria-labelledby="projects-title"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="section-index">03 / OPEN SOURCE</p>
+            <h2 id="projects-title">工具之外，也保留工程现场。</h2>
+          </div>
+          <p>个人 GitHub 上的脚本、自动化与数据处理项目。</p>
         </div>
-
-        <div class="privacy-note">
-          <p class="eyebrow">
-            <span data-lang-content="zh">本页的隐私承诺</span>
-            <span data-lang-content="en" lang="en" hidden
-              >This page's privacy promise</span
-            >
-          </p>
-          <p>
-            <span data-lang-content="zh"
-              >不使用
-              Cookie，不接入统计，不加载第三方脚本，也不收集任何访客输入。</span
-            >
-            <span data-lang-content="en" lang="en" hidden
-              >No cookies, analytics, third-party scripts, or visitor input
-              collection.</span
-            >
-          </p>
+        <div class="project-list">
+          <a href="https://github.com/zhaowl94/ttjjCrawler" rel="noreferrer"
+            ><span>01</span><strong>ttjjCrawler</strong
+            ><small>基金数据采集 / Python</small><b>GitHub ↗</b></a
+          >
+          <a
+            href="https://github.com/zhaowl94/ReadWechatMessage"
+            rel="noreferrer"
+            ><span>02</span><strong>ReadWechatMessage</strong
+            ><small>消息读取自动化</small><b>GitHub ↗</b></a
+          >
+          <a href="https://github.com/zhaowl94/yuanshen" rel="noreferrer"
+            ><span>03</span><strong>yuanshen</strong
+            ><small>自动化工具 / Python</small><b>GitHub ↗</b></a
+          >
+          <a href="https://github.com/zhaowl94/html_sample" rel="noreferrer"
+            ><span>04</span><strong>html_sample</strong
+            ><small>静态网页实验</small><b>GitHub ↗</b></a
+          >
+          <a
+            href="https://github.com/zhaowl94/ProcessSqlData-TS"
+            rel="noreferrer"
+            ><span>05</span><strong>ProcessSqlData-TS</strong
+            ><small>SQL 数据处理 / TypeScript</small><b>GitHub ↗</b></a
+          >
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <div class="shell footer-layout">
-        <div>
-          <p class="footer-wordmark">zhaowl94</p>
-          <p>
-            <span data-lang-content="zh">可验证 · 可迁移 · 开源</span>
-            <span data-lang-content="en" lang="en" hidden
-              >Verifiable · Portable · Open</span
-            >
-          </p>
-        </div>
-        <a href="https://github.com/zhaowl94" rel="me noreferrer">
-          github.com/zhaowl94 <span aria-hidden="true">↗</span>
-        </a>
+      <div>
+        <strong>zhaowl94</strong
+        ><span>Personal market research infrastructure.</span>
       </div>
+      <p>数据仅供研究，不构成投资建议。© <span data-current-year>2026</span></p>
     </footer>
 
-    <p class="sr-only" id="language-status" aria-live="polite"></p>
     <noscript>
       <p class="noscript-note">
-        JavaScript is disabled. Both language versions are shown, and all
-        project links remain available.
+        JavaScript
+        已关闭：所有工具入口仍可访问，但主页的快照更新时间不会自动加载。
       </p>
     </noscript>
   </body>

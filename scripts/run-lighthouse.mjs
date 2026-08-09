@@ -30,10 +30,7 @@ const serverScript = path.join(
   "http-server",
 );
 const baseUrl = "http://127.0.0.1:4173";
-const pages = [
-  { name: "home-zh", path: "/index.html?lang=zh" },
-  { name: "home-en", path: "/index.html?lang=en" },
-];
+const pages = [{ name: "home", path: "/index.html" }];
 const thresholds = {
   accessibility: 0.95,
   "best-practices": 0.95,

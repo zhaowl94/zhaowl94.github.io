@@ -1,0 +1,109 @@
+.hub-nav {
+  position: sticky;
+  z-index: 1000;
+  top: 0;
+  min-height: 3.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem max(1rem, calc((100vw - 1280px) / 2));
+  border-bottom: 1px solid rgb(112 123 118 / 38%);
+  color: #17211d;
+  background: rgb(247 245 238 / 94%);
+  box-shadow: 0 4px 16px rgb(18 29 25 / 6%);
+  font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  backdrop-filter: blur(12px);
+}
+
+.hub-nav a {
+  color: inherit;
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.hub-nav a:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  letter-spacing: -0.01em;
+}
+
+.hub-nav a:first-child::before {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  content: "Z94";
+  font:
+    700 0.48rem ui-monospace,
+    "Cascadia Code",
+    monospace;
+}
+
+.hub-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hub-nav-links a {
+  color: #58645e;
+  font-size: 0.72rem;
+}
+
+.hub-nav a:hover,
+.hub-nav a:focus-visible {
+  color: #d74429;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.snapshot-explainer {
+  margin: 0;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgb(112 123 118 / 25%);
+  color: #55615b;
+  background: #fff8d8;
+  font:
+    0.72rem/1.45 "Segoe UI",
+    "Microsoft YaHei",
+    system-ui,
+    sans-serif;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .hub-nav {
+    color: #f0f4ed;
+    background: rgb(20 27 23 / 94%);
+  }
+
+  .hub-nav-links a {
+    color: #abb6b0;
+  }
+
+  .snapshot-explainer {
+    color: #e4ddbc;
+    background: #332f1e;
+  }
+}
+
+@media (max-width: 620px) {
+  .hub-nav-links a:not(:last-child) {
+    display: none;
+  }
+
+  .hub-nav {
+    padding-inline: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-nav {
+    backdrop-filter: none;
+  }
+}

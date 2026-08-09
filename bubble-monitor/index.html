@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NDX 100 泡沫监控 · zhaowl94</title>
+    <meta
+      name="description"
+      content="综合 VIX、情绪、估值、集中度与长期趋势的 NDX 风险温度监控。"
+    />
+    <link rel="canonical" href="https://zhaowl94.github.io/bubble-monitor/" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css" />
+  </head>
+  <body>
+    <nav class="hub-nav" aria-label="研究工具导航">
+      <a href="../">zhaowl94 研究工具台</a>
+      <span class="hub-nav-links"
+        ><a href="../ndx-valuation/">纳指估值</a
+        ><a href="../strategy-monitor/">趋势策略</a
+        ><a href="../">全部工具</a></span
+      >
+    </nav>
+    <p class="snapshot-explainer">
+      刷新按钮会绕过浏览器缓存，读取 GitHub Actions
+      最近一次生成并发布的数据快照。
+    </p>
+    <main class="shell">
+      <header>
+        <div>
+          <h1>NDX 100 泡沫监控</h1>
+          <p class="sub">
+            多源风险快照由 GitHub Actions 离线抓取并重算趋势线、MA200
+            与历史偏离；页面刷新不会要求登录。
+          </p>
+        </div>
+        <div class="actions">
+          <button id="reloadBtn" type="button">重新读取</button>
+          <button id="updateBtn" class="primary" type="button">更新数据</button>
+        </div>
+      </header>
+
+      <div id="status" class="status">正在读取本地数据...</div>
+
+      <section class="hero" aria-label="核心状态">
+        <article class="hero-card">
+          <div>
+            <div class="label">NDX 收盘</div>
+            <div id="ndxValue" class="big">--</div>
+          </div>
+          <div id="ndxMeta" class="hint">--</div>
+        </article>
+        <article class="hero-card">
+          <div>
+            <div class="label">泡沫温度</div>
+            <div id="scoreValue" class="big">--</div>
+          </div>
+          <div id="scorePill" class="pill">--</div>
+        </article>
+        <article class="hero-card">
+          <div>
+            <div class="label">全周期趋势偏离</div>
+            <div id="trendValue" class="big">--</div>
+          </div>
+          <div id="trendMeta" class="hint">--</div>
+        </article>
+        <article class="hero-card">
+          <div>
+            <div class="label">MA200 偏离</div>
+            <div id="maValue" class="big">--</div>
+          </div>
+          <div id="maMeta" class="hint">--</div>
+        </article>
+      </section>
+
+      <section id="metrics" class="metric-grid" aria-label="关键指标"></section>
+
+      <section class="grid-2">
+        <article class="panel">
+          <h2>泡沫评分拆解</h2>
+          <div id="scoreBars" class="bars"></div>
+          <p class="foot">
+            评分用于横向观察，不是交易信号。趋势过热、估值、情绪、集中度、杠杆信用和
+            IPO 热度各占一部分。
+          </p>
+        </article>
+        <article class="panel">
+          <h2>历史峰值对比</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>阶段</th>
+                  <th>日期</th>
+                  <th>NDX</th>
+                  <th>趋势 σ</th>
+                  <th>MA200</th>
+                  <th>趋势偏离</th>
+                  <th>推荐仓位</th>
+                </tr>
+              </thead>
+              <tbody id="peakRows"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="grid-2">
+        <article class="panel">
+          <h2>历史关键点：趋势偏离 σ</h2>
+          <div class="timeline">
+            <svg
+              id="sigmaChart"
+              viewBox="0 0 860 260"
+              role="img"
+              aria-label="历史趋势偏离图"
+            ></svg>
+          </div>
+        </article>
+        <article class="panel">
+          <h2>纳指 100 前 20 权重</h2>
+          <div id="holdings" class="holding-list"></div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>关键历史节点</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>事件</th>
+              <th>日期</th>
+              <th>NDX</th>
+              <th>趋势 σ</th>
+              <th>MA200 偏离</th>
+              <th>趋势偏离</th>
+              <th>推荐仓位</th>
+            </tr>
+          </thead>
+          <tbody id="eventRows"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

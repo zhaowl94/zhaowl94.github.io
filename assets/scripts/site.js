@@ -1,150 +1,57 @@
-(function initializePortfolio(globalObject) {
-  "use strict";
+const statusButton = document.querySelector("#refresh-status");
+const siteUpdated = document.querySelector("#site-updated");
 
-  const DEFAULT_LANGUAGE = "zh";
-  const SUPPORTED_LANGUAGES = new Set(["zh", "en"]);
+function formatTimestamp(value) {
+  if (!value) return "暂无时间";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return new Intl.DateTimeFormat("zh-CN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Shanghai",
+  }).format(date);
+}
 
-  function normalizeLanguage(value) {
-    return SUPPORTED_LANGUAGES.has(value) ? value : DEFAULT_LANGUAGE;
-  }
-
-  function languageFromSearch(search) {
-    const parameters = new URLSearchParams(search || "");
-    return normalizeLanguage(parameters.get("lang"));
-  }
-
-  function languageUrl(href, language) {
-    const url = new URL(href);
-    url.searchParams.set("lang", normalizeLanguage(language));
-    return url.href;
-  }
-
-  function setMetaDescription(documentObject, language) {
-    const description = documentObject.querySelector(
-      'meta[name="description"]',
-    );
-
-    if (!description) {
-      return;
-    }
-
-    const content =
-      language === "en"
-        ? description.dataset.metaEn
-        : description.dataset.metaZh;
-
-    if (content) {
-      description.setAttribute("content", content);
-    }
-  }
-
-  function setDocumentTitle(documentObject, language) {
-    const title = documentObject.querySelector("title");
-
-    if (!title) {
-      return;
-    }
-
-    const content =
-      language === "en" ? title.dataset.titleEn : title.dataset.titleZh;
-
-    if (content) {
-      documentObject.title = content;
-    }
-  }
-
-  function applyLanguage(documentObject, language) {
-    const selectedLanguage = normalizeLanguage(language);
-
-    documentObject.documentElement.lang =
-      selectedLanguage === "en" ? "en" : "zh-CN";
-    documentObject.documentElement.classList.remove("no-js");
-    documentObject.documentElement.dataset.language = selectedLanguage;
-
-    for (const element of documentObject.querySelectorAll(
-      "[data-lang-content]",
-    )) {
-      element.hidden = element.dataset.langContent !== selectedLanguage;
-    }
-
-    for (const link of documentObject.querySelectorAll(
-      "[data-language-link]",
-    )) {
-      const active = link.dataset.languageLink === selectedLanguage;
-
-      if (active) {
-        link.setAttribute("aria-current", "page");
-      } else {
-        link.removeAttribute("aria-current");
-      }
-    }
-
-    setDocumentTitle(documentObject, selectedLanguage);
-    setMetaDescription(documentObject, selectedLanguage);
-
-    const status = documentObject.querySelector("#language-status");
-    if (status) {
-      status.textContent =
-        selectedLanguage === "en"
-          ? "Language changed to English."
-          : "语言已切换为中文。";
-    }
-
-    return selectedLanguage;
-  }
-
-  function updateLanguageLinks(documentObject, href) {
-    for (const link of documentObject.querySelectorAll(
-      "[data-language-link]",
-    )) {
-      link.href = languageUrl(href, link.dataset.languageLink);
-    }
-  }
-
-  function start(documentObject, locationObject, historyObject) {
-    const initialLanguage = languageFromSearch(locationObject.search);
-    applyLanguage(documentObject, initialLanguage);
-    updateLanguageLinks(documentObject, locationObject.href);
-
-    for (const link of documentObject.querySelectorAll(
-      "[data-language-link]",
-    )) {
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        const selectedLanguage = normalizeLanguage(link.dataset.languageLink);
-        const nextUrl = languageUrl(locationObject.href, selectedLanguage);
-
-        try {
-          historyObject.pushState({ language: selectedLanguage }, "", nextUrl);
-          applyLanguage(documentObject, selectedLanguage);
-          updateLanguageLinks(documentObject, nextUrl);
-        } catch {
-          locationObject.assign(nextUrl);
-        }
-      });
-    }
-
-    globalObject.addEventListener("popstate", () => {
-      const selectedLanguage = languageFromSearch(locationObject.search);
-      applyLanguage(documentObject, selectedLanguage);
-      updateLanguageLinks(documentObject, locationObject.href);
-    });
-  }
-
-  const publicApi = Object.freeze({
-    applyLanguage,
-    languageFromSearch,
-    languageUrl,
-    normalizeLanguage,
+function applyToolStatus(payload) {
+  const tools = payload.tools || {};
+  document.querySelectorAll("[data-tool]").forEach((card) => {
+    const key = card.dataset.tool;
+    const target = card.querySelector("[data-tool-updated]");
+    const item = tools[key];
+    if (target)
+      target.textContent =
+        item?.label || (item ? formatTimestamp(item.updatedAt) : "待发布");
   });
+  siteUpdated.textContent = formatTimestamp(payload.generatedAt);
+}
 
-  globalObject.PortfolioLanguage = publicApi;
-
-  if (
-    typeof document !== "undefined" &&
-    typeof location !== "undefined" &&
-    typeof history !== "undefined"
-  ) {
-    start(document, location, history);
+async function loadToolStatus({ announce = false } = {}) {
+  if (!siteUpdated) return;
+  if (location.protocol === "file:") {
+    siteUpdated.textContent = "直接打开模式；请进入各工具读取本地数据";
+    return;
   }
-})(globalThis);
+  if (announce) siteUpdated.textContent = "正在拉取最新发布状态…";
+  if (statusButton) statusButton.disabled = true;
+  try {
+    const response = await fetch(`data/tool-status.json?t=${Date.now()}`, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    applyToolStatus(await response.json());
+  } catch {
+    siteUpdated.textContent = "状态暂不可用；工具页面仍可直接打开";
+  } finally {
+    if (statusButton) statusButton.disabled = false;
+  }
+}
+
+document.querySelectorAll("[data-current-year]").forEach((node) => {
+  node.textContent = String(new Date().getFullYear());
+});
+
+statusButton?.addEventListener("click", () =>
+  loadToolStatus({ announce: true }),
+);
+loadToolStatus();
