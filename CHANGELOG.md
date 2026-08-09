@@ -13,6 +13,7 @@ All notable changes to this project are documented here.
 ### Changed
 
 - Updated three transitive development dependencies to patched releases required by the repository security audit.
+- Added a Tencent daily-price fallback with non-destructive incremental merging when the primary historical-price endpoint is unavailable.
 
 ## [1.0.0] - 2026-07-31
 
