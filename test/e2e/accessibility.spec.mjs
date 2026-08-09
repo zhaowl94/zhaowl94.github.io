@@ -54,7 +54,8 @@ test("home reflows at the 400 percent zoom equivalent", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/index.html");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(7);
+  await expect(page.locator(".tool-card")).toHaveCount(8);
+  await expect(page.locator(".game-card")).toHaveCount(5);
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,

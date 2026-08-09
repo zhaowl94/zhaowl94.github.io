@@ -20,6 +20,11 @@ const tools = [
     "美股市场脉搏 · 无 LLM 规则快照 · zhaowl94",
     /美股市场脉搏/,
   ],
+  [
+    "/ndx100-dashboard/",
+    "纳指 100 量化仪表盘 · zhaowl94",
+    /纳指100 · 量化仪表盘/,
+  ],
 ];
 
 for (const [path, title, heading] of tools) {
@@ -61,6 +66,11 @@ test("published market snapshots render substantive data", async ({ page }) => {
   expect(candidates).toBeGreaterThanOrEqual(60);
   expect(universe).toBeGreaterThanOrEqual(candidates);
   await expect(page.locator("#modelUsed")).toHaveText("不使用");
+
+  await page.goto("/ndx100-dashboard/");
+  await page.getByRole("button", { name: "刷新行情数据" }).click();
+  await expect(page.locator("#chartsArea")).toBeVisible();
+  await expect(page.locator("#metricCards .metric-card")).toHaveCount(8);
 });
 
 test("every tool exposes an appropriate refresh control", async ({ page }) => {
@@ -72,6 +82,7 @@ test("every tool exposes an appropriate refresh control", async ({ page }) => {
     ["/backtest-lab/", "拉取最新数据"],
     ["/qdii-similarity/", "刷新最新快照"],
     ["/market-pulse/", "刷新最新快照"],
+    ["/ndx100-dashboard/", "刷新行情数据"],
   ];
   for (const [path, name] of controls) {
     await page.goto(path);

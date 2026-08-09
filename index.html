@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="zhaowl94 的市场研究工具台：美股市场脉搏、跨境 ETF 溢价、纳指估值、泡沫指标、趋势策略、动态回测与 QDII 相似度。"
+      content="zhaowl94 的研究与游乐工具台：市场脉搏、跨境 ETF 溢价、纳指量化、估值、策略回测、QDII 相似度与浏览器小游戏。"
     />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#f2efe7" />
@@ -18,7 +18,7 @@
     <meta property="og:title" content="zhaowl94 · 市场研究工具台" />
     <meta
       property="og:description"
-      content="把跨境 ETF 溢价、纳指估值、泡沫指标与策略回测放在同一张研究桌上。"
+      content="把跨境 ETF 溢价、纳指量化、估值与策略回测放在同一张研究桌上，也保留五个浏览器小游戏。"
     />
     <meta
       property="og:image"
@@ -32,10 +32,10 @@
         "@type": "CollectionPage",
         "name": "zhaowl94 市场研究工具台",
         "url": "https://zhaowl94.github.io/",
-        "description": "跨境 ETF、纳指估值与量化策略研究工具集合。",
+        "description": "跨境 ETF、纳指估值、量化策略研究工具与浏览器小游戏集合。",
         "mainEntity": {
           "@type": "ItemList",
-          "numberOfItems": 7,
+          "numberOfItems": 13,
           "itemListElement": [
             {
               "@type": "ListItem",
@@ -78,6 +78,42 @@
               "position": 7,
               "url": "https://zhaowl94.github.io/market-pulse/",
               "name": "美股市场脉搏"
+            },
+            {
+              "@type": "ListItem",
+              "position": 8,
+              "url": "https://zhaowl94.github.io/ndx100-dashboard/",
+              "name": "纳指 100 量化仪表盘"
+            },
+            {
+              "@type": "ListItem",
+              "position": 9,
+              "url": "https://zhaowl94.github.io/doudizhu/",
+              "name": "斗地主"
+            },
+            {
+              "@type": "ListItem",
+              "position": 10,
+              "url": "https://zhaowl94.github.io/guandan/",
+              "name": "掼蛋"
+            },
+            {
+              "@type": "ListItem",
+              "position": 11,
+              "url": "https://zhaowl94.github.io/tank-battle/",
+              "name": "坦克大战"
+            },
+            {
+              "@type": "ListItem",
+              "position": 12,
+              "url": "https://zhaowl94.github.io/auction-king/",
+              "name": "竞拍之王"
+            },
+            {
+              "@type": "ListItem",
+              "position": 13,
+              "url": "https://zhaowl94.github.io/cultivation/",
+              "name": "凡人修仙传 · 问道凡尘"
             }
           ]
         }
@@ -98,6 +134,7 @@
       </a>
       <nav class="site-nav" aria-label="主要导航">
         <a href="#tools">研究工具</a>
+        <a href="#playground">小游戏</a>
         <a href="#pipeline">数据机制</a>
         <a href="https://github.com/zhaowl94" rel="me noreferrer">GitHub ↗</a>
       </nav>
@@ -114,11 +151,11 @@
           <p class="hero-lede">
             一张个人研究桌，集中查看跨境 ETF
             溢价、纳指估值、泡沫温度、趋势信号、动态配置回测、QDII
-            基金相似度和无需模型的美股市场脉搏。
+            基金相似度和无需模型的美股市场脉搏；研究间隙，也可以直接来一局。
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#tools">打开研究工具</a>
-            <a class="button button-secondary" href="#pipeline">数据怎么更新</a>
+            <a class="button button-secondary" href="#playground">进入小游戏</a>
           </div>
         </div>
 
@@ -128,9 +165,9 @@
             <span class="live-dot">ONLINE</span>
           </div>
           <div class="desk-metric desk-metric-primary">
-            <span>已上线工具</span>
-            <strong>07</strong>
-            <small>独立子页面 / 可直接访问</small>
+            <span>公开页面</span>
+            <strong>13</strong>
+            <small>8 个研究工具 / 5 个小游戏</small>
           </div>
           <div class="desk-grid">
             <div class="desk-metric">
@@ -139,14 +176,14 @@
               <small>GitHub Actions 生成</small>
             </div>
             <div class="desk-metric">
-              <span>访问方式</span>
-              <strong>零登录</strong>
-              <small>无追踪 / 无 Cookie</small>
+              <span>浏览器游戏</span>
+              <strong>5 款</strong>
+              <small>无需安装 / 本地运行</small>
             </div>
           </div>
           <div class="market-tape" aria-hidden="true">
             <span>NDX</span><i></i><span>QDII</span><i></i><span>PREMIUM</span
-            ><i></i><span>BACKTEST</span>
+            ><i></i><span>PLAY</span>
           </div>
         </aside>
       </section>
@@ -157,7 +194,7 @@
           <strong id="site-updated">正在读取站点快照…</strong>
         </div>
         <p>
-          按钮刷新只重新读取已发布快照；后台抓取由定时任务完成，页面不保存个人数据。
+          研究页按钮读取最新发布快照；小游戏在浏览器本地运行，不上传个人数据。
         </p>
         <button id="refresh-status" class="text-button" type="button">
           刷新站点状态 ↻
@@ -172,7 +209,7 @@
         <div class="section-heading">
           <div>
             <p class="section-index">01 / RESEARCH TOOLS</p>
-            <h2 id="tools-title">七个工具，各回答一个问题。</h2>
+            <h2 id="tools-title">八个工具，各回答一个问题。</h2>
           </div>
           <p>每个工具都保留自己的交互与指标口径，并提供“刷新最新快照”按钮。</p>
         </div>
@@ -343,6 +380,102 @@
               ><strong>查看市场脉搏 →</strong>
             </div>
           </a>
+
+          <a
+            class="tool-card tool-card-ndx"
+            href="ndx100-dashboard/"
+            data-tool="ndx100-dashboard"
+          >
+            <div class="tool-topline">
+              <span class="tool-number">08</span
+              ><span class="tool-state">DAILY UNIVERSE</span>
+            </div>
+            <p class="tool-kicker">NDX 100 CONSTITUENTS</p>
+            <h3>纳指 100 量化仪表盘</h3>
+            <p>
+              查看成份股趋势、风险回报、相对指数强弱和关键绩效指标，支持浏览器离线缓存。
+            </p>
+            <div class="constellation" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+              ><i></i><i></i><i></i>
+            </div>
+            <div class="tool-footer">
+              <span>更新：<b data-tool-updated>读取中</b></span
+              ><strong>打开量化仪表盘 →</strong>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section
+        id="playground"
+        class="section playground-section"
+        aria-labelledby="playground-title"
+      >
+        <div class="section-heading">
+          <div>
+            <p class="section-index">02 / PLAYGROUND</p>
+            <h2 id="playground-title">研究之外，来一局。</h2>
+          </div>
+          <p>
+            五个无需安装的浏览器小游戏。进度只留在当前设备，不上传账号或存档。
+          </p>
+        </div>
+
+        <div class="playground-grid">
+          <a class="game-card game-card-spade" href="doudizhu/">
+            <span class="game-number">01 / CARDS</span>
+            <span class="game-symbol" aria-hidden="true">♠</span>
+            <div>
+              <h3>斗地主</h3>
+              <p>叫地主、出牌、压制，两位电脑牌友随时开局。</p>
+            </div>
+            <strong>开始游戏 →</strong>
+          </a>
+
+          <a class="game-card game-card-heart" href="guandan/">
+            <span class="game-number">02 / TEAM PLAY</span>
+            <span class="game-symbol" aria-hidden="true">A♥</span>
+            <div>
+              <h3>掼蛋</h3>
+              <p>四人组队对局，包含进贡、还贡、提示和托管。</p>
+            </div>
+            <strong>坐上牌桌 →</strong>
+          </a>
+
+          <a class="game-card game-card-pixel" href="tank-battle/">
+            <span class="game-number">03 / ARCADE</span>
+            <span class="game-symbol game-symbol-pixel" aria-hidden="true"
+              >▦</span
+            >
+            <div>
+              <h3>坦克大战</h3>
+              <p>键盘移动、射击和守卫基地，复古像素闯关。</p>
+            </div>
+            <strong>进入战场 →</strong>
+          </a>
+
+          <a class="game-card game-card-auction" href="auction-king/">
+            <span class="game-number">04 / SIMULATION</span>
+            <span class="game-symbol" aria-hidden="true">槌</span>
+            <div>
+              <h3>竞拍之王</h3>
+              <p>鉴定拍品、判断价值，在有限资金下赢过竞拍对手。</p>
+            </div>
+            <strong>举牌竞价 →</strong>
+          </a>
+
+          <a class="game-card game-card-wide" href="cultivation/">
+            <span class="game-number">05 / STORY</span>
+            <span class="game-symbol" aria-hidden="true">道</span>
+            <div>
+              <h3>凡人修仙传 · 问道凡尘</h3>
+              <p>
+                从灵根与出身开始，在剧情分支中修炼、抉择并收集不同结局；支持浏览器本地存档。
+              </p>
+            </div>
+            <strong>踏上仙途 →</strong>
+          </a>
         </div>
       </section>
 
@@ -353,7 +486,7 @@
       >
         <div class="section-heading">
           <div>
-            <p class="section-index">02 / DATA PIPELINE</p>
+            <p class="section-index">03 / DATA PIPELINE</p>
             <h2 id="pipeline-title">刷新按钮背后，发生了什么？</h2>
           </div>
           <p>GitHub Pages 是静态站，因此数据计算与页面读取被明确拆开。</p>

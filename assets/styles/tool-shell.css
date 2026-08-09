@@ -76,6 +76,38 @@
   text-align: center;
 }
 
+.hub-home-chip {
+  position: fixed;
+  z-index: 10000;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgb(255 255 255 / 38%);
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(12 18 15 / 78%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+  font:
+    750 0.75rem/1 "Segoe UI",
+    "Microsoft YaHei",
+    system-ui,
+    sans-serif;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+}
+
+.hub-home-chip:hover,
+.hub-home-chip:focus-visible {
+  border-color: #fff;
+  background: #d74429;
+  outline: 3px solid rgb(255 255 255 / 45%);
+  outline-offset: 2px;
+}
+
 @media (prefers-color-scheme: dark) {
   .hub-nav {
     color: #f0f4ed;
@@ -103,7 +135,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hub-nav {
+  .hub-nav,
+  .hub-home-chip {
     backdrop-filter: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .hub-home-chip {
+    border: 1px solid ButtonText;
   }
 }

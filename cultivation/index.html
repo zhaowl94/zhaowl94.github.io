@@ -1,0 +1,3434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>凡人修仙传 · 问道凡尘 · zhaowl94 小游戏</title>
+<meta name="description" content="支持浏览器本地存档、剧情分支与结局图鉴的文字修仙游戏。">
+<link rel="canonical" href="https://zhaowl94.github.io/cultivation/">
+<link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/styles/tool-shell.css">
+<style>
+  :root {
+    --gold: #c9a86a;
+    --gold-dim: rgba(201,168,106,.35);
+    --ink: #14171c;
+    --ink-2: #1b2026;
+    --paper: #d8d3c8;
+    --paper-dim: #9a9488;
+    --red: #c0392b;
+    --purple: #a06bc4;
+    --gray: #7d7d7d;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body {
+    font-family: "KaiTi","STKaiti","楷体","SimSun","Songti SC",serif;
+    color: var(--paper);
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,106,.10), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 85% 110%, rgba(60,90,140,.12), transparent 60%),
+      linear-gradient(160deg, #0b0d10 0%, #10151c 55%, #0a0c0f 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  ::selection { background: rgba(201,168,106,.35); }
+  .screen { display:none; min-height:100vh; }
+  .screen.active { display:flex; }
+  .vignette::after {
+    content:""; position:fixed; inset:0; pointer-events:none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.45) 100%);
+    z-index: 50;
+  }
+
+  /* ---------- 标题页 ---------- */
+  #screen-title { flex-direction:column; align-items:center; justify-content:center; gap: 18px; text-align:center; padding: 24px; }
+  .title-main {
+    font-size: clamp(56px, 12vw, 120px);
+    letter-spacing: .18em;
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(201,168,106,.35), 0 2px 0 rgba(0,0,0,.6);
+    animation: fadeIn 1.2s ease both;
+  }
+  .title-sub { font-size: clamp(15px, 2.6vw, 22px); letter-spacing: .6em; color: var(--paper-dim); animation: fadeIn 1.2s .3s ease both; }
+  .title-divider { width: min(320px, 60vw); height:1px; margin: 6px 0 20px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); animation: fadeIn 1.2s .5s ease both; }
+  .btn {
+    display:block; width: min(340px, 78vw); padding: 14px 0; margin: 8px auto;
+    font-family: inherit; font-size: 19px; letter-spacing: .3em; text-indent: .3em;
+    color: var(--gold); background: rgba(20,23,28,.7);
+    border: 1px solid var(--gold-dim); border-radius: 4px;
+    cursor: pointer; transition: all .25s ease;
+    animation: fadeIn 1.2s .7s ease both;
+  }
+  .btn:hover { background: rgba(201,168,106,.12); box-shadow: 0 0 24px rgba(201,168,106,.2); transform: translateY(-1px); }
+  .btn:disabled { opacity:.35; cursor: not-allowed; transform:none; box-shadow:none; }
+  .btn.ghost { color: var(--paper-dim); border-color: rgba(154,148,136,.25); }
+  .title-note { margin-top: 26px; font-size: 13px; color: rgba(154,148,136,.55); letter-spacing:.15em; animation: fadeIn 1.2s 1s ease both; }
+
+  /* ---------- 出身页 ---------- */
+  #screen-origin { flex-direction:column; align-items:center; justify-content:flex-start; padding: 40px 20px; gap: 14px; }
+  .page-title { font-size: 34px; letter-spacing:.3em; color: var(--gold); margin-bottom: 6px; animation: fadeIn .8s ease both; }
+  .page-sub { font-size: 15px; color: var(--paper-dim); letter-spacing:.2em; margin-bottom: 22px; animation: fadeIn .8s .15s ease both; }
+  .name-row { display:flex; gap: 12px; align-items:center; animation: fadeIn .8s .3s ease both; }
+  .name-row input {
+    font-family: inherit; font-size: 18px; padding: 10px 16px; width: 240px;
+    background: rgba(20,23,28,.8); color: var(--paper);
+    border: 1px solid var(--gold-dim); border-radius: 4px; outline:none;
+  }
+  .name-row input:focus { box-shadow: 0 0 18px rgba(201,168,106,.25); }
+  .name-row label { color: var(--paper-dim); letter-spacing:.2em; }
+  .origin-cards { display:flex; flex-wrap:wrap; gap: 18px; justify-content:center; margin-top: 8px; }
+  .origin-card {
+    width: 260px; padding: 20px 18px; border-radius: 6px;
+    background: rgba(20,23,28,.72); border: 1px solid rgba(154,148,136,.22);
+    cursor: pointer; transition: all .25s ease; animation: fadeIn .8s ease both;
+  }
+  .origin-card:hover { border-color: var(--gold-dim); transform: translateY(-3px); }
+  .origin-card.sel { border-color: var(--gold); background: rgba(201,168,106,.08); box-shadow: 0 0 28px rgba(201,168,106,.18); }
+  .origin-card h3 { color: var(--gold); font-size: 22px; letter-spacing:.25em; margin-bottom: 10px; font-weight: normal; }
+  .origin-card p { font-size: 14.5px; line-height: 1.7; color: var(--paper-dim); min-height: 74px; }
+  .origin-card .stats { margin-top: 12px; font-size: 14px; line-height: 1.9; color: var(--paper); }
+  .origin-card .stats b { color: var(--gold); font-weight: normal; }
+  .btn.start { margin-top: 26px; animation: fadeIn .8s .5s ease both; }
+
+  /* ---------- 剧情页 ---------- */
+  #screen-story { flex-direction: row; }
+  #story-main { flex:1; max-width: 820px; margin: 0 auto; padding: 46px 34px 90px; position: relative; }
+  .act-banner {
+    text-align:center; font-size: 26px; letter-spacing:.5em; text-indent:.5em;
+    color: var(--gold); margin: 8px 0 34px;
+    animation: bannerIn 1s ease both;
+  }
+  .act-banner::before, .act-banner::after {
+    content: "❖"; font-size: 15px; vertical-align: middle; margin: 0 18px; opacity:.7;
+  }
+  #story-text { font-size: 19px; line-height: 2.05; min-height: 260px; cursor: pointer; }
+  #story-text p { margin-bottom: 1em; animation: paraIn .6s ease both; }
+  #choices { margin-top: 30px; display: flex; flex-direction: column; gap: 12px; }
+  .choice-btn {
+    display:block; width: 100%; text-align:left; padding: 15px 20px;
+    font-family: inherit; font-size: 17.5px; line-height: 1.6; letter-spacing: .06em;
+    color: var(--paper); background: rgba(20,23,28,.75);
+    border: 1px solid rgba(154,148,136,.3); border-radius: 5px;
+    cursor: pointer; transition: all .22s ease;
+    animation: choiceIn .5s ease both;
+    border-left: 3px solid var(--gold-dim);
+  }
+  .choice-btn:hover { border-color: var(--gold); border-left-color: var(--gold); background: rgba(201,168,106,.1); transform: translateX(4px); box-shadow: 0 0 20px rgba(201,168,106,.15); }
+  .choice-btn:disabled { opacity:.4; cursor:default; transform:none; box-shadow:none; }
+  .choice-btn.locked {
+    opacity:.5; cursor:not-allowed;
+    border-color: rgba(154,148,136,.18); border-left-color: rgba(154,148,136,.18);
+    background: rgba(14,17,21,.55);
+    color: var(--paper-dim);
+  }
+  .choice-btn.locked:hover { background: rgba(14,17,21,.55); border-color: rgba(154,148,136,.18); border-left-color: rgba(154,148,136,.18); transform:none; box-shadow:none; }
+  .typing-hint { text-align:center; color: rgba(154,148,136,.5); font-size: 13px; letter-spacing:.3em; margin-top: 14px; animation: blink 1.6s infinite; }
+
+  /* 属性面板 */
+  #stat-panel {
+    width: 230px; padding: 26px 18px; margin: 26px 18px 0 0;
+    background: rgba(16,19,24,.78); border: 1px solid rgba(154,148,136,.18); border-radius: 6px;
+    align-self: flex-start; position: sticky; top: 24px;
+    animation: slideIn .8s ease both;
+  }
+  #stat-panel h4 { color: var(--gold); font-size: 16px; letter-spacing:.35em; text-indent:.35em; text-align:center; margin-bottom: 4px; font-weight:normal; }
+  #stat-name { text-align:center; font-size: 18px; letter-spacing:.2em; margin-bottom: 14px; color: var(--paper); }
+  .stat-row { display:flex; justify-content:space-between; font-size: 15px; padding: 7px 4px; border-bottom: 1px dashed rgba(154,148,136,.12); }
+  .stat-row:last-of-type { border-bottom:none; }
+  .stat-row .k { color: var(--paper-dim); letter-spacing:.1em; }
+  .stat-row .v { color: var(--gold); }
+  #stat-realm { margin-top: 12px; text-align:center; font-size: 15px; color: var(--paper-dim); letter-spacing:.2em; }
+  #stat-realm b { color: var(--gold); font-weight: normal; font-size: 17px; }
+  #stat-npcs { margin-top: 6px; border-top: 1px dashed rgba(154,148,136,.2); padding-top: 8px; }
+  .stat-npc-title { font-size: 12px; letter-spacing:.3em; color: rgba(201,168,106,.75); margin-bottom: 6px; text-align:center; }
+  .stat-row.npc { margin-top: 3px; }
+
+  /* ---------- 结局页 ---------- */
+  #screen-ending { flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 40px 22px; }
+  .end-tag { font-size: 15px; letter-spacing:.5em; text-indent:.5em; margin-bottom: 14px; animation: fadeIn 1s ease both; }
+  .end-title { font-size: clamp(44px, 9vw, 84px); letter-spacing:.25em; text-indent:.25em; margin-bottom: 10px; animation: fadeIn 1s .2s ease both; }
+  .end-divider { width: min(260px, 60vw); height:1px; background: linear-gradient(90deg,transparent,currentColor,transparent); margin: 8px auto 26px; opacity:.6; animation: fadeIn 1s .3s ease both; }
+  #end-text { max-width: 640px; font-size: 18.5px; line-height: 2.05; margin-bottom: 36px; animation: fadeIn 1s .45s ease both; }
+  #end-text p { margin-bottom: 1em; }
+  .tone-true  { color: var(--gold); }
+  .tone-bad   { color: #d3544a; }
+  .tone-gray  { color: #a0a0a0; }
+  .tone-hidden{ color: var(--purple); }
+
+  /* ---------- 图鉴页 ---------- */
+  #screen-gallery { flex-direction:column; align-items:center; padding: 44px 20px 60px; }
+  .gallery-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; width: min(900px, 100%); margin-top: 24px; }
+  .g-card { padding: 20px; border-radius: 6px; background: rgba(20,23,28,.75); border: 1px solid rgba(154,148,136,.2); transition: all .25s; animation: fadeIn .8s ease both; }
+  .g-card.locked { opacity:.45; }
+  .g-card .g-title { font-size: 24px; letter-spacing:.2em; margin-bottom: 6px; }
+  .g-card .g-tag { font-size: 13px; letter-spacing:.3em; opacity:.8; margin-bottom: 10px; }
+  .g-card .g-epi { font-size: 14.5px; line-height: 1.8; color: var(--paper-dim); }
+  .g-card .g-hint { font-size: 13px; line-height: 1.8; color: rgba(154,148,136,.7); font-style: italic; }
+  .g-card .g-time { margin-top: 10px; font-size: 12px; color: rgba(154,148,136,.5); }
+  .g-count { margin-top: 10px; font-size: 15px; color: var(--paper-dim); letter-spacing:.2em; }
+  .g-count b { color: var(--gold); font-weight: normal; }
+
+  /* ---------- 路线图 ---------- */
+  #screen-map { flex-direction:column; align-items:center; padding: 36px 16px 0; }
+  .map-head { text-align:center; margin-bottom: 10px; }
+  .map-legend { font-size: 13px; color: var(--paper-dim); letter-spacing:.12em; margin-top: 6px; }
+  .map-wrap {
+    width: min(1500px, 96vw); overflow: auto; margin: 8px auto 0;
+    background: rgba(13,16,20,.6); border: 1px solid rgba(154,148,136,.15); border-radius: 8px;
+    padding: 10px;
+  }
+  .map-wrap svg { display:block; }
+  .map-node rect { fill: rgba(28,32,40,.9); stroke: rgba(154,148,136,.3); stroke-width: 1; rx: 9; }
+  .map-node .n-title { fill: var(--paper-dim); font-family: inherit; font-size: 12.5px; letter-spacing:.04em; }
+  .map-node .n-id { fill: rgba(154,148,136,.45); font-size: 10px; letter-spacing:.06em; }
+  .map-node.visited { cursor: pointer; }
+  .map-node.visited rect { stroke: var(--gold); fill: rgba(201,168,106,.08); }
+  .map-node.visited .n-title { fill: var(--paper); }
+  .map-node.visited:hover rect { fill: rgba(201,168,106,.18); stroke: var(--gold); stroke-width: 1.5; }
+  .map-node.current rect { fill: rgba(201,168,106,.24); stroke: var(--gold); stroke-width: 2; }
+  .map-node.ending.visited rect { stroke: var(--gold); fill: rgba(201,168,106,.14); }
+  .map-node.ending.locked rect { stroke: rgba(160,107,196,.35); }
+  .map-node.locked rect { stroke: rgba(154,148,136,.16); stroke-dasharray: 4 3; fill: rgba(18,21,26,.65); }
+  .map-node.locked .n-title { fill: rgba(154,148,136,.4); }
+  .map-edge { stroke: rgba(154,148,136,.13); stroke-width: 1; fill: none; }
+  .map-edge.open { stroke: rgba(201,168,106,.45); }
+  .map-edge.back { stroke-dasharray: 3 3; opacity:.5; }
+  .map-act-label { font-size: 15px; letter-spacing:.4em; text-indent:.4em; fill: var(--gold); opacity:.85; }
+  .map-btn { margin-top: 14px; width: 100%; font-size: 15px; letter-spacing:.2em; padding: 10px 0; }
+
+  @media (max-width: 760px) {
+    #stat-panel .map-btn { grid-column: 1 / -1; }
+  }
+
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform:none;} }
+  @keyframes paraIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes choiceIn { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform:none;} }
+  @keyframes bannerIn { from { opacity:0; letter-spacing:.9em; } to { opacity:1; letter-spacing:.5em; } }
+  @keyframes slideIn { from { opacity:0; transform: translateX(24px);} to { opacity:1; transform:none;} }
+  @keyframes blink { 0%,100% {opacity:.25;} 50% {opacity:1;} }
+
+  @media (max-width: 760px) {
+    #screen-story { flex-direction: column; }
+    #stat-panel { position: static; width: calc(100% - 28px); margin: 14px; padding: 12px 16px; display:grid; grid-template-columns: repeat(2, 1fr); gap: 2px 18px; }
+    #stat-panel h4, #stat-name { grid-column: 1 / -1; margin-bottom: 6px; }
+    #story-main { padding: 30px 20px 80px; }
+    #story-text { font-size: 17.5px; }
+  }
+</style>
+</head>
+<body class="vignette">
+<a class="hub-home-chip" href="../" aria-label="返回 zhaowl94 主页">← 主页</a>
+
+<!-- 标题页 -->
+<div id="screen-title" class="screen active">
+  <div class="title-main">凡人修仙传</div>
+  <div class="title-sub">问 道 凡 尘</div>
+  <div class="title-divider"></div>
+  <button class="btn" id="btn-new">开 始 问 道</button>
+  <button class="btn ghost" id="btn-continue">继 续 旅 程</button>
+  <button class="btn ghost" id="btn-gallery">结 局 图 鉴</button>
+  <button class="btn ghost" id="btn-map-title">剧 情 树</button>
+  <div class="title-note">原创剧情 · 借用同名小说世界观 · 单机存档 · 本地运行</div>
+</div>
+
+<!-- 出身选择 -->
+<div id="screen-origin" class="screen">
+  <div class="page-title">出身</div>
+  <div class="page-sub">青牛山下，十六岁。你是什么人？</div>
+  <div class="name-row">
+    <label>道号</label>
+    <input id="input-name" type="text" maxlength="8" placeholder="给自己取个名字" value="无名">
+  </div>
+  <div class="origin-cards" id="origin-cards"></div>
+  <button class="btn start" id="btn-start" disabled>踏 上 仙 途</button>
+</div>
+
+<!-- 剧情 -->
+<div id="screen-story" class="screen">
+  <div id="story-main">
+    <div class="act-banner" id="act-banner"></div>
+    <div id="story-text"></div>
+    <div id="choices"></div>
+    <div class="typing-hint" id="typing-hint">— 轻触文字可跳过 —</div>
+  </div>
+  <aside id="stat-panel">
+    <h4>灵 台</h4>
+    <div id="stat-name"></div>
+    <div id="stat-rows"></div>
+    <div id="stat-realm"></div>
+    <div id="stat-npcs"></div>
+    <button class="btn ghost map-btn" id="btn-map-story">剧 情 树</button>
+  </aside>
+</div>
+
+<!-- 路线图 -->
+<div id="screen-map" class="screen">
+  <div class="map-head">
+    <div class="page-title">剧情树</div>
+    <div class="g-count" id="map-count"></div>
+    <div class="map-legend">金色 = 已走过，点击可回到该场景重新选择　灰暗 + 🔒 = 未解锁</div>
+  </div>
+  <div class="map-wrap" id="map-wrap"></div>
+  <button class="btn ghost" id="btn-map-back" style="margin:20px auto 40px;">返 回</button>
+</div>
+
+<!-- 结局 -->
+<div id="screen-ending" class="screen">
+  <div class="end-tag" id="end-tag"></div>
+  <div class="end-title" id="end-title"></div>
+  <div class="end-divider" id="end-divider"></div>
+  <div id="end-text"></div>
+  <button class="btn" id="btn-again">再 入 轮 回</button>
+  <button class="btn ghost" id="btn-back-save">回 溯 残 卷</button>
+  <button class="btn ghost" id="btn-end-gallery">结 局 图 鉴</button>
+</div>
+
+<!-- 图鉴 -->
+<div id="screen-gallery" class="screen">
+  <div class="page-title">结局图鉴</div>
+  <div class="g-count" id="g-count"></div>
+  <div class="gallery-grid" id="gallery-grid"></div>
+  <button class="btn ghost" id="btn-gallery-back" style="margin-top:30px;">返 回</button>
+</div>
+
+<script>
+const STORY = {
+ "meta": {
+  "title": "凡人修仙传 · 问道凡尘",
+  "subtitle": "一个山村少年的问道之路（原创剧情 · 借用世界观）",
+  "version": "1.0.0"
+ },
+ "origins": [
+  {
+   "id": "origin_hunter",
+   "name": "猎户之子",
+   "desc": "自幼随父进山打猎，识得百草，性子坚韧。",
+   "stats": {
+    "zizhi": 2,
+    "daoxin": 2,
+    "jiyuan": 1,
+    "lingshi": 1
+   }
+  },
+  {
+   "id": "origin_merchant",
+   "name": "商贾之子",
+   "desc": "家道中落，随商队走南闯北，见惯世情冷暖。",
+   "stats": {
+    "zizhi": 1,
+    "daoxin": 1,
+    "jiyuan": 2,
+    "lingshi": 4
+   }
+  },
+  {
+   "id": "origin_scholar",
+   "name": "书香门第",
+   "desc": "祖上曾出过举人，家藏几卷残破古书，根基略厚。",
+   "stats": {
+    "zizhi": 3,
+    "daoxin": 2,
+    "jiyuan": 0,
+    "lingshi": 2
+   }
+  }
+ ],
+ "nodes": {
+  "origin_hunter": {
+   "text": "你生在青牛山下猎户之家。七岁那年，父亲进山猎虎再未归来，母亲含辛茹苦将你养大。\n你十六岁了。这日清晨，你背着药篓进了山——青牛山的药材值钱，山下的药铺掌柜肯出好价钱。\n山风裹着松香，你脚步轻快。却不知这一日，将是你凡俗人生的最后一日。",
+   "choices": [
+    {
+     "text": "继续采药",
+     "next": "a1_01"
+    }
+   ]
+  },
+  "origin_merchant": {
+   "text": "你家原是临水镇上有名的绸缎商，一场大火烧尽了家业，也烧走了爹娘。你跟着远房叔父的商队走南闯北，从伙计熬成了半个掌柜。\n你十六岁了。这日商队路过青牛山，你独自上山采些药草备着——山里的药材，到了大城能翻三倍价钱。\n你脚步轻快。却不知这一日，将是你凡俗人生的最后一日。",
+   "choices": [
+    {
+     "text": "继续赶路采药",
+     "next": "a1_01"
+    }
+   ]
+  },
+  "origin_scholar": {
+   "text": "你家是青牛山下的耕读之家，祖上中过举人，留下几卷古书。父亲早逝，母亲织布供你读书。你识得字，也读过些杂书——包括一本缺了封皮的《奇闻异录》，上面写着些半真半假的修仙传说。\n你十六岁了。这日为了给母亲抓药，你上山采药。\n你脚步轻快。却不知这一日，将是你凡俗人生的最后一日。",
+   "choices": [
+    {
+     "text": "继续上山采药",
+     "next": "a1_01"
+    }
+   ]
+  },
+  "a1_01": {
+   "act": "第一幕 · 入道",
+   "text": "午后，天色骤变。黑云压山，豆大的雨点砸下来，眨眼成了瓢泼大雨。你浑身湿透，在山道上狂奔，忽然瞥见半山腰一处被藤蔓遮住的洞口。\n雨越下越大，雷声在头顶滚过。",
+   "choices": [
+    {
+     "text": "钻进山洞避雨",
+     "next": "a1_02"
+    },
+    {
+     "text": "冒雨抄近路回村",
+     "next": "a1_03"
+    }
+   ]
+  },
+  "a1_02": {
+   "text": "洞不深，却别有洞天。你借着闪电的光，看见洞壁石缝里生着一株赤红的灵芝——足有碗口大，药香扑鼻。你小心翼翼地连土挖出，又在灵芝根下摸到一枚温润的玉简。\n玉简入手，你莫名觉得头脑清明了几分。这灵芝怕不是百年以上的火候。\n（灵根资质 +1，机缘 +1）",
+   "effects": {
+    "zizhi": 1,
+    "jiyuan": 1
+   },
+   "choices": [
+    {
+     "text": "收好灵芝玉简，雨停回村",
+     "next": "a1_04"
+    },
+    {
+     "text": "再搜搜山洞深处（或有所获）",
+     "next": "a1_04",
+     "random": [
+      {
+       "chance": 0.5,
+       "next": "a1_04",
+       "effects": {
+        "lingshi": 2
+       },
+       "text": "你在洞底石缝里摸到一小袋灵石，不知是哪位前辈留下的。（灵石 +2）"
+      },
+      {
+       "chance": 0.5,
+       "next": "a1_04",
+       "effects": {},
+       "text": "山洞深处只有蝙蝠和碎石，再无他物。"
+      }
+     ]
+    }
+   ]
+  },
+  "a1_03": {
+   "text": "你抄小路狂奔，在一处山坳撞见一个蜷在树下、被雨浇得半死的行商。你心善，扯了块油布给他遮雨，又扶他到崖下避雨。\n雨停时，行商千恩万谢，塞给你一小袋碎银：「小兄弟救命之恩，聊表心意。」\n（机缘 +1，灵石 +2）",
+   "effects": {
+    "jiyuan": 1,
+    "lingshi": 2
+   },
+   "choices": [
+    {
+     "text": "收下谢礼，回村",
+     "next": "a1_04"
+    },
+    {
+     "text": "婉拒谢礼，只求问路（道心 +1）",
+     "next": "a1_04",
+     "effects": {
+      "daoxin": 1
+     }
+    }
+   ]
+  },
+  "a1_04": {
+   "text": "回到村里，正撞见镇上的恶霸赵虎带着两个泼皮，在逼王寡妇交「例钱」。王寡妇哭得跪在地上，围观的村民敢怒不敢言。\n赵虎瞥见你，咧嘴一笑：「小崽子，看什么看？」",
+   "choices": [
+    {
+     "text": "上前拦下赵虎（道心 +1）",
+     "next": "a1_05",
+     "effects": {
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "隐忍旁观，悄悄捡走赵虎掉落的钱袋（道心 -1，灵石 +3）",
+     "next": "a1_05",
+     "effects": {
+      "daoxin": -1,
+      "lingshi": 3
+     }
+    }
+   ]
+  },
+  "a1_05": {
+   "text": "闹剧过后，村口来了个游方郎中，支了个摊子替人看病。他一身洗得发白的青袍，两鬓斑白，眼神却亮得吓人。轮到你时，他搭了搭你的脉，忽然微微一怔，盯着你看了半晌。\n「小友，」他压低声音，「你骨相清奇，可愿随老夫走一遭？」",
+   "choices": [
+    {
+     "text": "当即跪下拜师",
+     "next": "a1_06"
+    },
+    {
+     "text": "警惕地退后半步：「你是何人？」",
+     "next": "a1_07"
+    }
+   ]
+  },
+  "a1_06": {
+   "text": "郎中自称墨散人，游历天下替人看诊，实为修仙中人。他取出一枚灰扑扑的铜镜，让你握住：「闭上眼，什么都别想。」\n铜镜微热，你仿佛看见镜中有细碎的灵光游走。墨散人神色几变，缓缓点头。",
+   "choices": [
+    {
+     "text": "「前辈，我资质如何？」",
+     "next": "a1_06a",
+     "if": {
+      "zizhi": {
+       "gte": 3
+      }
+     }
+    },
+    {
+     "text": "「前辈，我资质如何？」",
+     "next": "a1_06b"
+    }
+   ]
+  },
+  "a1_06a": {
+   "text": "「真灵根，中上之资！」墨散人抚掌而笑，「老夫行走半生，这等资质也少见。好，好，你便做老夫的正式弟子。」\n你叩首拜师。山村的十六年光阴，在这一跪之后，就此别过。\n（已拜入墨散人门下，为正式弟子）",
+   "effects": {
+    "setFlag": [
+     "disciple_true"
+    ]
+   },
+   "choices": [
+    {
+     "text": "随师离去",
+     "next": "a1_08"
+    }
+   ]
+  },
+  "a1_06b": {
+   "text": "「伪灵根……」墨散人捻须沉吟，「修行之路，比旁人难上十倍。不过也并非全无希望。」他看你眼神恳切，叹道：「也罢，你且随我做个记名弟子，将来如何，看你造化。」\n你叩首拜师。山村的十六年光阴，在这一跪之后，就此别过。\n（已拜入墨散人门下，为记名弟子）",
+   "effects": {
+    "setFlag": [
+     "disciple_false"
+    ]
+   },
+   "choices": [
+    {
+     "text": "随师离去",
+     "next": "a1_08"
+    }
+   ]
+  },
+  "a1_07": {
+   "text": "你退后半步，问他是何人。郎中也不恼，只笑了笑：「三日后，村口古槐树下，你若想通了，便来寻我。若不想，就当今日没见过老夫。」\n他说完收了摊子，悠悠然出了村。夜里你翻来覆去，脑中全是那枚铜镜的微光。",
+   "choices": [
+    {
+     "text": "三日后赴约古槐下",
+     "next": "a1_08",
+     "effects": {
+      "setFlag": [
+       "disciple_false"
+      ]
+     }
+    },
+    {
+     "text": "不去了，安稳过日子要紧",
+     "next": "e5"
+    }
+   ]
+  },
+  "a1_08": {
+   "text": "墨散人带你翻山越岭七日，到了一处云雾缭绕的山门——七玄门。他在门中有个客卿名头，替你安排了个杂役弟子的身份，又丢给你一本《引气诀》。\n「先识字，再读书，最后修法。」他说，「三个月后我考你。」",
+   "choices": [
+    {
+     "text": "开始在七玄门修行",
+     "next": "a1_09"
+    },
+    {
+     "text": "先向墨散人讨教修行心得（道心 +1）",
+     "next": "a1_09",
+     "effects": {
+      "daoxin": 1
+     }
+    }
+   ]
+  },
+  "a1_09": {
+   "text": "入门第一桩差事，是给山下的药铺送一封门中书信。管事板着脸：「天黑前回来，丢了书信，逐出山门。」\n山路有两条：一条近路穿过后山乱石岗，据说有野兽出没；一条大路绕远，却稳妥。",
+   "choices": [
+    {
+     "text": "抄近路走乱石岗",
+     "random": [
+      {
+       "chance": 0.5,
+       "next": "a1_09b",
+       "effects": {
+        "lingshi": 3
+       },
+       "text": "你在乱石岗的石缝里捡到一只皮袋，里面竟是三块亮晶晶的灵石。运气这东西，当真是说不准。（灵石 +3）"
+      },
+      {
+       "chance": 0.5,
+       "next": "a1_09c",
+       "effects": {
+        "lingshi": -1
+       },
+       "text": "你一脚踩空滚下山坡，摔得鼻青脸肿，还丢了半串铜钱。好在书信还在。（灵石 -1）"
+      }
+     ]
+    },
+    {
+     "text": "走大路，稳妥为上",
+     "next": "a1_10"
+    }
+   ]
+  },
+  "a1_09b": {
+   "text": "你在乱石岗的石缝里捡到一只皮袋，里面竟是三块亮晶晶的灵石。运气这东西，当真是说不准。\n（灵石 +3）",
+   "choices": [
+    {
+     "text": "继续赶路",
+     "next": "a1_10"
+    }
+   ]
+  },
+  "a1_09c": {
+   "text": "你一脚踩空滚下山坡，摔得鼻青脸肿，还丢了半串铜钱。好在书信还在。\n（灵石 -1）",
+   "choices": [
+    {
+     "text": "忍着疼继续赶路",
+     "next": "a1_10"
+    }
+   ]
+  },
+  "a1_10": {
+   "text": "送信归来，管事给了你三个差事挑：看守药园，清静安稳；洒扫藏书阁，能偷看些门中典籍；后山巡夜，凶险，但月例灵石多一倍。\n墨散人临行前的话在你耳边响着：「修行路上，安稳与机缘，往往不可兼得。」",
+   "choices": [
+    {
+     "text": "看守药园",
+     "next": "a1_11"
+    },
+    {
+     "text": "洒扫藏书阁",
+     "next": "a1_12"
+    },
+    {
+     "text": "后山巡夜",
+     "next": "a1_13"
+    }
+   ]
+  },
+  "a1_11": {
+   "text": "药园的日子安稳。你结识了药童阿青，一个总爱笑的小丫头。她偷偷告诉你哪几株灵草值钱，又教你分辨药性。\n三个月下来，你攒下两块灵石，还落了个好名声。\n（灵石 +1，结识阿青）",
+   "effects": {
+    "lingshi": 1,
+    "setFlag": [
+     "met_aqing"
+    ]
+   },
+   "choices": [
+    {
+     "text": "墨散人考校之期将近",
+     "next": "a1_14"
+    },
+    {
+     "text": "帮阿青偷种一株灵草（有风险）",
+     "next": "a1_14",
+     "random": [
+      {
+       "chance": 0.6,
+       "next": "a1_14",
+       "effects": {
+        "lingshi": 2
+       },
+       "text": "你手法利落，灵草成活，管事查验时直夸阿青。她偷偷塞给你两块灵石。（灵石 +2）"
+      },
+      {
+       "chance": 0.4,
+       "next": "a1_14",
+       "effects": {
+        "lingshi": -1
+       },
+       "text": "灵草被你种死了，管事扣了药园一个月的月例，阿青替你背了黑锅。（灵石 -1）"
+      }
+     ]
+    }
+   ]
+  },
+  "a1_12": {
+   "text": "藏书阁洒扫之余，你的目光总落在那些蒙尘的功法玉简上。看守的老修士打盹时，你偷偷摸出一枚标着《青木诀》的玉简贴上额头。\n功法如水，缓缓流入识海。你心跳如鼓。",
+   "choices": [
+    {
+     "text": "凝神记下功法（需 机缘≥2 或 资质≥3）",
+     "next": "a1_12a",
+     "if": {
+      "or": [
+       {
+        "jiyuan": {
+         "gte": 2
+        }
+       },
+       {
+        "zizhi": {
+         "gte": 3
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "强行记下功法",
+     "next": "a1_12b"
+    }
+   ]
+  },
+  "a1_12a": {
+   "text": "你记下了《青木诀》的入门篇。虽然只是残卷，却让你的引气之路顺畅了许多。\n（获得功法《青木诀》残卷，灵根资质 +1）",
+   "effects": {
+    "zizhi": 1,
+    "setFlag": [
+     "gongfa"
+    ]
+   },
+   "choices": [
+    {
+     "text": "墨散人考校之期将近",
+     "next": "a1_14"
+    }
+   ]
+  },
+  "a1_12b": {
+   "text": "你正读到关键处，老修士忽然醒来，一声咳嗽吓得你魂飞魄散。虽然没被揭穿，管事却以「手脚不干净」为由扣了你两个月月例。\n（灵石 -2，什么都没记住）",
+   "effects": {
+    "lingshi": -2
+   },
+   "choices": [
+    {
+     "text": "墨散人考校之期将近",
+     "next": "a1_14"
+    }
+   ]
+  },
+  "a1_13": {
+   "text": "后山巡夜的第三个月夜，你撞上了一只山魈。那畜生一人来高，獠牙森森，你腿都软了。",
+   "choices": [
+    {
+     "text": "转身就跑（需 机缘≥2）",
+     "next": "a1_13a",
+     "if": {
+      "jiyuan": {
+       "gte": 2
+      }
+     }
+    },
+    {
+     "text": "转身就跑",
+     "next": "a1_13b"
+    }
+   ]
+  },
+  "a1_13a": {
+   "text": "你连滚带爬逃入一片竹林，却见月光下一个青衫青年负手而立，正淡淡地看着你身后。他只是屈指一弹，那头山魈便哀嚎一声，化作飞灰。\n「七玄门的杂役？」青年打量你一眼，「胆色倒是不错。」他丢给你一瓶丹药，转身离去，身影消失在月色里。\n后来你才知道，那人姓韩，单名一个立字，是门中最年轻的筑基长老——关于他的传闻很多，有人说他身怀一件神秘宝物，有人说他出身比你还寒微。\n（机缘 +1，结识韩立）",
+   "effects": {
+    "jiyuan": 1,
+    "setFlag": [
+     "met_hanli"
+    ]
+   },
+   "choices": [
+    {
+     "text": "收好丹药，回去养伤",
+     "next": "a1_14"
+    }
+   ]
+  },
+  "a1_13b": {
+   "text": "你跑出不到十丈便被山魈扑倒，背上撕开三道血口子。千钧一发之际，巡夜的师兄赶到，一剑逼退山魈。\n你被抬回门中，养了整整一个月的伤。功课落下了，月例也扣了。\n（重伤，修为落后）",
+   "effects": {
+    "setFlag": [
+     "hurt",
+     "lag"
+    ]
+   },
+   "choices": [
+    {
+     "text": "养伤期间由阿青照顾",
+     "next": "a1_15"
+    }
+   ]
+  },
+  "a1_15": {
+   "text": "养伤的一个月里，阿青天天给你送药，叽叽喳喳讲门里的趣事。你问她为什么对自己这么好，她红着脸说：「因为你是个好人呀。」\n伤好时，你已经和这个药园小丫头成了好友。她见你功课落下，悄悄塞给你一本手抄的《引气诀》入门篇——那是她攒了半年月例，托人从藏书阁抄来的。\n（结识阿青，获得功法《引气诀》入门篇）",
+   "effects": {
+    "setFlag": [
+     "met_aqing",
+     "gongfa"
+    ]
+   },
+   "choices": [
+    {
+     "text": "墨散人考校之期到了",
+     "next": "a1_14"
+    }
+   ]
+  },
+  "a1_14": {
+   "text": "墨散人如期归来，考校你的引气功夫。你盘膝运功，气走周天。\n（若能得功法之助，或根基扎实，方可一举冲关；若有伤在身，恐力有不逮）",
+   "choices": [
+    {
+     "text": "气走周天，冲关！（若习得功法，运气通畅）",
+     "next": "a1_14a",
+     "if": {
+      "flags": {
+       "has": [
+        "gongfa"
+       ]
+      }
+     }
+    },
+    {
+     "text": "气走周天，冲关！（若根基扎实且未落下功课）",
+     "next": "a1_14a",
+     "if": {
+      "zizhi": {
+       "gte": 3
+      },
+      "flags": {
+       "not": [
+        "lag"
+       ]
+      }
+     }
+    },
+    {
+     "text": "气走周天，勉强冲关（根基尚可，未落下功课）",
+     "next": "a1_14c",
+     "if": {
+      "flags": {
+       "not": [
+        "lag"
+       ]
+      }
+     }
+    },
+    {
+     "text": "气走周天，强行冲关",
+     "next": "a1_14b"
+    }
+   ]
+  },
+  "a1_14c": {
+   "text": "你咬紧牙关，气走周天——半途虽屡屡淤塞，却终究被你一点一点磨了过去。\n「勉强算是练气一层。」墨散人面无表情，「根基太薄，往后怕是难有寸进。你好自为之。」\n（境界：练气一层，根基虚浮，道心 -1）",
+   "effects": {
+    "realm": "练气一层",
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "继续修行",
+     "next": "a1_16"
+    }
+   ]
+  },
+  "a1_14a": {
+   "text": "气走周天，畅通无阻。墨散人难得露出一丝笑意：「好，引气入体，练气一层。你比老夫预想的强些。」\n你正式踏入了修仙的门槛。\n（境界：练气一层）",
+   "effects": {
+    "realm": "练气一层"
+   },
+   "choices": [
+    {
+     "text": "继续修行",
+     "next": "a1_16"
+    },
+    {
+     "text": "趁热打铁，闭关冲击练气二层（需 道心≥4）",
+     "next": "a1_16",
+     "if": {
+      "daoxin": {
+       "gte": 4
+      }
+     },
+     "effects": {
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "强行闭关冲击二层",
+     "next": "a1_16",
+     "if": {
+      "not": {
+       "daoxin": {
+        "gte": 4
+       }
+      }
+     },
+     "effects": {
+      "daoxin": -1
+     }
+    }
+   ]
+  },
+  "a1_14b": {
+   "text": "气行到半途，淤塞难行。你涨红了脸，最终功亏一篑。\n墨散人面无表情地看了你半晌：「根基太薄，急不得。」他拂袖而去，你独自跪在蒲团上，第一次尝到了修道的苦涩。\n（道心 -1，仍未踏入练气）",
+   "effects": {
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "收拾心情，苦修三载，再试一次",
+     "next": "a1_15b"
+    },
+    {
+     "text": "就此作罢，安心做个凡人",
+     "next": "a1_16"
+    }
+   ]
+  },
+  "a1_15b": {
+   "text": "此后三年，你几乎住在静室里。引气、冲关、失败、再引气——周而复始。\n第三年深秋，气机终于贯通周天。你踏入练气一层，只是根基虚浮，比同门晚了三年。\n（境界：练气一层，道心 -1）",
+   "effects": {
+    "realm": "练气一层",
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "继续修行",
+     "next": "a1_16"
+    }
+   ]
+  },
+  "a1_16": {
+   "text": "三月后，七玄门大比。你挤在人群里看台上斗法，各色法术光华缭绕。到了最后一场，一个不起眼的青衫青年对阵门中赫赫有名的陈师兄。\n三招。只三招，陈师兄的飞剑便被击落。台下哗然——那青衫人，正是那夜你见过的韩长老。\n「韩师兄筑基才两年吧？这实力……」\n「听说他身怀异宝，还有个能催熟灵药的宝贝瓶子呢。」\n「嘘，慎言！」",
+   "choices": [
+    {
+     "text": "你攥紧拳头：有朝一日，我也要站上那个台子（道心 +1）",
+     "next": "a1_17",
+     "effects": {
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "你垂下头：人家是天之骄子，我算什么（道心 -1）",
+     "next": "a1_17",
+     "effects": {
+      "daoxin": -1
+     }
+    },
+    {
+     "text": "散场后上前向韩长老请教剑法（需 机缘≥2）",
+     "next": "a1_16a",
+     "if": {
+      "jiyuan": {
+       "gte": 2
+      }
+     }
+    },
+    {
+     "text": "散场后上前向韩长老请教剑法",
+     "next": "a1_16b"
+    }
+   ]
+  },
+  "a1_16a": {
+   "text": "散场后，你鼓起勇气追上去。韩立停下脚步，看了你片刻，忽然道：「你方才看比试时，眼睛很亮。」\n他随手折下一截树枝，比划了一个剑势：「修行如登山，先求稳，再求快。你底子薄，更要把功夫下在稳字上。」\n说罢，他转身离去。你站在原地，把那句话在心里翻来覆去地嚼了许久。\n（机缘 +1，道心 +1）",
+   "effects": {
+    "jiyuan": 1,
+    "daoxin": 1
+   },
+   "choices": [
+    {
+     "text": "回住处",
+     "next": "a1_17"
+    }
+   ]
+  },
+  "a1_16b": {
+   "text": "散场后你追出去，却只看见一片空荡荡的山道——韩长老早已离去。你扑了个空，讪讪地回了住处。\n（道心 -1）",
+   "effects": {
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "回住处",
+     "next": "a1_17"
+    }
+   ]
+  },
+  "a1_17": {
+   "text": "大比后的第七日，墨散人把你叫到房中，神色有些异样。他给你留下一只玉瓶和一枚玉简，说要去办一件私事，短则三年，长则十载。\n「修行之路，终究要靠你自己走。」他说这话时，眼底似乎有一丝你读不懂的复杂。",
+   "choices": [
+    {
+     "text": "追问师父去办何事（需 机缘≥3）",
+     "next": "a1_18a",
+     "if": {
+      "jiyuan": {
+       "gte": 3
+      }
+     }
+    },
+    {
+     "text": "追问师父去办何事",
+     "next": "a1_18b"
+    },
+    {
+     "text": "含泪送别师父（道心 +1）",
+     "next": "a1_18c",
+     "effects": {
+      "daoxin": 1
+     }
+    }
+   ]
+  },
+  "a1_18a": {
+   "text": "你斗胆追问。墨散人沉默良久，忽然道：「血煞谷。」再问，他闭口不言，只叮嘱你：「三年内，莫要踏足天南坊市。」\n你留了个心眼，把这句话记在了心里。\n（察觉到师父的异常）",
+   "effects": {
+    "setFlag": [
+     "suspicious"
+    ]
+   },
+   "choices": [
+    {
+     "text": "目送师父远去",
+     "next": "a2_01"
+    }
+   ]
+  },
+  "a1_18b": {
+   "text": "你追问师父去办何事。墨散人只说了句「故人之事」，便不再多言。你虽然觉得蹊跷，却也不敢再问。",
+   "choices": [
+    {
+     "text": "目送师父远去",
+     "next": "a2_01"
+    }
+   ]
+  },
+  "a1_18c": {
+   "text": "你没有追问，只恭恭敬敬磕了三个头。墨散人看了你片刻，忽然轻声说：「你这孩子……倒是重情。」他转身下山，青袍很快消失在云雾里。\n你目送他的背影，心里空落落的。",
+   "choices": [
+    {
+     "text": "目送师父远去",
+     "next": "a2_01"
+    }
+   ]
+  },
+  "a2_01": {
+   "act": "第二幕 · 历练",
+   "text": "三年转瞬即过。你已是练气三层，仗着几分资质和苦修，在天南小有名气。这一日，你来到临水坊市——修仙者的集市。\n坊市里灵光流转，叫卖声不绝：丹药、符箓、法器、灵草……你怀里揣着三年攒下的灵石，一时看花了眼。",
+   "choices": [
+    {
+     "text": "买一瓶聚气丹（灵石 -2，资质 +1）",
+     "next": "a2_01a",
+     "effects": {
+      "lingshi": -2,
+      "zizhi": 1
+     }
+    },
+    {
+     "text": "逛法器摊子碰碰运气（灵石 -3）",
+     "next": "a2_01b",
+     "effects": {
+      "lingshi": -3
+     }
+    },
+    {
+     "text": "什么都不买，存着灵石（道心 +1）",
+     "next": "a2_01c",
+     "effects": {
+      "daoxin": 1
+     }
+    }
+   ]
+  },
+  "a2_01a": {
+   "text": "你花两块灵石买下一瓶聚气丹。回去服下，药力化开，丹田里的灵力凝实了几分。\n（灵根资质 +1）",
+   "choices": [
+    {
+     "text": "继续逛坊市",
+     "next": "a2_02"
+    }
+   ]
+  },
+  "a2_01b": {
+   "text": "你在法器摊前蹲了半个时辰，挑了又挑，最终咬牙买下一柄锈迹斑斑的铜钱剑。摊主说这是古修士遗物。你揣着剑回了客栈。",
+   "random": [
+    {
+     "chance": 0.5,
+     "next": "a2_01b1",
+     "effects": {
+      "setFlag": [
+       "weapon"
+      ]
+     },
+     "text": "夜深人静时你擦拭铜钱剑，剑身忽然嗡鸣，浮现出细密的灵纹——这竟是一件上品法器！你捡了个大漏。（获得法器·铜钱剑）"
+    },
+    {
+     "chance": 0.5,
+     "next": "a2_01b2",
+     "effects": {
+      "daoxin": -1
+     },
+     "text": "你擦去锈迹，发现剑身一道裂纹贯穿到底——废铁一件。摊主早就跑没影了。你心疼得直抽气。（灵石打了水漂，道心 -1）"
+    }
+   ]
+  },
+  "a2_01b1": {
+   "text": "夜深人静时你擦拭铜钱剑，剑身忽然嗡鸣，浮现出细密的灵纹——这竟是一件上品法器！你捡了个大漏。\n（获得法器·铜钱剑）",
+   "effects": {
+    "setFlag": [
+     "weapon"
+    ]
+   },
+   "choices": [
+    {
+     "text": "继续逛坊市",
+     "next": "a2_02"
+    }
+   ]
+  },
+  "a2_01b2": {
+   "text": "你擦去锈迹，发现剑身一道裂纹贯穿到底——废铁一件。摊主早就跑没影了。你心疼得直抽气。\n（灵石打了水漂）",
+   "effects": {
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "继续逛坊市",
+     "next": "a2_02"
+    }
+   ]
+  },
+  "a2_01c": {
+   "text": "你摸了摸怀里的灵石，最终什么也没买。坊市里宝物再多，也不如自己修为实在。\n（道心 +1，灵石 +1）",
+   "effects": {
+    "lingshi": 1
+   },
+   "choices": [
+    {
+     "text": "继续逛坊市",
+     "next": "a2_02"
+    }
+   ]
+  },
+  "a2_02": {
+   "text": "坊市茶楼里，你听到一个劲爆消息：血煞谷秘境即将开启。谷中传说有古修士洞府，灵药法器无数，但凶险万分——上次开启，进去三十人，只出来七个。\n各大门派都在争夺名额，散修们更是挤破了头。邻桌一个背负长剑、英气逼人的女修瞥了你一眼。\n「练气三层，也敢打血煞谷的主意？」她轻笑。",
+   "choices": [
+    {
+     "text": "报名参加名额试炼",
+     "next": "a2_03"
+    },
+    {
+     "text": "自知实力不足，回七玄门闭关",
+     "next": "a2_09"
+    },
+    {
+     "text": "向茶楼老板打听血煞谷详情（灵石 -1，需 机缘≥3）",
+     "next": "a2_03",
+     "if": {
+      "jiyuan": {
+       "gte": 3
+      }
+     },
+     "effects": {
+      "lingshi": -1,
+      "jiyuan": 1
+     }
+    },
+    {
+     "text": "向茶楼老板打听血煞谷详情（灵石 -1）",
+     "next": "a2_03",
+     "if": {
+      "not": {
+       "jiyuan": {
+        "gte": 3
+       }
+      }
+     },
+     "effects": {
+      "lingshi": -1
+     }
+    }
+   ]
+  },
+  "a2_03": {
+   "text": "名额试炼设在坊市外的演武场：三场斗法，胜两场者得名额。\n第一场，你险胜一个练气二层的散修。第二场，对手是练气四层的老手，一柄飞刀使得阴狠毒辣。",
+   "choices": [
+    {
+     "text": "全力应战（需 资质≥4 或 持有法器）",
+     "next": "a2_05",
+     "if": {
+      "or": [
+       {
+        "zizhi": {
+         "gte": 4
+        }
+       },
+       {
+        "flags": {
+         "has": [
+          "weapon"
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "全力应战",
+     "next": "a2_04"
+    }
+   ]
+  },
+  "a2_04": {
+   "text": "第三回合，你被那老手的飞刀划破肩头，狼狈落败。台下嘘声一片，你握着断了的剑柄，指节发白。\n「可惜了。」那负剑女修不知何时走到你身边，「你的功法路子很正，就是火候差了。我缺个认路的向导——血煞谷外围的地形，我打听过，你常年在山里跑，可愿同行？酬劳十块灵石。」",
+   "choices": [
+    {
+     "text": "答应她（需 机缘≥3）",
+     "next": "a2_04a",
+     "if": {
+      "jiyuan": {
+       "gte": 3
+      }
+     }
+    },
+    {
+     "text": "婉拒，回七玄门闭关",
+     "next": "a2_09"
+    }
+   ]
+  },
+  "a2_04a": {
+   "text": "你答应了。女修自称柳烟，掩月宗内门弟子，筑基二层。她出手大方，也守信用——先付了五块灵石定金。\n「血煞谷，」她说，「我这辈子只进这一次。要么筑基，要么死。」她眼里有种你读不懂的光。\n（灵石 +5，结识柳烟）",
+   "effects": {
+    "lingshi": 5,
+    "setFlag": [
+     "guide",
+     "met_liuyan"
+    ]
+   },
+   "choices": [
+    {
+     "text": "随柳烟前往血煞谷",
+     "next": "a2_06"
+    },
+    {
+     "text": "先回七玄门收拾行装（道心 +1）",
+     "next": "a2_06",
+     "effects": {
+      "daoxin": 1
+     }
+    }
+   ]
+  },
+  "a2_05": {
+   "text": "你咬紧牙关，避开飞刀，欺身近战——你那三年在山里练出的脚力，此刻成了最大的依仗。老手被你的搏命打法惊住，露出破绽，被你一掌拍落台下。\n「有点意思。」柳烟不知何时站在场边，打量你一眼，「掩月宗柳烟。血煞谷缺个认路的向导，你常年在山里跑，可愿同行？」\n（试炼胜出，结识柳烟）",
+   "effects": {
+    "setFlag": [
+     "contest_win",
+     "met_liuyan"
+    ]
+   },
+   "choices": [
+    {
+     "text": "应下同行",
+     "next": "a2_05a"
+    }
+   ]
+  },
+  "a2_05a": {
+   "text": "出发前夜，柳烟请你喝酒。她喝得微醺，忽然说：「你知道吗，我师兄就死在血煞谷。他临死前传信出来，说谷里……有魔修的痕迹。」\n她随即又笑了：「不过富贵险中求嘛。你若怕了，现在退出还来得及。」她歪头看你，月光下眉眼如画。",
+   "choices": [
+    {
+     "text": "「我跟你去。」（道心 +1）",
+     "next": "a2_06",
+     "effects": {
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "默不作声，心里打起了退堂鼓",
+     "next": "a2_06"
+    },
+    {
+     "text": "追问她师兄的事（柳烟好感 +1）",
+     "next": "a2_06",
+     "effects": {
+      "liuyan_favor": 1
+     }
+    }
+   ]
+  },
+  "a2_06": {
+   "text": "血煞谷口，血雾弥漫。入口处立着一块斑驳的石碑：入谷者，生死自负。\n队伍一共九人，鱼贯而入。谷内灵气暴戾，遍地白骨，走不到半个时辰，前方忽然腾起一片黑压压的阴云——血蝠群！成千上万只巴掌大的血蝠，嗜血成性。",
+   "choices": [
+    {
+     "text": "硬闯过去",
+     "next": "a2_06a"
+    },
+    {
+     "text": "绕路而行",
+     "next": "a2_06c"
+    },
+    {
+     "text": "等血蝠群散去再走",
+     "next": "a2_06e"
+    }
+   ]
+  },
+  "a2_06a": {
+   "text": "你挥剑开路，血蝠尖啸着扑来。",
+   "choices": [
+    {
+     "text": "硬闯（需 资质≥4 或 持有法器）",
+     "next": "a2_06b",
+     "if": {
+      "or": [
+       {
+        "zizhi": {
+         "gte": 4
+        }
+       },
+       {
+        "flags": {
+         "has": [
+          "weapon"
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "硬闯",
+     "next": "a2_06d"
+    }
+   ]
+  },
+  "a2_06b": {
+   "text": "铜钱剑嗡鸣（或灵力鼓荡），血蝠在你身周炸开一团团血雾。你杀出蝠群，身上添了七八道小伤，却守住了阵脚。柳烟赞了一句：「好身手。」\n（负伤，道心 +1）",
+   "effects": {
+    "daoxin": 1
+   },
+   "choices": [
+    {
+     "text": "继续深入",
+     "next": "a2_07"
+    }
+   ]
+  },
+  "a2_06d": {
+   "text": "血蝠数量远超你的预估。你被扑倒，脸上肩上血肉模糊。危急关头，柳烟一剑劈开蝠群把你拽出来，往你嘴里塞了颗丹药。\n「欠我一条命，记着。」她说。你昏昏沉沉，只觉得她力气大得惊人。\n（重伤，灵石 -3，欠柳烟一个人情）",
+   "effects": {
+    "lingshi": -3,
+    "setFlag": [
+     "liuyan_debt"
+    ]
+   },
+   "choices": [
+    {
+     "text": "继续深入",
+     "next": "a2_07"
+    }
+   ]
+  },
+  "a2_06c": {
+   "text": "你带队绕向谷壁。血雾深处，岔路纵横，稍有不慎就会迷路。",
+   "choices": [
+    {
+     "text": "凭直觉选路（需 机缘≥3）",
+     "next": "a2_06f",
+     "if": {
+      "jiyuan": {
+       "gte": 3
+      }
+     }
+    },
+    {
+     "text": "凭直觉选路",
+     "next": "a2_06g"
+    }
+   ]
+  },
+  "a2_06f": {
+   "text": "你挑了一条几乎被藤蔓封死的岔路，拨开藤蔓，竟是一条前人开辟的捷径，直通谷腹。石壁上还刻着一行小字：「后来者，此路通宝库。莫负机缘。」\n（机缘 +1，发现捷径）",
+   "effects": {
+    "jiyuan": 1,
+    "setFlag": [
+     "shortcut"
+    ]
+   },
+   "choices": [
+    {
+     "text": "沿捷径深入",
+     "next": "a2_07"
+    }
+   ]
+  },
+  "a2_06g": {
+   "text": "你们在岔路里转了两个时辰，撞回原地三次。天色渐暗，队伍里已经有人骂娘了。最终柳烟一剑劈开荆棘，强行开出一条路。\n（迷路耽搁，道心 -1）",
+   "effects": {
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "继续深入",
+     "next": "a2_07"
+    }
+   ]
+  },
+  "a2_06e": {
+   "text": "你们寻了处岩缝躲了半日，等血蝠群散去。虽然稳妥，但其他队伍早已先行一步。\n「宝贝怕是被人捷足先登了。」有人嘟囔。柳烟倒是不急：「急什么，活得久才是本事。」\n（道心 +1，但错失先机）",
+   "effects": {
+    "daoxin": 1,
+    "setFlag": [
+     "late"
+    ]
+   },
+   "choices": [
+    {
+     "text": "继续深入",
+     "next": "a2_07"
+    }
+   ]
+  },
+  "a2_07": {
+   "text": "谷腹深处，一座坍塌的石殿现于眼前。殿中灵光点点：正中一株九叶血莲，叶脉如血，香气扑鼻；角落一具盘坐的枯骨，怀里抱着一枚墨色玉简，指骨上还套着个储物戒。\n「九叶血莲！」队伍里有人失声。众人目光灼灼，各怀心思。",
+   "choices": [
+    {
+     "text": "抢摘九叶血莲（机缘 +1，灵石 +5）",
+     "next": "a2_07a",
+     "effects": {
+      "jiyuan": 1,
+      "lingshi": 5
+     }
+    },
+    {
+     "text": "搜检魔修遗骸",
+     "next": "a2_07b"
+    },
+    {
+     "text": "两样都不取，护住身边受伤的同伴",
+     "next": "a2_07c"
+    }
+   ]
+  },
+  "a2_07a": {
+   "text": "你抢先一步摘下血莲，又顺手取走枯骨上的储物戒——戒中竟有五块灵石和几瓶丹药。柳烟看了你一眼，没说什么。\n只是你捧着血莲时，总觉得那枯骨空洞的眼窝在望着你。\n（机缘 +1，灵石 +5）",
+   "choices": [
+    {
+     "text": "退出石殿",
+     "next": "a2_08"
+    }
+   ]
+  },
+  "a2_07b": {
+   "text": "你绕开血莲，蹲下身，小心翼翼地从枯骨怀里取出那枚墨色玉简。玉简入手冰凉，识海里传来一阵阴冷的低语——魔功，《噬灵诀》。\n你鬼使神差地将玉简收入怀中，心口怦怦直跳。柳烟意味深长地看了你一眼：「那东西……看着邪门，小心点。」\n（获得《噬灵诀》玉简，道心 -1，机缘 +1）",
+   "effects": {
+    "daoxin": -1,
+    "jiyuan": 1,
+    "setFlag": [
+     "demon_tome"
+    ]
+   },
+   "choices": [
+    {
+     "text": "退出石殿",
+     "next": "a2_08"
+    }
+   ]
+  },
+  "a2_07c": {
+   "text": "队伍里有人为争夺血莲动起手来。你没有参与，而是护住受了伤的向导老周，退到殿外。柳烟也跟了出来，说：「不贪，很好。」\n殿内的争夺以两死一伤告终。活着的人瓜分了血莲，看你的眼神却都带着忌惮。\n（道心 +1）",
+   "effects": {
+    "daoxin": 1
+   },
+   "choices": [
+    {
+     "text": "退出石殿",
+     "next": "a2_08"
+    }
+   ]
+  },
+  "a2_08": {
+   "text": "谷口，你们九人只剩下五人。血雾忽然剧烈翻涌，一道青色身影自雾中缓缓走出——青袍，白发，熟悉得让你头皮发麻。\n「师父……？」你难以置信。\n墨散人负手而立，居高临下地看着你：「好徒儿，三年不见，长进不少。」他目光扫过你怀中的玉简，嘴角勾起一丝笑意，「看来，为师留的后手，你也替我取回来了。」",
+   "choices": [
+    {
+     "text": "「你早就知道我会来？」",
+     "next": "a2_08a",
+     "if": {
+      "flags": {
+       "has": [
+        "suspicious"
+       ]
+      }
+     }
+    },
+    {
+     "text": "「师父，这到底是怎么回事！」",
+     "next": "a2_08b",
+     "if": {
+      "not": {
+       "flags": {
+        "has": [
+         "suspicious"
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  "a2_08a": {
+   "text": "「血煞谷、九叶血莲、魔修遗骸……」你缓缓道，「三年前你走时说的话，弟子一直记着。师父，你是魔修。」\n墨散人微微一怔，随即大笑：「好，好！不愧是我看中的炉鼎，心思这般缜密！」他笑声渐冷，「可惜，你猜到了开头，却猜不到结局。」\n（早有准备，道心 +1）",
+   "effects": {
+    "daoxin": 1
+   },
+   "choices": [
+    {
+     "text": "握紧法器，严阵以待",
+     "next": "a2_10"
+    }
+   ]
+  },
+  "a2_08b": {
+   "text": "「炉鼎。」墨散人平静地说，「为师收你为徒，不过是因为你资质尚可，灵根纯净，正适合做血祭大阵的炉鼎。今日血煞谷事了，明日，临水城十万凡人，都将成为为师成就金丹的资粮。」\n你如坠冰窟。三年师恩，竟是一场算计。\n（道心 -1）",
+   "effects": {
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "「我绝不会让你得逞！」",
+     "next": "a2_10"
+    }
+   ]
+  },
+  "a2_09": {
+   "text": "你回到七玄门，闭了死关。三年枯坐，丹药耗尽，灵石花光。最后一日，你盘膝坐在蒲团上，丹田里灵力翻涌——筑基的关口，就在眼前。",
+   "choices": [
+    {
+     "text": "冲击筑基（需 资质≥4）",
+     "next": "a2_09a",
+     "if": {
+      "zizhi": {
+       "gte": 4
+      }
+     }
+    },
+    {
+     "text": "冲击筑基",
+     "next": "a2_09b"
+    }
+   ]
+  },
+  "a2_09a": {
+   "text": "你咬破舌尖，灵力如潮水般冲开桎梏——筑基成了。丹田之中，灵力凝成一汪清潭，耳清目明，连山外的风声都清晰了几分。\n（境界：筑基）\n出关那日，你接到一封加急传讯：临水城告急，有魔修布下血祭大阵，城中凡人危在旦夕。署名处的印记你太熟悉了——是你那位「师父」，墨散人。",
+   "effects": {
+    "realm": "筑基",
+    "setFlag": [
+     "jianji"
+    ]
+   },
+   "choices": [
+    {
+     "text": "即刻赶往临水城",
+     "next": "a2_08"
+    }
+   ]
+  },
+  "a2_09b": {
+   "text": "你冲击筑基失败，气血两亏，只得提前出关。下山才知，临水城出了大事——有魔修布下血祭大阵，城中十万凡人危在旦夕。\n传讯上的署名印记你太熟悉了——是你那位「师父」，墨散人。",
+   "choices": [
+    {
+     "text": "赶往临水城",
+     "next": "a2_08"
+    }
+   ]
+  },
+  "a2_10": {
+   "text": "临水城头，血阵已起。阵眼处，墨散人盘膝而坐，周身血光冲天。城中凡人成片昏厥，魂魄正在被缓缓抽出。\n「好徒儿，」他睁开眼，「为师给你最后一个机会。跪下，拜入魔道，你我师徒一同登临大道。否则——」他抬手，一道血光在你脚边炸开，「灰飞烟灭。」",
+   "choices": [
+    {
+     "text": "「呸！我羞于与你为伍！」（道心 +1）",
+     "next": "a2_11",
+     "effects": {
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "假意顺从，伺机偷听破绽（需 机缘≥4）",
+     "next": "a2_11",
+     "if": {
+      "jiyuan": {
+       "gte": 4
+      }
+     },
+     "effects": {
+      "daoxin": -1,
+      "setFlag": [
+       "weakness"
+      ]
+     }
+    },
+    {
+     "text": "假意顺从，伺机而动",
+     "next": "a2_11",
+     "effects": {
+      "daoxin": -1
+     }
+    }
+   ]
+  },
+  "a2_11": {
+   "text": "决战前夜，你盘点自己的底牌。这一战，关系十万凡人生死。",
+   "choices": [
+    {
+     "text": "传讯求援",
+     "next": "a2_11a"
+    },
+    {
+     "text": "倾尽灵石布置破阵符阵（需 灵石≥5）",
+     "next": "a2_11b",
+     "if": {
+      "lingshi": {
+       "gte": 5
+      }
+     }
+    },
+    {
+     "text": "倾尽灵石布置破阵符阵",
+     "next": "a2_11c"
+    },
+    {
+     "text": "静坐调息，以最好的状态迎战",
+     "next": "a2_11d"
+    }
+   ]
+  },
+  "a2_11a": {
+   "text": "你捏碎传讯符。",
+   "choices": [
+    {
+     "text": "（若曾结识韩立）",
+     "next": "a2_11a1",
+     "if": {
+      "flags": {
+       "has": [
+        "met_hanli"
+       ]
+      }
+     }
+    },
+    {
+     "text": "（否则，向柳烟求援）",
+     "next": "a2_11a2"
+    }
+   ]
+  },
+  "a2_11a1": {
+   "text": "当夜，一道青影无声落入你的小院。韩立看了看你，什么也没问，只留下一枚青色符箓：「破阵之时，以此符助你。血祭大阵，反噬极重，你只有一息之机。」\n他顿了顿：「你师父的账，我早想与他算一算。」\n（韩立援手，获得破阵符）",
+   "effects": {
+    "setFlag": [
+     "backup_hanli"
+    ]
+   },
+   "choices": [
+    {
+     "text": "决战！",
+     "next": "a3_01"
+    }
+   ]
+  },
+  "a2_11a2": {
+   "text": "柳烟收到传讯，当夜便至。她听完原委，沉默片刻，道：「我师兄的血仇，今日一并了结。」她祭出一柄青锋剑，剑光凛冽，「明日，我替你挡住他的护身血煞，你破阵。」\n（柳烟相助）",
+   "effects": {
+    "setFlag": [
+     "backup_liuyan"
+    ]
+   },
+   "choices": [
+    {
+     "text": "决战！",
+     "next": "a3_01"
+    }
+   ]
+  },
+  "a2_11b": {
+   "text": "你倾尽所有灵石，在城头布下七十二面破阵符旗。灵石化入旗面，灵光流转，只待明日一举发动。\n（破阵符阵布成）",
+   "effects": {
+    "lingshi": -5,
+    "setFlag": [
+     "formation"
+    ]
+   },
+   "choices": [
+    {
+     "text": "决战！",
+     "next": "a3_01"
+    }
+   ]
+  },
+  "a2_11c": {
+   "text": "你倾尽灵石布阵，可灵石不足，符旗只立了四十九面便告罄。阵势残缺，威力大减。你盯着那半套阵旗，苦笑一声。\n（灵石耗尽，阵势残缺）",
+   "effects": {
+    "lingshi": -5,
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "决战！",
+     "next": "a3_01"
+    }
+   ]
+  },
+  "a2_11d": {
+   "text": "你没有做任何布置，只是盘膝坐下，将三年来所学在心头过了一遍。夜风拂过，心湖无波。\n（若道心深厚，可于战中顿悟）",
+   "choices": [
+    {
+     "text": "（道心 ≥4，静坐中福至心灵）",
+     "next": "a2_11d1",
+     "if": {
+      "daoxin": {
+       "gte": 4
+      }
+     }
+    },
+    {
+     "text": "（道心不足，越想越乱）",
+     "next": "a2_11d2"
+    }
+   ]
+  },
+  "a2_11d1": {
+   "text": "静坐中，你忽然福至心灵——三年苦修的种种疑障，此刻豁然贯通。灵力自行运转，竟隐隐有了几分圆融气象。\n（顿悟，道心 +1）",
+   "effects": {
+    "daoxin": 1,
+    "setFlag": [
+     "epiphany"
+    ]
+   },
+   "choices": [
+    {
+     "text": "决战！",
+     "next": "a3_01"
+    }
+   ]
+  },
+  "a2_11d2": {
+   "text": "你越想越乱，越想越怕。十万人的性命压在肩上，压得你喘不过气。直到天边泛起鱼肚白，你也没有真正平静下来。\n（道心 -1）",
+   "effects": {
+    "daoxin": -1
+   },
+   "choices": [
+    {
+     "text": "决战！",
+     "next": "a3_01"
+    }
+   ]
+  },
+  "a3_01": {
+   "act": "第三幕 · 终局",
+   "text": "黎明，血阵运转到了极致。临水城十万凡人齐齐昏睡，魂魄如萤火般向城头汇聚。墨散人端坐阵眼，血光映着他苍老的脸，竟显出几分悲悯之色。\n「天地不仁，以万物为刍狗。」他喃喃道，「老夫踏尽仙途，终究要靠这条路登顶。」\n你站在城头，身后是昏迷的十万生灵。风掀起你的衣袍。",
+   "choices": [
+    {
+     "text": "正面强攻，与他硬碰硬",
+     "next": "a3_02"
+    },
+    {
+     "text": "智取——先破血阵，再斩魔头",
+     "next": "a3_03"
+    },
+    {
+     "text": "此战无胜算，趁乱远遁",
+     "next": "a3_05"
+    },
+    {
+     "text": "（若身怀魔功玉简且道心松动）跪下，接受魔功传承",
+     "next": "a3_06",
+     "if": {
+      "flags": {
+       "has": [
+        "demon_tome"
+       ]
+      },
+      "daoxin": {
+       "lte": 3
+      }
+     }
+    }
+   ]
+  },
+  "a3_02": {
+   "text": "你长啸一声，飞身扑向阵眼。血光如潮，迎面压来。你祭出全部修为，剑光与血光轰然相撞！\n墨散人端坐不动，只抬手一指——一道血煞指力洞穿你的护体灵光。你胸口一凉，低头，看见血从指缝间涌出。\n「不自量力。」他说。",
+   "choices": [
+    {
+     "text": "（若修为深厚且持有法器/灵石充裕，尚可一搏）",
+     "next": "a3_10",
+     "if": {
+      "zizhi": {
+       "gte": 5
+      },
+      "or": [
+       {
+        "flags": {
+         "has": [
+          "weapon"
+         ]
+        }
+       },
+       {
+        "lingshi": {
+         "gte": 5
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "（否则，重伤坠地）",
+     "next": "a3_04",
+     "if": {
+      "not": {
+       "zizhi": {
+        "gte": 5
+       },
+       "or": [
+        {
+         "flags": {
+          "has": [
+           "weapon"
+          ]
+         }
+        },
+        {
+         "lingshi": {
+          "gte": 5
+         }
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "a3_03": {
+   "text": "你没有硬拼，而是借着血光的掩护，绕向阵法的边缘。墨散人冷笑：「想破阵？痴人说梦。」\n你咬破舌尖，将灵力尽数灌入掌中——破阵，只在一瞬。",
+   "choices": [
+    {
+     "text": "（若道心/机缘深厚，或有破阵手段）",
+     "next": "a3_10",
+     "if": {
+      "or": [
+       {
+        "daoxin": {
+         "gte": 5
+        }
+       },
+       {
+        "jiyuan": {
+         "gte": 5
+        }
+       },
+       {
+        "flags": {
+         "has": [
+          "formation",
+          "weakness",
+          "epiphany"
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "（否则，阵未破，你已被血煞缠身）",
+     "next": "a3_04",
+     "if": {
+      "not": {
+       "or": [
+        {
+         "daoxin": {
+          "gte": 5
+         }
+        },
+        {
+         "jiyuan": {
+          "gte": 5
+         }
+        },
+        {
+         "flags": {
+          "has": [
+           "formation",
+           "weakness",
+           "epiphany"
+          ]
+         }
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "a3_04": {
+   "text": "你倒在血泊里，意识一点点模糊。墨散人的声音从极远处传来：「可惜了一副好炉鼎……」\n血光漫过你的身体。你想起母亲，想起阿青的笑，想起韩立在月下的背影，想起柳烟那句「要么筑基，要么死」。\n原来修仙路上，当真一步走错，便是万劫不复。",
+   "choices": [
+    {
+     "text": "（若有强援接应）",
+     "next": "a3_07",
+     "if": {
+      "flags": {
+       "has": [
+        "backup_hanli",
+        "backup_liuyan"
+       ]
+      }
+     }
+    },
+    {
+     "text": "（否则，身死道消）",
+     "next": "e2",
+     "if": {
+      "not": {
+       "flags": {
+        "has": [
+         "backup_hanli",
+         "backup_liuyan"
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  "a3_05": {
+   "text": "你退了。理智告诉你，练气/筑基的修为，在金丹期魔修面前不过是蝼蚁。你趁乱逃出临水城，身后传来十万人的哀嚎与墨散人登临金丹的狂笑。\n那一夜，你在一座荒山上坐到天明。晨光照在脸上，你忽然想：自己修的，到底是个什么道？",
+   "choices": [
+    {
+     "text": "……",
+     "next": "e3"
+    }
+   ]
+  },
+  "a3_06": {
+   "text": "你跪下了。魔功玉简在怀中发烫，《噬灵诀》的经文如潮水般涌入识海。道心之上，裂纹蔓延——你听见自己心底有个声音说：力量，才是这世间的真理。\n墨散人笑了：「好，好徒儿。你我师徒，终成一路人。」\n血光中，你的眼睛一点点变成暗红色。",
+   "choices": [
+    {
+     "text": "……",
+     "next": "e4"
+    }
+   ]
+  },
+  "a3_07": {
+   "text": "千钧一发之际，一道剑光撕裂血幕。韩立的青衫自天际而来，柳烟的青锋紧随其后。血阵被撕开一角，你被拖出阵眼，却已气若游丝。\n你活下来了。但丹田碎裂，修为尽废，此生再无望仙途。\n三个月后，你在青牛山下养伤。阿青来了，红着眼睛说：「你回来就好。」",
+   "choices": [
+    {
+     "text": "……",
+     "next": "e3"
+    }
+   ]
+  },
+  "a3_10": {
+   "text": "你抓住那一线生机，倾尽所有，轰在阵眼之上！\n血阵剧烈震颤，墨散人终于变了脸色：「不可能——你区区练气，怎会……！」\n「师父，」你咳着血，笑了，「你教我的第一课就是：修行路上，安稳与机缘，往往不可兼得。今日我赌上性命，赌这一线机缘。」",
+   "choices": [
+    {
+     "text": "阵破了",
+     "next": "a3_10a"
+    }
+   ]
+  },
+  "a3_10a": {
+   "text": "血阵崩碎，十万凡人的魂魄如潮水般倒卷回城。墨散人闷哼一声，喷出一口黑血——血祭反噬，他金丹寸裂，跌下云端。\n「不——！」他嘶吼着，周身血光暴涨，竟要自爆金丹。\n就在这时，你怀中的破阵符（或韩立的青符）自行亮起，化作一道青光钉入他的眉心。\n墨散人怔怔地看着你，嘴角忽然泛起一丝说不清的笑意：「好徒儿……你终究，比为师强。」\n青光散尽，他化作点点血光，消散于风中。",
+   "choices": [
+    {
+     "text": "临水城得救了",
+     "next": "a3_10b"
+    }
+   ]
+  },
+  "a3_10b": {
+   "text": "日出之时，临水城十万凡人悠悠转醒。城头，你负手而立，晨光照在染血的衣袍上。\n柳烟走过来，拍了拍你的肩：「行啊，散修，一战成名了。」\n韩立不知何时站在你身后，淡淡开口：「血祭大阵、魔修余孽，背后恐怕另有其人。修仙界的水，深得很。」他顿了顿，难得露出一丝笑意，「不过今日之事，你做得很好。大道可期。」\n他说完，青衫一闪，已消失在晨光里。远处传来他最后一句传音——\n「十年后，天南论道大会。你若想看看这修仙界的真面目，便来。」",
+   "choices": [
+    {
+     "text": "就此了却尘缘，飞升而去",
+     "next": "e1"
+    },
+    {
+     "text": "尘缘未了——十年后，天南论道大会见",
+     "next": "a4_01"
+    }
+   ]
+  },
+  "e1": {
+   "type": "ending",
+   "endingId": "e1",
+   "title": "大道可期",
+   "tag": "真结局",
+   "tone": "true",
+   "text": "血祭之劫后，你名震天南。「破阵斩魔」的传闻越传越玄，有人称你为「临水剑仙」，有人说你身怀异宝。\n你只是笑笑，继续走自己的路。\n数百年后，青牛山下的猎户偶尔会看见，一个灰袍道人踏云而过，在山巅驻足片刻，望一眼那早已改朝换代的村庄。\n道人的目光很平静，像是看尽了这世间的潮起潮落。\n飞升之日，天降霞光。你最后回望了一眼人间——那里有母亲，有阿青，有柳烟，有那个月光下的青衫背影。\n「大道可期。」你轻声说，「后会有期。」",
+   "epilogue": "破血阵、斩魔师，名震天南，终登大道。韩立临别一句「大道可期」，是这方天地对你最好的送别。"
+  },
+  "e2": {
+   "type": "ending",
+   "endingId": "e2",
+   "title": "身死道消",
+   "tag": "陨落结局",
+   "tone": "bad",
+   "text": "你倒在临水城头，血染青石。\n墨散人踏过你的尸身，血祭大阵继续运转。十万凡人的魂魄化作漫天萤火，汇入他的金丹。\n当夜，临水城成为死城。\n多年后，有散修路过此地，在废墟中拾到一枚染血的铜钱剑。剑身已断，灵光尽散，只在剑柄处，依稀刻着两个字——\n问道。",
+   "epilogue": "强攻血阵，力竭身陨。临水城十万凡人尽数罹难，你与那座城一同，被掩埋在历史的风沙里。"
+  },
+  "e3": {
+   "type": "ending",
+   "endingId": "e3",
+   "title": "沦为凡俗",
+   "tag": "隐世结局",
+   "tone": "gray",
+   "text": "你终究没有踏出那一步。\n血祭之夜后，你隐姓埋名，在青牛山下娶了妻，生了子。日子过得平淡，偶尔夜深人静，你会摸出那枚温润的玉简，想起山门里的月光。\n孩子问：「爹，你年轻时是做什么的？」\n你沉默很久，说：「做过一场梦。」\n三十年后，你病逝于家中。临终前，你听见窗外有风声掠过——像是有人踏剑而过，在天上看了你一眼。\n你笑了笑，闭上了眼。",
+   "epilogue": "或遁走，或修为尽废，你终究回到凡尘，度过庸碌而安稳的一生。修仙二字，成了一生只做一次的长梦。"
+  },
+  "e4": {
+   "type": "ending",
+   "endingId": "e4",
+   "title": "道魔一念",
+   "tag": "隐藏结局",
+   "tone": "hidden",
+   "text": "血光之中，你接受了《噬灵诀》的传承。道心尽碎，魔根深种。\n墨散人终究没能成就金丹——血祭反噬，他油尽灯枯。临终前，他看着你，忽然笑了：「好徒儿……为师这一生，机关算尽，却算漏了人心。你比为师，更适合这条路。」\n你接过他的衣钵，成了新一代魔道巨擘。\n百年后，修仙界提起「噬灵魔君」，人人色变。只有青牛山下的老人偶尔提起：那位魔君年轻时，也曾是个采药救人的好少年。\n你站在临水城头，看着万家灯火，忽然想起很多年前，师父说过的那句话——\n「天地不仁，以万物为刍狗。」\n你轻声接道：「那我便做那天地。」",
+   "epilogue": "道心尽碎之际接过魔功传承，屠尽正道，登临魔道之巅。一念成佛，一念成魔。"
+  },
+  "e5": {
+   "type": "ending",
+   "endingId": "e5",
+   "title": "庸碌一生",
+   "tag": "凡尘结局",
+   "tone": "gray",
+   "text": "你没有去赴古槐之约。\n日子一天天过去，你娶了村里的姑娘，生了一双儿女，守着几亩薄田，过了平凡安稳的一生。\n只是每年春天，你都会路过村口那棵古槐，站一会儿。风穿过枝叶，哗哗地响。\n你总觉得，好像错过了什么。\n五十年后，你病逝于家中。孙辈在整理遗物时，发现一只从未打开过的木匣，里面放着一枚温润的玉简，和一株早已干枯的灵芝。",
+   "epilogue": "仙缘临门而不取，终老山村。村口古槐年年发新叶，那个十六岁的雨天，成了你一生唯一的波澜。"
+  },
+  "a4_01": {
+   "act": "第四幕 · 宗门风云",
+   "text": "十年弹指。你闭关七载，厚积薄发，结成金丹——当年临水城头破阵斩魔的散修，如今已是天南有数的金丹真人。\n这一日，一枚鎏金请柬送到洞府：掩月宗主办天南论道大会，广邀天南诸派与散修高人。请柬末尾，另有一行墨迹小字——\n「故人韩某，扫榻以待。」\n（境界：金丹初期）",
+   "effects": {
+    "realm": "金丹初期"
+   },
+   "choices": [
+    {
+     "text": "赴会——看看这修仙界的真面目",
+     "next": "a4_03"
+    },
+    {
+     "text": "婉拒——修行要紧，这些虚礼不必理会",
+     "next": "a4_02"
+    }
+   ]
+  },
+  "a4_02": {
+   "text": "你回书婉拒。然而三日后夜半，七玄门山门火光冲天——血煞宗余孽寻仇来了！为首的是个金丹初期的血袍老者，指名要你的性命。\n你且战且退，借着山势周旋半宿，终于将老者重创逼退。火光里，你看见他腰间挂着一枚黑铁令牌，刻着扭曲的符文——与当年墨散人留下的玉简纹路，如出一辙。\n（机缘 +1，发现血煞宗线索）",
+   "effects": {
+    "jiyuan": 1,
+    "setFlag": [
+     "trail_blood"
+    ]
+   },
+   "choices": [
+    {
+     "text": "血煞宗余孽未清——去天南大会，查个明白",
+     "next": "a4_03"
+    }
+   ]
+  },
+  "a4_03": {
+   "text": "掩月宗，天南第一大派，山门如白玉天梯，绵延十里。论道大会人声鼎沸，你正四下张望，肩头忽然被人一拍——\n「十年不见，你都结丹了？」柳烟眉眼弯弯。她也已结丹，腰间青锋剑光流转，「听说你破了血祭大阵？我师兄的仇，也算你替我报了一半。」",
+   "choices": [
+    {
+     "text": "与她叙旧，细说当年（柳烟好感 +1，道心 +1）",
+     "next": "a4_03a",
+     "effects": {
+      "liuyan_favor": 1,
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "寒暄几句，先去看大比",
+     "next": "a4_04"
+    },
+    {
+     "text": "问她这些年过得好不好（柳烟好感 +1）",
+     "next": "a4_04",
+     "effects": {
+      "liuyan_favor": 1
+     }
+    }
+   ]
+  },
+  "a4_03a": {
+   "text": "你们寻了处茶亭坐下，说起这十年。柳烟说她仍在追查师兄之死的真相——当年血煞谷一事，背后似乎还有更大的黑手。「墨散人不过是一枚棋子，」她压低声音，「他背后的人，藏得很深。」\n你想起那枚黑铁令牌，心头微沉。",
+   "choices": [
+    {
+     "text": "「此事，我们一起查。」",
+     "next": "a4_04"
+    }
+   ]
+  },
+  "a4_04": {
+   "text": "论道台上，各派俊杰轮番斗法。轮到你时，对手是掩月宗真传弟子，一手冰魄剑法使得滴水不漏。台下诸派长老的目光，齐刷刷落在你身上。",
+   "choices": [
+    {
+     "text": "全力应战（需 资质≥6 或 持有法器）",
+     "next": "a4_05",
+     "if": {
+      "or": [
+       {
+        "zizhi": {
+         "gte": 6
+        }
+       },
+       {
+        "flags": {
+         "has": [
+          "weapon"
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "全力应战",
+     "next": "a4_06"
+    }
+   ]
+  },
+  "a4_05": {
+   "text": "你金丹灵力鼓荡，剑光如虹，三招之内将对手逼下论道台。台下轰然叫好——「临水剑仙」的名号，从此坐实。\n散场后，掩月宗宗主亲自召见。殿上，宗主身侧立着一位白衣女子，眉目清冷如霜雪，正是掩月宗圣女南宫婉——天南第一美人，也是天南年轻一辈第一人。她只淡淡看了你一眼，眼波无澜。",
+   "choices": [
+    {
+     "text": "以礼相见，不卑不亢（南宫婉好感 +1，道心 +1）",
+     "next": "a4_05a",
+     "effects": {
+      "nangong_favor": 1,
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "目不斜视，行完礼便退下（道心 +1）",
+     "next": "a4_05b",
+     "effects": {
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "刻意攀谈，想博美人青睐（道心 -1）",
+     "next": "a4_05c",
+     "effects": {
+      "daoxin": -1
+     }
+    }
+   ]
+  },
+  "a4_05a": {
+   "text": "你行礼如仪，进退有度。南宫婉眼中终于起了一丝波澜，微微颔首：「久闻临水剑仙之名，今日一见，名不虚传。」\n宗主抚须而笑，留你在掩月宗小住。",
+   "choices": [
+    {
+     "text": "「多谢宗主美意。」",
+     "next": "a4_07"
+    }
+   ]
+  },
+  "a4_05b": {
+   "text": "你行完礼便告退，目不斜视。走出殿门时，隐约听见宗主轻笑：「倒是个人物。」\n（南宫婉记住了你）",
+   "effects": {
+    "nangong_favor": 1
+   },
+   "choices": [
+    {
+     "text": "回客房休息",
+     "next": "a4_07"
+    }
+   ]
+  },
+  "a4_05c": {
+   "text": "你堆起笑脸攀谈，南宫婉却只淡淡回了一句「道友言重」，便不再理会。你讪讪退下，觉得自己像个跳梁小丑。\n（道心 -1）",
+   "choices": [
+    {
+     "text": "回客房休息",
+     "next": "a4_07"
+    }
+   ]
+  },
+  "a4_06": {
+   "text": "你苦战五十回合，终究棋差一着，败下阵来。台下有人嘘声，也有人赞你「虽败犹荣」。\n散场时，你注意到席上那位白衣圣女多看了你一眼——掩月宗圣女南宫婉，天南第一美人。她的目光在你身上停了片刻，才移开。\n（南宫婉记住了你）",
+   "effects": {
+    "nangong_favor": 1
+   },
+   "choices": [
+    {
+     "text": "回客房调息",
+     "next": "a4_07"
+    }
+   ]
+  },
+  "a4_07": {
+   "text": "是夜，掩月宗设宴款待诸派高人。酒过三巡，你正与柳烟说话，一道白影无声落座——南宫婉。\n她直入正题：「临水城血祭一事，掩月宗查了十年，查到一处所在——血魔渊，上古血魔宗遗址。血煞宗余孽近日在那里频繁出没，掩月宗身份敏感，不便出面。」\n她看着你：「道友可愿同行一探？」",
+   "choices": [
+    {
+     "text": "「固所愿也，不敢请耳。」（南宫婉好感 +1）",
+     "next": "a4_08",
+     "effects": {
+      "nangong_favor": 1
+     }
+    },
+    {
+     "text": "婉拒——血魔渊凶险，何必趟这浑水",
+     "next": "a4_07b"
+    },
+    {
+     "text": "答应同行，并邀她明日先同游坊市（灵石 -2，南宫婉好感 +1）",
+     "next": "a4_08",
+     "effects": {
+      "lingshi": -2,
+      "nangong_favor": 1
+     }
+    }
+   ]
+  },
+  "a4_07b": {
+   "text": "你婉言谢绝。南宫婉也不强求，只留下一枚传讯符便离去。\n翌日你才知道，柳烟替你跟了去。她回来时肩头带伤，却笑吟吟的：「血魔渊里，果然有血煞宗的动静。喏，这是路线图。」她把一枚玉简塞进你手里，「下次，可别再让人家一个姑娘家替你冒险了。」\n（柳烟好感 +1）",
+   "effects": {
+    "liuyan_favor": 1
+   },
+   "choices": [
+    {
+     "text": "「是我的不是。走，这次我打头阵。」",
+     "next": "a4_08"
+    }
+   ]
+  },
+  "a4_08": {
+   "text": "血魔渊位于天南极西，终年血雾弥漫，鸟兽绝迹。渊口立着一块残碑，字迹早已模糊。\n你们深入半日，忽然惊起一片血蝠——比血煞谷那次，大了一倍不止。",
+   "random": [
+    {
+     "chance": 0.6,
+     "next": "a4_08a",
+     "effects": {},
+     "text": "你剑光如幕，护住身周数尺，血蝠撞在剑网上纷纷坠落。南宫婉在一旁冷眼观战，末了说了句：「剑法不错。」"
+    },
+    {
+     "chance": 0.4,
+     "next": "a4_08b",
+     "effects": {
+      "setFlag": [
+       "hurt_a4"
+      ]
+     },
+     "text": "血蝠太多，你左臂被撕开一道血口。千钧一发之际，一道冰魄剑气扫过，将蝠群冻成冰雕——南宫婉出手了。她丢给你一瓶丹药：「别死在这里。」"
+    }
+   ]
+  },
+  "a4_08a": {
+   "text": "你剑光如幕，护住身周数尺，血蝠撞在剑网上纷纷坠落。南宫婉在一旁冷眼观战，末了说了句：「剑法不错。」\n穿过蝠群，渊底一座倒塌的宫殿现于眼前。",
+   "choices": [
+    {
+     "text": "进入宫殿",
+     "next": "a4_09"
+    },
+    {
+     "text": "先搜搜蝠群巢穴（或有所获）",
+     "next": "a4_09",
+     "random": [
+      {
+       "chance": 0.5,
+       "next": "a4_09",
+       "effects": {
+        "lingshi": 3
+       },
+       "text": "蝠巢深处躺着半具白骨，怀里还攥着一个小袋子，里面是三块灵石。（灵石 +3）"
+      },
+      {
+       "chance": 0.5,
+       "next": "a4_09",
+       "effects": {},
+       "text": "巢穴里只有腥臭的蝠粪和碎骨，你一无所获。"
+      }
+     ]
+    }
+   ]
+  },
+  "a4_08b": {
+   "text": "血蝠太多，你左臂被撕开一道血口。千钧一发之际，一道冰魄剑气扫过，将蝠群冻成冰雕——南宫婉出手了。她丢给你一瓶丹药：「别死在这里。」\n（负伤，南宫婉替你挡了一击）",
+   "effects": {
+    "nangong_favor": 1
+   },
+   "choices": [
+    {
+     "text": "道谢，继续深入",
+     "next": "a4_09"
+    }
+   ]
+  },
+  "a4_09": {
+   "text": "宫殿深处，一方血池咕嘟咕嘟冒着泡。池中央悬着一枚拳头大的黑珠，四周缠满血色符链——那符链上的符文，与墨散人玉简、黑铁令牌上的纹路，一模一样。\n「血祖封印……」南宫婉脸色骤变，「掩月宗典籍记载，血魔宗开山老祖「血祖」并未陨落，而是沉睡在封印之下。这封印……快破了。」",
+   "choices": [
+    {
+     "text": "深入查看封印（需 机缘≥4 或 道心≥5）",
+     "next": "a4_09a",
+     "if": {
+      "or": [
+       {
+        "jiyuan": {
+         "gte": 4
+        }
+       },
+       {
+        "daoxin": {
+         "gte": 5
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "深入查看封印",
+     "next": "a4_09b"
+    },
+    {
+     "text": "就地加固封印（需 灵石≥5，可拖延血祖苏醒）",
+     "next": "a4_09c",
+     "if": {
+      "lingshi": {
+       "gte": 5
+      }
+     }
+    },
+    {
+     "text": "退出血魔渊，回掩月宗禀报",
+     "next": "a4_10"
+    }
+   ]
+  },
+  "a4_09c": {
+   "text": "你倾尽灵石，配合南宫婉的冰魄之力，将三道裂开的符链重新炼合。血珠的搏动渐渐沉寂，封印表面重新泛起一层微光。\n「只能拖延十年，」南宫婉额角见汗，「但十年，够天南准备了。」\n（灵石 -5，血祖苏醒被拖延）",
+   "effects": {
+    "lingshi": -5,
+    "setFlag": [
+     "seal_delay"
+    ]
+   },
+   "choices": [
+    {
+     "text": "回掩月宗，召集诸派",
+     "next": "a4_11"
+    }
+   ]
+  },
+  "a4_09a": {
+   "text": "你屏息靠近血池，细细查看符链——果然，有三道锁链已现裂纹，灵光黯淡。血珠内隐约传来心跳般的搏动，一下，又一下。\n你退出时脚步极轻，没有惊动任何禁制。\n（机缘 +1，确认血祖封印将破）",
+   "effects": {
+    "jiyuan": 1,
+    "setFlag": [
+     "blood_seal"
+    ]
+   },
+   "choices": [
+    {
+     "text": "回掩月宗，召集诸派",
+     "next": "a4_11"
+    }
+   ]
+  },
+  "a4_09b": {
+   "text": "你靠得太近，触动了封印外围的禁制。血池猛地沸腾，一道血影扑面而来！南宫婉一剑替你挡下大半，你仍被余波震得吐血倒飞。\n你们拼死逃出血魔渊。养伤期间，柳烟衣不解带地照顾你，嘴上却损你：「逞什么能？下次我先上。」\n（重伤，柳烟好感 +1，道心 -1）",
+   "effects": {
+    "daoxin": -1,
+    "liuyan_favor": 1,
+    "setFlag": [
+     "hurt_a4"
+    ]
+   },
+   "choices": [
+    {
+     "text": "伤愈后，回掩月宗召集诸派",
+     "next": "a4_11"
+    }
+   ]
+  },
+  "a4_10": {
+   "text": "你果断退出。掩月宗长老会上，你将所见一五一十禀报。宗主面色凝重，诸派长老议论纷纷。\n唯有大长老垂着眼帘，神色如常——但你注意到，他的指尖在袖中微微发颤，像是……紧张。\n（你留了个心眼）",
+   "choices": [
+    {
+     "text": "备战血魔渊",
+     "next": "a4_11"
+    },
+    {
+     "text": "私下拜访大长老，试探口风（需 道心≥5）",
+     "next": "a4_10a",
+     "if": {
+      "daoxin": {
+       "gte": 5
+      }
+     },
+     "effects": {
+      "jiyuan": 1
+     }
+    },
+    {
+     "text": "私下拜访大长老，试探口风",
+     "next": "a4_10b",
+     "if": {
+      "not": {
+       "daoxin": {
+        "gte": 5
+       }
+      }
+     },
+     "effects": {
+      "daoxin": -1
+     }
+    }
+   ]
+  },
+  "a4_10a": {
+   "text": "你以请教为名拜访大长老，话里话外试探血魔渊之事。大长老应对滴水不漏，只是你告辞时，瞥见他袖中滑出半枚黑铁令牌的一角——与血煞宗余孽腰间的，一般无二。\n你不动声色地退出，心里却翻起了惊涛骇浪。\n（机缘 +1，发现大长老的破绽）",
+   "effects": {
+    "setFlag": [
+     "betrayer_known"
+    ]
+   },
+   "choices": [
+    {
+     "text": "回房细想对策",
+     "next": "a4_11"
+    }
+   ]
+  },
+  "a4_10b": {
+   "text": "你以请教为名拜访大长老，问得却太过直白。大长老目光幽深地看了你半晌，淡淡道：「道友还是把心思放在修行上为好。」\n你告辞时，总觉得背后有一道视线，凉飕飕的。\n（道心 -1，引起了警觉）",
+   "effects": {
+    "setFlag": [
+     "framed"
+    ]
+   },
+   "choices": [
+    {
+     "text": "回房细想对策",
+     "next": "a4_11"
+    }
+   ]
+  },
+  "a4_11": {
+   "text": "血祖封印将破的消息传遍天南，人心惶惶。掩月宗牵头，广邀诸派共商对策。大战在即，你站在命运的岔路口。",
+   "choices": [
+    {
+     "text": "全力促成诸派联合（道心 +1）",
+     "next": "a4_11a",
+     "effects": {
+      "daoxin": 1,
+      "setFlag": [
+       "aid_union"
+      ]
+     }
+    },
+    {
+     "text": "私下调查掩月宗大长老（需 机缘≥5 或 道心≥6）",
+     "next": "a4_11b",
+     "if": {
+      "or": [
+       {
+        "jiyuan": {
+         "gte": 5
+        }
+       },
+       {
+        "daoxin": {
+         "gte": 6
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "私下调查掩月宗大长老",
+     "next": "a4_11c"
+    },
+    {
+     "text": "明哲保身，退出这场纷争",
+     "next": "a4_14"
+    }
+   ]
+  },
+  "a4_11a": {
+   "text": "你奔走于诸派之间，凭借当年临水城的名望与三寸不烂之舌，终于促成天南七派一十三门的大联合。歃血为盟那日，柳烟在人群中冲你竖了个大拇指。\n（诸派联合，天南一心）",
+   "choices": [
+    {
+     "text": "大会散后，你忽然接到密报",
+     "next": "a4_12"
+    }
+   ]
+  },
+  "a4_11b": {
+   "text": "你夜探大长老书房，在暗格里发现一枚黑铁令牌——与血煞宗余孽腰间的，一模一样。铁证如山：掩月宗大长老，早已暗中投靠血煞宗。\n你不动声色地退出，将令牌收好。\n（查明内奸，道心 +1）",
+   "effects": {
+    "daoxin": 1,
+    "setFlag": [
+     "betrayer_known"
+    ]
+   },
+   "choices": [
+    {
+     "text": "大会散后，你忽然接到密报",
+     "next": "a4_12"
+    }
+   ]
+  },
+  "a4_11c": {
+   "text": "你夜探大长老书房，翻找间却不慎碰翻了一盏灯。灯火炸开，惊动了巡夜的护法——大长老披衣赶来，看见你站在他书房里，目光幽深。\n翌日，掩月宗上下传遍一个消息：临水剑仙夜闯长老书房，私通血煞宗的，另有其人。\n（被反咬一口，道心 -2）",
+   "effects": {
+    "daoxin": -2,
+    "setFlag": [
+     "framed"
+    ]
+   },
+   "choices": [
+    {
+     "text": "大会散后，你被「请」到了大殿",
+     "next": "a4_12"
+    }
+   ]
+  },
+  "a4_12": {
+   "text": "掩月宗大殿，诸派长老齐聚。大长老居中而坐，声如洪钟：「临水剑仙私通血煞宗，证据确凿！来人，拿下！」\n殿门应声而合，四周灵光闪烁——布好的困阵。你成了瓮中之鳖。",
+   "choices": [
+    {
+     "text": "当众揭露大长老的令牌（需 查明内奸）",
+     "next": "a4_12a",
+     "if": {
+      "flags": {
+       "has": [
+        "betrayer_known"
+       ]
+      }
+     }
+    },
+    {
+     "text": "拔剑反杀，杀出重围（需 资质≥6 或 持有法器）",
+     "next": "a4_12a",
+     "if": {
+      "or": [
+       {
+        "zizhi": {
+         "gte": 6
+        }
+       },
+       {
+        "flags": {
+         "has": [
+          "weapon"
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "忍辱负重，束手就擒",
+     "next": "a4_12c"
+    }
+   ]
+  },
+  "a4_12a": {
+   "text": "「且慢！」你朗声开口，将那枚黑铁令牌高高举起，「血煞宗余孽的令牌，怎么会出现在掩月宗大长老的书房里？」\n满殿哗然。大长老脸色剧变，正要暴起，一道白影已横在你身前——南宫婉。她冰魄剑出鞘：「我也想问，大长老十年前血煞谷一役，为何恰好「闭关」？」\n大势已去。大长老仰天长叹，自碎丹田，被押入镇魔塔。\n（揭破内奸，道心 +1）",
+   "effects": {
+    "daoxin": 1,
+    "setFlag": [
+     "kill_traitor"
+    ]
+   },
+   "choices": [
+    {
+     "text": "风波过后，你收到一枚玉简",
+     "next": "a4_13"
+    }
+   ]
+  },
+  "a4_12c": {
+   "text": "你垂下剑，任由锁链加身。殿上诸派长老的窃窃私语，像刀子一样刮过耳膜。\n当夜，南宫婉与柳烟联名作保，将你赎出。走出掩月宗山门时，天边正落着细雪。你回头看了一眼那座白玉天梯，心里一片冰凉。\n（道心 -2）",
+   "effects": {
+    "daoxin": -2
+   },
+   "choices": [
+    {
+     "text": "山门外，你收到一枚玉简",
+     "next": "a4_13"
+    }
+   ]
+  },
+  "a4_13": {
+   "text": "玉简是韩立的传讯，只有八个字：「血祖将醒，天南之巅。」\n柳烟背剑而来：「我跟你去。」\n南宫婉立于山门，淡淡道：「掩月宗欠你的，我来还。」\n你握紧玉简，抬头望向天南之巅的方向。血雾已在天边隐隐翻涌——大劫，来了。",
+   "choices": [
+    {
+     "text": "走，天南之巅",
+     "next": "a5_01"
+    }
+   ]
+  },
+  "a4_14": {
+   "text": "你终究没有卷入那场纷争。你辞别诸派，回到七玄门，做了个清闲的客卿长老。\n此后百年，天南血雨腥风：血祖苏醒，诸派苦战，死伤无数。你守着青牛山这一方清净，偶尔听见山下传来的战报，只是沉默。\n又过了许多年，你坐在山巅看云，忽然想起十六岁那年，村口古槐下那个游方郎中的话——\n「修行路上，安稳与机缘，往往不可兼得。」",
+   "choices": [
+    {
+     "text": "……",
+     "next": "e6"
+    }
+   ]
+  },
+  "a5_01": {
+   "act": "第五幕 · 魔劫终局",
+   "text": "天南之巅，万仞孤峰。七派一十三门的旗帜在风中猎猎作响，山巅之上，血雾如海，翻涌不休。\n血雾深处，一道身影负手而立——血袍，白发，双目赤红。他抬手，整片血海便随他的动作起伏：「本座沉睡千年，这人间，倒还记得血祖之名。」\n你身边，一道青衫身影无声浮现。韩立十年不见，气息深不可测——他已结婴。他看了你一眼：「当年我说过，修仙界的水，深得很。今日，你亲眼看看。」",
+   "choices": [
+    {
+     "text": "「韩兄，这一战，我请缨先锋。」（道心 +1）",
+     "next": "a5_02",
+     "effects": {
+      "daoxin": 1
+     }
+    },
+    {
+     "text": "「我留守大阵，伺机而动。」",
+     "next": "a5_02"
+    }
+   ]
+  },
+  "a5_02": {
+   "text": "韩立以元婴之力布下九曜破魔大阵，需三处阵眼由金丹修士镇守，另需一人随他正面牵制血祖。\n「阵眼凶险，正面更凶险。」他看着你，「你选哪边？」",
+   "choices": [
+    {
+     "text": "守东阵眼——稳扎稳打",
+     "next": "a5_03"
+    },
+    {
+     "text": "随韩立正面牵制血祖",
+     "next": "a5_04",
+     "effects": {
+      "setFlag": [
+       "aid_hanli"
+      ]
+     }
+    }
+   ]
+  },
+  "a5_03": {
+   "text": "东阵眼，你盘膝而坐，灵力源源灌入阵旗。血煞宗精锐如潮水般涌来，一波又一波。你的手臂在发抖，阵旗的灵光也在闪烁。",
+   "choices": [
+    {
+     "text": "死守不退（需 资质≥6 或 持有法器 或 诸派联合）",
+     "next": "a5_03a",
+     "if": {
+      "or": [
+       {
+        "zizhi": {
+         "gte": 6
+        }
+       },
+       {
+        "flags": {
+         "has": [
+          "weapon",
+          "aid_union"
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "死守不退",
+     "next": "a5_03b"
+    }
+   ]
+  },
+  "a5_03a": {
+   "text": "你咬碎舌尖，将一口精血喷在阵旗上——灵光暴涨，将涌来的血影尽数绞杀！阵眼守住了。\n远处传来韩立的传音：「做得好。」\n（守住阵眼，道心 +1）",
+   "effects": {
+    "daoxin": 1
+   },
+   "choices": [
+    {
+     "text": "血祖，要亲自出手了",
+     "next": "a5_06"
+    },
+    {
+     "text": "趁隙给韩立传讯示警（道心 +1）",
+     "next": "a5_06",
+     "effects": {
+      "daoxin": 1
+     }
+    }
+   ]
+  },
+  "a5_03b": {
+   "text": "血影太多，你灵力耗尽，被一道血爪撕开护体灵光。阵眼告破的刹那，南宫婉/柳烟（依谁在侧）替你补上了缺口，但你已重伤脱力。\n（重伤，被替换下场）",
+   "effects": {
+    "setFlag": [
+     "hurt_a5"
+    ]
+   },
+   "choices": [
+    {
+     "text": "血祖，要亲自出手了",
+     "next": "a5_06"
+    }
+   ]
+  },
+  "a5_04": {
+   "text": "你与韩立并肩立于阵前。韩立抬手，一记青雷将血海劈开一道裂缝：「我牵制他，你护住阵眼方向。」\n激战正酣，血祖忽然分出一道血影，无声无息地朝你后心袭来！",
+   "choices": [
+    {
+     "text": "凭直觉闪避反杀（需 机缘≥5）",
+     "next": "a5_04a",
+     "if": {
+      "jiyuan": {
+       "gte": 5
+      }
+     }
+    },
+    {
+     "text": "硬抗这一击（需 道心≥7）",
+     "next": "a5_04b",
+     "if": {
+      "daoxin": {
+       "gte": 7
+      }
+     }
+    },
+    {
+     "text": "来不及了",
+     "next": "a5_04c"
+    }
+   ]
+  },
+  "a5_04a": {
+   "text": "血影及体的刹那，你鬼使神差地侧身半步——血影擦着你的衣角掠过，钉在你身后的山石上，炸出一个深坑。你反手一剑，将那缕血影斩灭。\n韩立瞥你一眼，难得赞了一句：「好身法。」\n（道心 +1）",
+   "effects": {
+    "daoxin": 1
+   },
+   "choices": [
+    {
+     "text": "血祖，要亲自出手了",
+     "next": "a5_06"
+    }
+   ]
+  },
+  "a5_04b": {
+   "text": "你避无可避，索性不避——灵力灌体，硬受这一击！血影炸开，你闷哼一声，双脚在山石上犁出两道深痕，却站住了。\n「有点意思。」血祖的声音从云端传来。\n（道心 +1）",
+   "effects": {
+    "daoxin": 1
+   },
+   "choices": [
+    {
+     "text": "血祖，要亲自出手了",
+     "next": "a5_06"
+    }
+   ]
+  },
+  "a5_04c": {
+   "text": "血影无声穿透你的护体灵光，你眼前一黑，喷出一口鲜血。韩立一把将你拽到身后，青雷连发，替你挡下后续攻势。\n（重伤，道心 -1）",
+   "effects": {
+    "daoxin": -1,
+    "setFlag": [
+     "hurt_a5"
+    ]
+   },
+   "choices": [
+    {
+     "text": "血祖，要亲自出手了",
+     "next": "a5_06"
+    }
+   ]
+  },
+  "a5_06": {
+   "text": "九曜破魔阵终于合拢。血祖被困阵中，血海被一寸寸压碎。他仰天长啸，声震九霄：「区区小阵，也想困住本座！」\n他忽然化作一道血光，朝阵眼最薄弱处撞去——那里，正是你镇守的方向。",
+   "choices": [
+    {
+     "text": "迎战血祖（需 资质≥6 或 持有法器 或 诸派联合 或 韩立助阵 或 拖延封印 或 道心≥7）",
+     "next": "a5_08",
+     "if": {
+      "or": [
+       {
+        "zizhi": {
+         "gte": 6
+        }
+       },
+       {
+        "flags": {
+         "has": [
+          "weapon",
+          "aid_union",
+          "aid_hanli",
+          "seal_delay"
+         ]
+        }
+       },
+       {
+        "daoxin": {
+         "gte": 7
+        }
+       }
+      ]
+     }
+    },
+    {
+     "text": "迎战血祖",
+     "next": "a5_07"
+    }
+   ]
+  },
+  "a5_07": {
+   "text": "血祖全力一击，你横剑硬挡——剑断，人飞。你撞碎三面阵旗，滚落山崖。\n「不——！」韩立目眦欲裂。他化作一道青虹冲天而起，金丹……不，元婴之力尽数燃烧——他自爆元婴，与血祖同归于尽！\n天地失色。血海溃散，血祖的咆哮戛然而止。天南惨胜。\n你在崖底醒来时，已是三个月后。道基尽毁，修为全废。柳烟守在你榻边，眼睛红红的：「你醒了。韩立他……」她说不下去了。",
+   "choices": [
+    {
+     "text": "（若柳烟情深）由她搀扶，归隐青牛山",
+     "next": "a5_07b",
+     "if": {
+      "liuyan_favor": {
+       "gte": 2
+      }
+     }
+    },
+    {
+     "text": "归隐青牛山",
+     "next": "a5_07a"
+    }
+   ]
+  },
+  "a5_07a": {
+   "text": "你回到了青牛山。修为尽废，你重操旧业，采药、打猎、种田。偶尔夜深人静，你摸出那枚温润的玉简，想起山门里的月光，想起临水城头的血光，想起那个总说「大道可期」的青衫人。\n这一生，终究是做过一场大梦。",
+   "choices": [
+    {
+     "text": "……",
+     "next": "e3"
+    }
+   ]
+  },
+  "a5_07b": {
+   "text": "你回到了青牛山。修为尽废，柳烟却辞了掩月宗，在山下开了间医馆，日日替乡邻看病。她总是笑：「反正我也打不过你了，不如救救人，积点功德。」\n你帮她晒药、研药，偶尔替她挡挡不讲理的病人。日子清苦，却踏实。\n多年后，你坐在医馆门槛上晒太阳，柳烟从里屋探出头：「喂，今天的药还没分呢！」你笑着应了一声——心里忽然觉得，这样过完一生，也不算太坏。",
+   "choices": [
+    {
+     "text": "……",
+     "next": "e3"
+    }
+   ]
+  },
+  "a5_08": {
+   "text": "你横剑而上，将毕生修为凝于一击！九曜大阵同时发力，血祖的护体血海被撕得粉碎。你的剑，洞穿了他的胸口。\n「本座……不甘……」血祖化作漫天血雨，洒落天南。千年魔劫，就此终结。\n战后庆功宴上，诸派推你为首功。你端着酒杯，却想起韩立说的那句——「大道可期」。现在，他站在你身侧，依旧一身青衫。\n（境界：金丹后期）\n夜宴散后，你独自站在峰顶，山风拂面。",
+   "effects": {
+    "realm": "金丹后期"
+   },
+   "choices": [
+    {
+     "text": "找她——有些话，再不说就晚了（需 柳烟好感≥2 或 南宫婉好感≥2，且 道心≥8）",
+     "next": "a5_09",
+     "if": {
+      "or": [
+       {
+        "liuyan_favor": {
+         "gte": 2
+        }
+       },
+       {
+        "nangong_favor": {
+         "gte": 2
+        }
+       }
+      ],
+      "daoxin": {
+       "gte": 8
+      }
+     }
+    },
+    {
+     "text": "找韩立，谈谈问道之事",
+     "next": "a5_10"
+    },
+    {
+     "text": "留守天南，执掌宗门",
+     "next": "e6"
+    }
+   ]
+  },
+  "a5_09": {
+   "text": "你敲开了她的门。月下，柳烟（或南宫婉，依情谊而定）站在门边，看着你：「这么晚了，有事？」\n你张了张嘴，忽然觉得千言万语都不知从何说起。最后只说了一句：「我这一生，杀过妖，斩过魔，踏过尸山血海。到头来，只想有个人，能一起看看月亮。」\n她怔了很久。然后，眉眼弯弯，笑了。",
+   "choices": [
+    {
+     "text": "执子之手",
+     "next": "e9"
+    }
+   ]
+  },
+  "a5_10": {
+   "text": "「韩兄，接下来打算去哪？」\n韩立沉默片刻，道：「天南事了，我欲往北。传闻灵界通道将开——那是更高一层的天地。」他看着你，「你若愿同行，你我二人，也好有个照应。」",
+   "choices": [
+    {
+     "text": "「固所愿也。」",
+     "next": "a5_10a"
+    },
+    {
+     "text": "犹豫——天南基业，故人难舍",
+     "next": "e6"
+    }
+   ]
+  },
+  "a5_10a": {
+   "text": "灵界通道开启那日，天降霞光万丈。你与韩立并肩立于山巅，身后是天南诸派前来相送的故人——柳烟、南宫婉、七玄门的老友。\n「不后悔？」韩立问。\n「不后悔。」你说。\n（境界：元婴初期）\n通道尽头，灵气扑面，天高地阔。你回头最后望了一眼人间——那里有你的山，你的城，你的故人。然后，你转身，踏入那道光。",
+   "effects": {
+    "realm": "元婴初期"
+   },
+   "choices": [
+    {
+     "text": "踏入灵界之门",
+     "next": "e8"
+    }
+   ]
+  },
+  "e6": {
+   "type": "ending",
+   "endingId": "e6",
+   "title": "太上长老",
+   "tag": "执掌结局",
+   "tone": "gray",
+   "text": "你成了天南辈分最高的那一批人。\n魔劫之后，诸派凋零，你以金丹之尊（或元婴之身）执掌七玄门，庇佑一方。弟子们尊你一声「太上长老」，山下凡人供你的长生牌位，香火不断。\n你活了很久。久到青牛山的树枯了又荣，久到当年并肩的故人一个个坐化。\n寿尽那日，你坐在山巅，看着天边的晚霞，忽然想起十六岁那年的那场大雨。你笑了笑，闭上了眼。\n山风呜咽，像一声叹息。",
+   "epilogue": "或明哲保身，或留守执掌，你终成天南一代耆宿。寿尽坐化那日，青牛山的树，又落了一地叶子。",
+   "hint": "第四幕选择明哲保身，或第五幕战后留守宗门。"
+  },
+  "e8": {
+   "type": "ending",
+   "endingId": "e8",
+   "title": "飞升上界",
+   "tag": "真结局 · 终",
+   "tone": "true",
+   "text": "灵界。\n灵气如潮，天高地阔，山河万里皆在脚下。你与韩立并肩而立，看着这片崭新的天地，一时无言。\n良久，韩立开口：「传闻灵界之上，还有仙界。仙路漫漫，你我不过才走完开头。」\n你笑了：「那就继续走。」\n数百年后，灵界多了一对散修的名号——「青牛真人」与「韩真人」，有人说他们结伴闯过无数秘境，有人说他们早已踏破虚空，去了更高处。\n没有人知道，很多年前，在天南一座无名小山村里，一个采药的少年，曾经抬头看过一眼天上的云。",
+   "epilogue": "与韩立并肩踏入灵界之门，天高地阔，仙路方始。凡人修仙传，传的从来不是结局，是那一步。",
+   "hint": "第五幕战胜血祖后，随韩立潜修，同往灵界。"
+  },
+  "e9": {
+   "type": "ending",
+   "endingId": "e9",
+   "title": "道侣相随",
+   "tag": "隐藏结局",
+   "tone": "hidden",
+   "text": "你们结为了道侣。\n修仙界都说，临水剑仙娶了天南第一美人（或说，被柳烟那个疯丫头拐走了）。你只是笑。\n此后百年，你们携手走过天南的山水，闯过灵界的秘境，打过照面的妖魔鬼怪，都在你们剑下成了传说。\n夜深人静时，她靠在你肩头看月亮，忽然问：「你说，修仙修到最后，图的是什么？」\n你想了很久，说：「图一个，有人一起看月亮。」\n她笑了，笑得比月光还亮。\n多年后，灵界通道再次开启。你们并肩踏入那道光，身后是天南故人送别的目光。\n仙路漫漫，但从此，不再是一个人。",
+   "epilogue": "魔劫之后执子之手，结为道侣，同修同游，共赴灵界。仙路漫漫，有人同行，便不算辜负。",
+   "hint": "隐藏结局：与柳烟或南宫婉结下深厚情谊，道心圆满时，战后执子之手。"
+  }
+ }
+};
+const STAT_KEYS = ['zizhi','daoxin','jiyuan','lingshi'];
+const STAT_NAMES = { zizhi:'灵根资质', daoxin:'道心', jiyuan:'机缘', lingshi:'灵石' };
+const SAVE_KEY = 'frx_save_v1';
+const GALLERY_KEY = 'frx_gallery_v1';
+const TYPE_SPEED = 9; // ms per char
+
+let state = null;
+let typingTimer = null;
+let typingDone = false;
+let lastAct = null;
+let currentParas = [];
+let currentEls = [];
+
+/* ---------- 工具 ---------- */
+const $ = id => document.getElementById(id);
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+function loadGallery(){ try { return JSON.parse(localStorage.getItem(GALLERY_KEY)) || {}; } catch(e){ return {}; } }
+function saveGallery(g){ localStorage.setItem(GALLERY_KEY, JSON.stringify(g)); }
+function saveGame(){ if(state) localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+function loadGame(){ try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); return s && STORY.nodes[s.node] ? s : null; } catch(e){ return null; } }
+
+function statVal(k){ return (state.stats && state.stats[k]) || 0; }
+function flagSet(f){ return state.flags.indexOf(f) !== -1; }
+
+function checkCond(cond){
+  if(!cond) return true;
+  if(cond.not) return !checkCond(cond.not);
+  if(cond.or && !cond.or.some(checkCond)) return false;
+  for(const k in cond){
+    if(k === 'or' || k === 'not' || k === 'flags') continue;
+    const v = statVal(k);
+    if(cond[k].gte !== undefined && v < cond[k].gte) return false;
+    if(cond[k].lte !== undefined && v > cond[k].lte) return false;
+    if(cond[k].eq !== undefined && v !== cond[k].eq) return false;
+  }
+  if(cond.flags){
+    if(cond.flags.has && cond.flags.has.length && !cond.flags.has.some(flagSet)) return false;
+    if(cond.flags.not && cond.flags.not.length && cond.flags.not.some(flagSet)) return false;
+  }
+  return true;
+}
+
+function applyEffects(eff){
+  if(!eff) return;
+  for(const k in eff){
+    if(k === 'realm' || k === 'setFlag') continue;
+    if(typeof eff[k] === 'number') state.stats[k] = (state.stats[k]||0) + eff[k];
+  }
+  if(eff.realm) state.realm = eff.realm;
+  if(eff.setFlag){ eff.setFlag.forEach(f=>{ if(state.flags.indexOf(f)===-1) state.flags.push(f); }); }
+}
+
+/* ---------- 渲染 ---------- */
+function renderStats(){
+  $('stat-name').textContent = state.name;
+  $('stat-rows').innerHTML = STAT_KEYS.map(k =>
+    `<div class="stat-row"><span class="k">${STAT_NAMES[k]}</span><span class="v">${Math.max(0,statVal(k))}</span></div>`
+  ).join('');
+  $('stat-realm').innerHTML = `境界 · <b>${state.realm}</b>`;
+  // 人物状态（已结识的 NPC + 好感）
+  const FAVOR_LEVELS = ['初识', '相识', '相熟', '亲近', '知己'];
+  const favorLine = v => {
+    const lv = Math.min(FAVOR_LEVELS.length - 1, Math.max(0, v));
+    return `好感 ${v} · ${FAVOR_LEVELS[lv]}`;
+  };
+  const npc = [];
+  if(flagSet('met_liuyan')) npc.push({ name: '柳 烟', line: favorLine(state.stats.liuyan_favor || 0) });
+  if((state.stats.nangong_favor || 0) > 0) npc.push({ name: '南宫婉', line: favorLine(state.stats.nangong_favor) });
+  if(flagSet('met_aqing')) npc.push({ name: '阿 青', line: '药园故友' });
+  if(flagSet('met_hanli')) npc.push({ name: '韩 立', line: '已结识' });
+  $('stat-npcs').innerHTML = npc.length
+    ? '<div class="stat-npc-title">— 人 物 —</div>' + npc.map(n =>
+        `<div class="stat-row npc"><span class="k">${n.name}</span><span class="v">${n.line}</span></div>`
+      ).join('')
+    : '';
+}
+
+function typeParagraphs(container, paras, done){
+  typingDone = false;
+  $('typing-hint').style.display = 'block';
+  clearInterval(typingTimer);
+  // 预建全部段落元素，逐字只更新当前段的 textContent（避免整块 innerHTML 重建）
+  container.innerHTML = paras.map(() => '<p></p>').join('');
+  currentEls = container.querySelectorAll('p');
+  let pi = 0, ci = 0;
+  typingTimer = setInterval(() => {
+    if(pi >= paras.length){ finishTyping(paras, done); return; }
+    currentEls[pi].textContent = paras[pi].slice(0, ci + 1);
+    ci++;
+    if(ci >= paras[pi].length){ pi++; ci = 0; }
+  }, TYPE_SPEED);
+}
+function finishTyping(paras, done){
+  clearInterval(typingTimer);
+  typingDone = true;
+  currentEls.forEach((el, i) => { el.textContent = paras[i]; });
+  $('typing-hint').style.display = 'none';
+  done();
+}
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function skipTyping(){
+  if(!typingDone && typingTimer){ finishTyping(currentParas, renderChoices); }
+}
+
+function renderNode(id){
+  const node = STORY.nodes[id];
+  if(!node){ console.error('node missing:', id); return; }
+  state.node = id;
+
+  // 记录访问轨迹（路线图回溯用）
+  if(state.visited.indexOf(id) === -1) state.visited.push(id);
+
+  // 节点级效果：每次新进入只结算一次（防读档/回溯重复加成）
+  if(node.effects && state.appliedEffects.indexOf(id) === -1){
+    applyEffects(node.effects);
+    state.appliedEffects.push(id);
+  }
+
+  if(node.act && node.act !== lastAct){
+    lastAct = node.act;
+    $('act-banner').textContent = node.act;
+    $('act-banner').style.animation = 'none';
+    void $('act-banner').offsetWidth;
+    $('act-banner').style.animation = '';
+  } else if(!node.act){
+    $('act-banner').textContent = '';
+  }
+
+  renderStats();
+
+  if(node.type === 'ending'){
+    showEnding(node);
+    return;
+  }
+
+  saveGame();
+  $('choices').innerHTML = '';
+  $('story-text').innerHTML = '';
+  currentParas = (node.text || '').split('\n');
+  typeParagraphs($('story-text'), currentParas, renderChoices);
+}
+
+// 生成「缺什么」的人类可读提示（短版）
+function condHint(cond){
+  if(!cond) return '';
+  if(cond.not) return '非(' + condHint(cond.not) + ')';
+  if(cond.or){
+    const subs = cond.or.map(condHint).filter(Boolean);
+    return subs.length > 1 ? subs[0] + ' 或 ' + subs[1] : (subs[0] || '任一条件');
+  }
+  const parts = [];
+  for(const k in cond){
+    if(k === 'or' || k === 'not' || k === 'flags') continue;
+    const nm = STAT_NAMES[k] || k;
+    const cur = statVal(k);
+    if(cond[k].gte !== undefined) parts.push(nm + '≥' + cond[k].gte + ' 现' + cur);
+    else if(cond[k].lte !== undefined) parts.push(nm + '≤' + cond[k].lte + ' 现' + cur);
+    else if(cond[k].eq !== undefined) parts.push(nm + '=' + cond[k].eq + ' 现' + cur);
+  }
+  if(cond.flags){
+    if(cond.flags.has && cond.flags.has.length) parts.push('特定经历');
+    if(cond.flags.not && cond.flags.not.length) parts.push('未触发特定事件');
+  }
+  return parts.join(' 且 ') || '条件不足';
+}
+
+function renderChoices(){
+  const node = STORY.nodes[state.node];
+  // 节点级随机事件：正文播完后自动结算
+  if(node.random){
+    setTimeout(() => rollNodeRandom(node), 450);
+    return;
+  }
+  const all = node.choices || [];
+  const base = t => t.replace(/（[^）]*）\s*$/, '').trim();
+  const ok = c => !c.if || checkCond(c.if);
+  // 有已满足的条件版时，其同文本兜底不再显示（避免重复）
+  const okCondBases = new Set(all.filter(c => c.if && ok(c)).map(c => base(c.text)));
+  const items = [];
+  all.forEach(c => {
+    if(c.if && !ok(c)){
+      // 条件不满足：显示但锁定，标注缺什么
+      items.push({ c, locked: true });
+      return;
+    }
+    if(!c.if && okCondBases.has(base(c.text))) return; // 同文本条件版已满足，隐藏兜底
+    items.push({ c, locked: false });
+  });
+  const box = $('choices');
+  box.innerHTML = '';
+  items.forEach((it, i) => {
+    const b = document.createElement('button');
+    b.className = 'choice-btn' + (it.locked ? ' locked' : '');
+    if(it.locked){
+      const hint = condHint(it.c.if);
+      b.textContent = '🔒 ' + it.c.text + (hint ? '（缺：' + hint + '）' : '（条件不足）');
+      b.title = it.c.text;
+      b.disabled = true;
+    } else {
+      b.textContent = it.c.text;
+      b.addEventListener('click', () => pickChoice(it.c));
+    }
+    b.style.animationDelay = (i * 0.12) + 's';
+    box.appendChild(b);
+  });
+}
+
+function rollNodeRandom(node){
+  const roll = Math.random();
+  let acc = 0, picked = null;
+  for(const r of node.random){
+    acc += r.chance;
+    if(roll < acc){ picked = r; break; }
+  }
+  if(!picked) picked = node.random[node.random.length - 1];
+  applyEffects(picked.effects);
+  renderNode(picked.next);
+}
+
+function pickChoice(choice){
+  if(choice.if && !checkCond(choice.if)) return; // 条件未满足的选项不可选（防御）
+  let target = choice.next, eff = choice.effects;
+  if(choice.random){
+    const roll = Math.random();
+    let acc = 0, picked = null;
+    for(const r of choice.random){
+      acc += r.chance;
+      if(roll < acc){ picked = r; break; }
+    }
+    if(!picked) picked = choice.random[choice.random.length - 1];
+    target = picked.next; eff = picked.effects;
+  }
+  applyEffects(eff);
+  renderNode(target);
+}
+
+/* ---------- 结局 ---------- */
+function showEnding(node){
+  const tone = node.tone || 'gray';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = $('screen-ending');
+  el.classList.add('active');
+  el.className = 'screen active tone-' + tone;
+  $('end-tag').textContent = node.tag || '结局';
+  $('end-title').textContent = node.title;
+  $('end-divider').style.color = getComputedStyle($('end-title')).color;
+  $('end-text').innerHTML = (node.text || '').split('\n').map(p=>`<p>${escapeHtml(p)}</p>`).join('');
+  // 图鉴解锁（结局节点不覆盖存档，可回溯）
+  const g = loadGallery();
+  if(!g[node.endingId]){
+    g[node.endingId] = { title: node.title, tag: node.tag, tone: tone, epilogue: node.epilogue, hint: node.hint, at: new Date().toLocaleString('zh-CN') };
+    saveGallery(g);
+  }
+}
+
+/* ---------- 图鉴 ---------- */
+function renderGallery(){
+  const g = loadGallery();
+  const all = Object.keys(STORY.nodes).filter(k => STORY.nodes[k].type === 'ending').map(k => STORY.nodes[k]);
+  const unlocked = all.filter(n => g[n.endingId]).length;
+  $('g-count').innerHTML = `已解锁 <b>${unlocked}</b> / ${all.length} 个结局`;
+  $('gallery-grid').innerHTML = all.map(n => {
+    const u = g[n.endingId];
+    const tone = n.tone || 'gray';
+    if(u){
+      return `<div class="g-card tone-${tone}">
+        <div class="g-title">${n.title}</div>
+        <div class="g-tag">${n.tag}</div>
+        <div class="g-epi">${escapeHtml(n.epilogue || '')}</div>
+        <div class="g-time">${u.at}</div>
+      </div>`;
+    }
+    return `<div class="g-card locked">
+      <div class="g-title">？？？</div>
+      <div class="g-tag">未解锁</div>
+      <div class="g-hint">${escapeHtml(n.hint || '结局未明，重入轮回再探仙途。')}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- 流程 ---------- */
+function newGame(name, originId){
+  const origin = STORY.origins.find(o => o.id === originId);
+  state = {
+    name: name || '无名',
+    origin: originId,
+    stats: Object.assign({}, origin.stats),
+    realm: '凡人',
+    flags: [],
+    appliedEffects: [],
+    visited: [],
+    node: originId,
+    log: []
+  };
+  lastAct = null;
+  saveGame();
+  show('screen-story');
+  renderNode(originId);
+}
+
+function continueGame(){
+  const s = loadGame();
+  if(!s){ alert('没有找到存档。'); return; }
+  if(!Array.isArray(s.visited)) s.visited = (s.appliedEffects || []).slice(); // 兼容旧存档
+  state = s;
+  lastAct = null;
+  show('screen-story');
+  renderNode(s.node);
+}
+
+/* ---------- 路线图 ---------- */
+const ACT_ORDER = ['序章', '第一幕 · 入道', '第二幕 · 历练', '第三幕 · 终局', '第四幕 · 宗门风云', '第五幕 · 魔劫终局', '结局'];
+function actOf(id){
+  const n = STORY.nodes[id];
+  if(n.type === 'ending') return '结局';
+  return n.act || '序章';
+}
+function mapTitle(id){
+  const n = STORY.nodes[id];
+  if(n.type === 'ending') return n.title;
+  const first = (n.text || '').split('\n')[0].replace(/[「」『』《》]/g, '').trim();
+  return first.length > 11 ? first.slice(0, 11) + '…' : first;
+}
+function renderMap(){
+    const visited = state.visited || [];
+    // BFS 分层 + 幕传播（act 只写在幕首节点，子节点继承所属幕）
+    const level = {};
+    const actMap = {};
+    const order = [];
+    const q = STORY.origins.map(o => o.id);
+    q.forEach(id => { level[id] = 0; actMap[id] = '序章'; });
+    const seen = {};
+    while(q.length){
+      const id = q.shift();
+      if(seen[id]) continue;
+      seen[id] = true; order.push(id);
+      const n = STORY.nodes[id];
+      const nexts = [];
+      (n.choices || []).forEach(c => {
+        if(c.next) nexts.push(c.next);
+        (c.random || []).forEach(r => { if(r.next) nexts.push(r.next); });
+      });
+      (n.random || []).forEach(r => { if(r.next) nexts.push(r.next); });
+      nexts.forEach(nid => {
+        if(!(nid in level)) level[nid] = level[id] + 1;
+        if(!(nid in actMap)){
+          const nn = STORY.nodes[nid];
+          actMap[nid] = nn.type === 'ending' ? '结局' : (nn.act || actMap[id]);
+        }
+        if(!seen[nid]) q.push(nid);
+      });
+    }
+    Object.keys(STORY.nodes).forEach(id => { if(!(id in level)) level[id] = 99; if(!(id in actMap)) actMap[id] = actOf(id); });
+    // 幕内排序（level 升序，保持 BFS 序）
+    const buckets = {};
+    order.forEach(id => { const a = actMap[id]; (buckets[a] = buckets[a] || []).push(id); });
+    ACT_ORDER.forEach(a => { if(!buckets[a]) buckets[a] = []; });
+  // 布局参数（幕带 × 层级：x = 剧情层级列，y = 幕带内竖排；每幕一条水平带，幕标签锚定带顶部）
+  const CW = 118, CH = 36, COL_GAP = 42, ROW_H = 54, ACT_GAP = 50;
+  const actIdx = {};
+  ACT_ORDER.forEach((a, i) => actIdx[a] = i);
+  // 每幕每列的节点数 → 幕带高度
+  const actColCount = {};
+  order.forEach(id => {
+    const a = actMap[id];
+    const m = actColCount[a] = actColCount[a] || {};
+    m[level[id]] = (m[level[id]] || 0) + 1;
+  });
+  const actTop = {};
+  let yCursor = 16;
+  ACT_ORDER.forEach(a => {
+    if(!actColCount[a]) return;
+    actTop[a] = yCursor;
+    const maxInCol = Math.max.apply(null, Object.values(actColCount[a]));
+    yCursor += 34 + maxInCol * ROW_H + ACT_GAP; // 34 = 幕标签行高
+  });
+  // 节点位置：x = level 列，y = 幕带内按列内顺序竖排
+  const colIdx = {};
+  const pos = {};
+  order.forEach(id => {
+    const a = actMap[id], lv = level[id];
+    const key = a + '|' + lv;
+    const i = colIdx[key] || 0;
+    colIdx[key] = i + 1;
+    pos[id] = { x: 24 + lv * (CW + COL_GAP), y: actTop[a] + 34 + i * ROW_H };
+  });
+  const maxLevel = Math.max.apply(null, order.map(id => level[id]));
+  const W = 24 + (maxLevel + 1) * (CW + COL_GAP);
+  const H = yCursor + 20;
+  // 边
+  const edges = [];
+  const seenEdge = {};
+  order.forEach(id => {
+    const n = STORY.nodes[id];
+    const nexts = [];
+    (n.choices || []).forEach(c => {
+      if(c.next) nexts.push(c.next);
+      (c.random || []).forEach(r => { if(r.next) nexts.push(r.next); });
+    });
+    (n.random || []).forEach(r => { if(r.next) nexts.push(r.next); });
+    nexts.forEach(t => {
+      const key = id + '>' + t;
+      if(!seenEdge[key] && pos[id] && pos[t]){ seenEdge[key] = 1; edges.push([id, t]); }
+    });
+  });
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
+  // 幕标签（锚定到对应幕带的正上方，标签下方就是该幕节点带）
+  ACT_ORDER.forEach(a => {
+    if(!actColCount[a]) return;
+    let minX = Infinity, maxX = -Infinity;
+    order.forEach(id => {
+      if(actMap[id] !== a) return;
+      if(pos[id].x < minX) minX = pos[id].x;
+      if(pos[id].x + CW > maxX) maxX = pos[id].x + CW;
+    });
+    const cx = (minX + maxX) / 2;
+    svg += `<line x1="${minX - 8}" y1="${actTop[a] + 27}" x2="${maxX + 8}" y2="${actTop[a] + 27}" stroke="rgba(201,168,106,.25)" stroke-width="1"/>`;
+    svg += `<text class="map-act-label" x="${cx}" y="${actTop[a] + 22}" text-anchor="middle">${a}</text>`;
+  });
+  // 边（先画，在节点下层）：前进边左→右；回跳边虚线；已解锁路径金色
+  edges.forEach(([f, t]) => {
+    const p = pos[f], q2 = pos[t];
+    const open = visited.indexOf(f) !== -1 && visited.indexOf(t) !== -1;
+    const back = level[t] <= level[f];
+    const x1 = p.x + CW, y1 = p.y + CH / 2, x2 = q2.x, y2 = q2.y + CH / 2;
+    const cls = back ? 'map-edge back' : (open ? 'map-edge open' : 'map-edge');
+    if(level[t] === level[f]){
+      svg += `<path class="${cls}" d="M${x1},${y1} C${x1 + 22},${y1} ${x2 - 22},${y2} ${x2},${y2}"/>`;
+    } else if(back){
+      const dy = Math.max(26, Math.abs(y2 - y1) / 2);
+      svg += `<path class="${cls}" d="M${x1},${y1} C${x1 + dy},${y1} ${x2 - dy},${y2} ${x2},${y2}"/>`;
+    } else {
+      const mid = (x1 + x2) / 2;
+      svg += `<path class="${cls}" d="M${x1},${y1} C${mid},${y1} ${mid},${y2} ${x2},${y2}"/>`;
+    }
+  });
+  // 节点（胶囊 + 场景标题）
+  order.forEach(id => {
+    const n = STORY.nodes[id];
+    const p = pos[id];
+    const isVis = visited.indexOf(id) !== -1;
+    const isCur = state.node === id;
+    const cls = ['map-node', n.type === 'ending' ? 'ending' : '', isVis ? 'visited' : 'locked', isCur ? 'current' : ''].join(' ');
+    const title = mapTitle(id);
+    svg += `<g class="${cls}" data-id="${id}">
+      <rect x="${p.x}" y="${p.y}" width="${CW}" height="${CH}" rx="9"/>
+      <text class="n-title" x="${p.x + CW / 2}" y="${p.y + CH / 2 + 4}" text-anchor="middle">${isVis ? '' : '🔒 '}${escapeHtml(title)}</text>
+      <text class="n-id" x="${p.x + CW / 2}" y="${p.y + CH + 14}" text-anchor="middle">${id}${isVis ? ' · 已行' : ''}</text>
+    </g>`;
+  });
+  svg += '</svg>';
+  $('map-wrap').innerHTML = svg;
+  const un = visited.length;
+  const total = Object.keys(STORY.nodes).length;
+  $('map-count').innerHTML = `已解锁 <b>${un}</b> / ${total} 个场景`;
+  // 点击回溯
+  document.querySelectorAll('#map-wrap .map-node.visited').forEach(g => {
+    g.addEventListener('click', () => {
+      const id = g.dataset.id;
+      const label = mapTitle(id);
+      if(!confirm(`回到「${label}」？此后的进度将回退到该场景，可重新选择。`)) return;
+      show('screen-story');
+      renderNode(id);
+    });
+  });
+}
+
+/* ---------- 事件绑定 ---------- */
+$('btn-new').addEventListener('click', () => show('screen-origin'));
+$('btn-continue').addEventListener('click', continueGame);
+$('btn-gallery').addEventListener('click', () => { renderGallery(); show('screen-gallery'); });
+$('btn-map-title').addEventListener('click', () => {
+  if(!state){ alert('尚未开始修行——先开始问道，才能绘制仙途路线图。'); return; }
+  renderMap(); show('screen-map');
+});
+$('btn-map-story').addEventListener('click', () => { renderMap(); show('screen-map'); });
+$('btn-map-back').addEventListener('click', () => show('screen-title'));
+$('btn-gallery-back').addEventListener('click', () => show('screen-title'));
+$('btn-end-gallery').addEventListener('click', () => { renderGallery(); show('screen-gallery'); });
+$('btn-again').addEventListener('click', () => {
+  if(confirm('再入轮回将清除当前存档，重新开始。')){ localStorage.removeItem(SAVE_KEY); show('screen-origin'); }
+});
+$('btn-back-save').addEventListener('click', () => {
+  const s = loadGame();
+  if(s){
+    show('screen-story');
+    renderNode(s.node);
+  } else {
+    newGame(state.name || '无名', state.origin || 'origin_hunter');
+  }
+});
+$('story-text').addEventListener('click', skipTyping);
+$('input-name').addEventListener('input', () => {
+  $('btn-start').disabled = !selectedOrigin;
+});
+
+let selectedOrigin = null;
+$('origin-cards').innerHTML = STORY.origins.map(o =>
+  `<div class="origin-card" data-id="${o.id}">
+    <h3>${o.name}</h3>
+    <p>${o.desc}</p>
+    <div class="stats">${STAT_KEYS.map(k => `${STAT_NAMES[k]} <b>${o.stats[k]}</b>`).join('　')}</div>
+  </div>`
+).join('');
+document.querySelectorAll('.origin-card').forEach(card => {
+  card.addEventListener('click', () => {
+    selectedOrigin = card.dataset.id;
+    document.querySelectorAll('.origin-card').forEach(c => c.classList.remove('sel'));
+    card.classList.add('sel');
+    $('btn-start').disabled = false;
+  });
+});
+$('btn-start').addEventListener('click', () => {
+  if(!selectedOrigin) return;
+  newGame($('input-name').value.trim() || '无名', selectedOrigin);
+});
+
+/* 继续按钮可用性 */
+if(!loadGame()){ $('btn-continue').style.display = 'none'; }
+</script>
+</body>
+</html>

@@ -30,6 +30,7 @@ const premium = readJson("etf-premium/data/dashboard.json");
 const qdii = readJson("qdii-similarity/data/dashboard.json");
 const bubble = readJson("bubble-monitor/bubble_data.json");
 const marketPulse = readJson("market-pulse/data/state.json");
+const ndx100Dashboard = readJson("ndx100-dashboard/data/meta.json");
 const bubbleTime = bubble.updated_at
   ? `${bubble.updated_at.replace(" ", "T")}+08:00`
   : null;
@@ -41,6 +42,7 @@ const timestamps = [
   generatedFromScript("backtest-lab/backtest_lab_data.js"),
   ndxTimestamp(),
   marketPulse.generated_at,
+  ndx100Dashboard.generated_at || ndx100Dashboard.last_success,
 ]
   .filter(Boolean)
   .map((value) => new Date(value))
@@ -65,6 +67,10 @@ const payload = {
     },
     "qdii-similarity": { updatedAt: qdii.generatedAt },
     "market-pulse": { updatedAt: marketPulse.generated_at },
+    "ndx100-dashboard": {
+      updatedAt:
+        ndx100Dashboard.generated_at || ndx100Dashboard.last_success || null,
+    },
   },
 };
 

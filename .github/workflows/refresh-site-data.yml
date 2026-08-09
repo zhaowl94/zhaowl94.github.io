@@ -6,10 +6,17 @@ on:
     - cron: "30 10 * * 1-5"
     # Weekly full QDII similarity rebuild (Monday 06:30 Asia/Shanghai).
     - cron: "30 22 * * 0"
+    # NDX 100 closes: weekday 06:20 Asia/Shanghai, after US market settlement.
+    - cron: "20 22 * * 1-5"
   workflow_dispatch:
     inputs:
       refresh_qdii:
         description: "Run the slower full QDII refresh"
+        required: false
+        default: false
+        type: boolean
+      refresh_ndx100:
+        description: "Refresh the NDX 100 constituent dashboard"
         required: false
         default: false
         type: boolean
@@ -33,6 +40,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     env:
       RUN_QDII: ${{ github.event.schedule == '30 22 * * 0' || (github.event_name == 'workflow_dispatch' && inputs.refresh_qdii == true) }}
+      RUN_NDX100: ${{ github.event.schedule == '20 22 * * 1-5' || (github.event_name == 'workflow_dispatch' && inputs.refresh_ndx100 == true) }}
     steps:
       - name: Check out repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -54,6 +62,14 @@ jobs:
           key: qdii-data-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             qdii-data-${{ runner.os }}-
+
+      - name: Restore latest NDX 100 constituent snapshot
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ndx100-dashboard/data
+          key: ndx100-data-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            ndx100-data-${{ runner.os }}-
 
       - name: Set up Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
@@ -84,6 +100,14 @@ jobs:
         if: env.RUN_QDII == 'true'
         run: python -m pip install akshare beautifulsoup4 lxml pandas numpy
 
+      - name: Install NDX 100 dashboard dependencies
+        if: env.RUN_NDX100 == 'true'
+        run: python -m pip install yfinance pandas-datareader pandas lxml
+
+      - name: Refresh NDX 100 constituent snapshot
+        if: env.RUN_NDX100 == 'true'
+        run: python scripts/update-ndx100-dashboard.py
+
       - name: Refresh QDII similarity snapshot
         if: env.RUN_QDII == 'true'
         run: python scripts/update-qdii-similarity-data.py --refresh --workers 4
@@ -96,6 +120,13 @@ jobs:
             qdii-similarity/data/dashboard.json
             scripts/qdii-cache
           key: qdii-data-${{ runner.os }}-${{ github.run_id }}
+
+      - name: Save latest NDX 100 constituent snapshot
+        if: env.RUN_NDX100 == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ndx100-dashboard/data
+          key: ndx100-data-${{ runner.os }}-${{ github.run_id }}
 
       - name: Update home-page status and validate snapshots
         run: |

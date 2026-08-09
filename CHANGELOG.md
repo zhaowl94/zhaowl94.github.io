@@ -6,7 +6,10 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- Information-rich market research home page with direct navigation to seven public tools.
+- Nasdaq-100 constituent analytics at `/ndx100-dashboard/`, with a cache-busting refresh button, offline browser cache, daily Actions refresh, and a complete initial snapshot.
+- Five standalone browser games at `/doudizhu/`, `/guandan/`, `/tank-battle/`, `/auction-king/`, and `/cultivation/`, each with a direct return path to the home page.
+- A dedicated home-page playground section that keeps games visually separate from research tools.
+- Information-rich home page with direct navigation to eight public research tools.
 - No-LLM Market Pulse at `/market-pulse/`, with delayed index snapshots, a deterministic four-factor Top 10, rolling bulletins, explicit source degradation, and cache-busting refresh.
 - Dedicated 15-minute GitHub Actions refresh and last-known-good cache handoff across every Pages deployment workflow.
 - Static GitHub Pages versions of the NDX valuation, bubble monitor, trend strategy, backtest lab, and QDII similarity dashboards.

@@ -1,10 +1,10 @@
 # zhaowl94.github.io
 
-A framework-free, tracking-free personal market research desk hosted on GitHub Pages.
+A framework-free, tracking-free personal research desk and browser playground hosted on GitHub Pages.
 
 Live site: [https://zhaowl94.github.io/](https://zhaowl94.github.io/)
 
-The home page links seven public tools: cross-border ETF premiums, Nasdaq-100 valuation, a multi-source bubble monitor, an ETF trend strategy, an interactive allocation backtest, QDII fund similarity, and a deterministic US Market Pulse.
+The home page links eight public research tools, including a daily Nasdaq-100 constituent dashboard, plus five standalone browser games: Dou Dizhu, Guan Dan, Tank Battle, Auction King, and a branching cultivation story.
 
 GitHub Pages is static, so page-level refresh buttons fetch the newest published snapshot without browser caching. Scheduled GitHub Actions perform the upstream collection and computation, retain last-known-good values when a source fails, validate all outputs, and deploy the complete site.
 
@@ -14,6 +14,7 @@ GitHub Pages is static, so page-level refresh buttons fetch the newest published
 - Only public market and fund data is included in deployable snapshots.
 - The local asset and investment ledgers are intentionally excluded from this repository's public routes, sitemap, and Pages artifact.
 - Market Pulse uses no LLM or API key. Its public snapshot contains two index summaries, a deterministic Top 10, rolling bulletins, and source health rather than the full raw quote universe.
+- Browser-game saves stay on the visitor's device and are never uploaded.
 
 ## Market Pulse refresh
 

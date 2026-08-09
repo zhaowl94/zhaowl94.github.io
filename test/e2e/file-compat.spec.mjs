@@ -19,7 +19,8 @@ test("home remains useful when opened directly from the filesystem", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
   ).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(7);
+  await expect(page.locator(".tool-card")).toHaveCount(8);
+  await expect(page.locator(".game-card")).toHaveCount(5);
   await expect(page.locator("#site-updated")).toContainText("直接打开模式");
   expect(errors).toEqual([]);
 });

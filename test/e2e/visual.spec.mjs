@@ -5,7 +5,8 @@ test("desktop tool grid keeps the featured dashboard full width", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/index.html");
-  await expect(page.locator(".tool-card")).toHaveCount(7);
+  await expect(page.locator(".tool-card")).toHaveCount(8);
+  await expect(page.locator(".game-card")).toHaveCount(5);
   const featured = await page
     .locator(".tool-card-featured")
     .evaluate((element) => getComputedStyle(element).gridColumn);
@@ -30,6 +31,10 @@ test("mobile tool grid collapses to one column without horizontal overflow", asy
   }));
   expect(layout.columns).toBe(1);
   expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth);
+  await expect(page.locator(".playground-grid")).toHaveCSS(
+    "grid-template-columns",
+    /\d+(?:\.\d+)?px/u,
+  );
 });
 
 test("dark theme keeps cards and text visibly distinct", async ({ page }) => {

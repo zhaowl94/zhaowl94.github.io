@@ -7,7 +7,8 @@ test("home exposes all tool links without JavaScript", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
   ).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(7);
+  await expect(page.locator(".tool-card")).toHaveCount(8);
+  await expect(page.locator(".game-card")).toHaveCount(5);
   await expect(page.locator("#projects")).toHaveCount(0);
   await expect(page.locator(".noscript-note")).toBeVisible();
 });

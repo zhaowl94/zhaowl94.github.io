@@ -12,6 +12,8 @@ const premium = readJson("etf-premium/data/dashboard.json");
 const qdii = readJson("qdii-similarity/data/dashboard.json");
 const bubble = readJson("bubble-monitor/bubble_data.json");
 const marketPulse = readJson("market-pulse/data/state.json");
+const ndx100Meta = readJson("ndx100-dashboard/data/meta.json");
+const ndx100Quotes = readJson("ndx100-dashboard/data/quotes.json");
 const status = readJson("data/tool-status.json");
 const strategy = fs.readFileSync("strategy-monitor/strategy_data.js", "utf8");
 const backtest = fs.readFileSync("backtest-lab/backtest_lab_data.js", "utf8");
@@ -50,8 +52,12 @@ assert(
   "Market Pulse snapshot is incomplete or unexpectedly uses a model",
 );
 assert(
-  Object.keys(status.tools || {}).length === 7,
-  "Home status must describe all seven public tools",
+  ndx100Meta.ticker_count >= 80 && Object.keys(ndx100Quotes).length >= 80,
+  "NDX 100 dashboard snapshot is incomplete",
+);
+assert(
+  Object.keys(status.tools || {}).length === 8,
+  "Home status must describe all eight public research tools",
 );
 
 console.log(
@@ -60,6 +66,7 @@ console.log(
     qdiiFunds: qdii.funds.length,
     bubbleDate: bubble.updated_at,
     marketPulseCandidates: marketPulse.candidate_count,
+    ndx100Tickers: ndx100Meta.ticker_count,
     tools: Object.keys(status.tools).length,
   }),
 );
