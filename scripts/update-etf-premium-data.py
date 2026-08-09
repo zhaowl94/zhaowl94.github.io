@@ -25,6 +25,7 @@ DEFAULT_OUTPUT = ROOT / "etf-premium" / "data" / "dashboard.json"
 CHINA_TZ = timezone(timedelta(hours=8))
 SPOT_URL = "https://push2delay.eastmoney.com/api/qt/clist/get"
 HISTORY_URL = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+TENCENT_HISTORY_URL = "https://web.ifzq.gtimg.cn/appstock/app/kline/kline"
 NAV_URL = "https://fund.eastmoney.com/pingzhongdata/{code}.js"
 NAV_PATTERN = re.compile(r"Data_netWorthTrend\s*=\s*(\[.*?\])\s*;", re.DOTALL)
 
@@ -228,7 +229,7 @@ def discover() -> tuple[list[dict[str, Any]], list[str]]:
     ], warnings
 
 
-def fetch_prices(code: str, client: requests.Session) -> list[dict[str, Any]]:
+def fetch_prices_eastmoney(code: str, client: requests.Session) -> list[dict[str, Any]]:
     market_id = 1 if code.startswith(("5", "6")) else 0
     params = {
         "fields1": "f1,f2,f3,f4,f5,f6",
@@ -259,6 +260,59 @@ def fetch_prices(code: str, client: requests.Session) -> list[dict[str, Any]]:
     if not result:
         raise DataSourceError(f"{code} price history is empty")
     return result
+
+
+def fetch_prices_tencent(
+    code: str,
+    client: requests.Session,
+    start_date: str | None = None,
+) -> list[dict[str, Any]]:
+    symbol = f"{'sh' if code.startswith(('5', '6')) else 'sz'}{code}"
+    today = datetime.now(CHINA_TZ).date()
+    if start_date:
+        start = datetime.fromisoformat(start_date).date() - timedelta(days=21)
+    else:
+        start = today - timedelta(days=1_300)
+    params = {
+        "param": f"{symbol},day,{start.isoformat()},{today.isoformat()},640",
+    }
+    response = client.get(TENCENT_HISTORY_URL, params=params, timeout=30)
+    response.raise_for_status()
+    data = response.json().get("data") or {}
+    container = data.get(symbol) or {}
+    lines = container.get("day") or container.get("qfqday") or []
+    result = []
+    for line in lines:
+        if len(line) < 6 or as_float(line[2]) is None:
+            continue
+        result.append(
+            {
+                "date": date_field(line[0]),
+                "close": as_float(line[2]),
+                "volume": as_float(line[5]),
+                "turnover": None,
+            }
+        )
+    if not result:
+        raise DataSourceError(f"{code} Tencent price history is empty")
+    return result
+
+
+def fetch_prices(
+    code: str,
+    client: requests.Session,
+    start_date: str | None = None,
+) -> tuple[list[dict[str, Any]], str]:
+    errors = []
+    try:
+        return fetch_prices_eastmoney(code, client), "东方财富 ETF 历史行情"
+    except Exception as exc:
+        errors.append(f"EastMoney: {exc}")
+    try:
+        return fetch_prices_tencent(code, client, start_date), "腾讯证券公开日线"
+    except Exception as exc:
+        errors.append(f"Tencent: {exc}")
+    raise DataSourceError(f"{code} price sources failed: {'; '.join(errors)}")
 
 
 def fetch_navs(code: str, client: requests.Session) -> list[dict[str, Any]]:
@@ -348,21 +402,42 @@ def fetch_one(
     fund: dict[str, Any], existing: dict[str, Any] | None
 ) -> tuple[dict[str, Any] | None, str | None, bool]:
     try:
+        existing_series = list((existing or {}).get("series") or [])
+        existing_end = (existing or {}).get("stats", {}).get("end_date")
+        if not existing_end and existing_series:
+            existing_end = existing_series[-1].get("date")
         with session() as client:
-            prices = fetch_prices(fund["code"], client)
+            prices, price_source = fetch_prices(fund["code"], client, existing_end)
             navs = fetch_navs(fund["code"], client)
-        series = merge_series(prices, navs)
+        fresh_series = merge_series(prices, navs)
+        series_by_date = {item["date"]: item for item in existing_series}
+        for item in fresh_series:
+            previous = series_by_date.get(item["date"], {})
+            series_by_date[item["date"]] = {
+                **previous,
+                **{key: value for key, value in item.items() if value is not None},
+            }
+        series = sorted(series_by_date.values(), key=lambda item: item["date"])
         if not series:
             raise DataSourceError("no same-date price and NAV observations")
+        metadata = dict(existing or {})
+        metadata.update(
+            {
+                key: value
+                for key, value in fund.items()
+                if value is not None or key in {"code", "name", "group", "market"}
+            }
+        )
         return (
             {
-                **fund,
+                **metadata,
                 "series": series,
                 "stats": stats(series),
                 "source_counts": {
                     "price_days": len(prices),
                     "nav_days": len(navs),
                     "matched_days": len(series),
+                    "price_source": price_source,
                 },
                 "history_updated_at": now_iso(),
             },
@@ -420,6 +495,8 @@ def build(output: Path) -> bool:
             print(f"[{done:02d}/{len(targets):02d}] {fund['code']} {fund['name']}")
 
     if refreshed == 0 and existing_payload and existing_payload.get("ready"):
+        for warning in warnings[-20:]:
+            print(f"WARNING: {warning}")
         print("No source refreshed; keeping the previously published dataset.")
         return False
 
@@ -439,7 +516,11 @@ def build(output: Path) -> bool:
             "historical": "(A股ETF未复权收盘价 ÷ 同一净值日期的单位净值 - 1) × 100%",
             "live": "(最新成交价 ÷ IOPV实时估值 - 1) × 100%",
             "join": "仅保留收盘价与官方单位净值日期完全一致的观测",
-            "sources": ["东方财富 ETF 行情", "天天基金公开单位净值"],
+            "sources": [
+                "东方财富 ETF 行情",
+                "腾讯证券公开日线（历史行情备用）",
+                "天天基金公开单位净值",
+            ],
         },
     }
     atomic_write(output, payload)
