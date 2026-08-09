@@ -21,6 +21,7 @@ All notable changes to this project are documented here.
 
 ### Changed
 
+- Redesigned the public home page as a compact dashboard launcher aligned with the child pages' panels, navigation, typography, and status patterns.
 - Reframed the former project portfolio as a privacy-aware market research desk and removed the legacy open-source project index from the home page.
 - Explicitly excluded local personal asset and investment ledgers from all public routes and deployment artifacts.
 - Updated three transitive development dependencies to patched releases required by the repository security audit.

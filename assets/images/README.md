@@ -1,5 +1,15 @@
 # Visual assets
 
+## `social-preview-dashboard.png`
+
+Generated with the built-in ImageGen mode for the home page's Open Graph preview, then resized to 1200×630 for predictable social-card rendering.
+
+Prompt summary:
+
+> A polished wide financial-research dashboard on a light blue-gray canvas, with white data panels, navy and teal accents, restrained market charts and browser-game symbols; exact text “zhaowl94”, “研究与游戏工具台”, and “8 RESEARCH TOOLS · 5 BROWSER GAMES”; no people, third-party logos, device mockups or watermarks.
+
+The generated source was copied into this repository without relying on an external image host. Copyright (c) 2026 zhaowl94. All rights reserved.
+
 ## `social-preview.png`
 
 Generated with the built-in ImageGen mode for the repository's Open Graph preview.

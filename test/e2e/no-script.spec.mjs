@@ -5,7 +5,7 @@ test.use({ javaScriptEnabled: false });
 test("home exposes all tool links without JavaScript", async ({ page }) => {
   await page.goto("/index.html");
   await expect(
-    page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
+    page.getByRole("heading", { level: 1, name: /研究市场/ }),
   ).toBeVisible();
   await expect(page.locator(".tool-card")).toHaveCount(8);
   await expect(page.locator(".game-card")).toHaveCount(5);

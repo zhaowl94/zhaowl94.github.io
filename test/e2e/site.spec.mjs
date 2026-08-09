@@ -23,10 +23,10 @@ test("home page presents eight research tools and five games", async ({
 }) => {
   await page.goto("/index.html");
 
-  await expect(page).toHaveTitle("zhaowl94 · 市场研究工具台");
+  await expect(page).toHaveTitle("zhaowl94 · 研究与游戏工具台");
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await expect(
-    page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
+    page.getByRole("heading", { level: 1, name: /研究市场/ }),
   ).toBeVisible();
   await expect(page.locator(".tool-card")).toHaveCount(8);
   await expect(page.locator(".game-card")).toHaveCount(5);
@@ -93,7 +93,7 @@ test("reduced motion disables meaningful transition duration", async ({
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.001);
 });
 
-test("dark color scheme uses the research-desk dark token", async ({
+test("system dark preference keeps the shared dashboard palette", async ({
   page,
 }) => {
   await page.emulateMedia({ colorScheme: "dark" });
@@ -103,7 +103,7 @@ test("dark color scheme uses the research-desk dark token", async ({
       .getPropertyValue("--paper")
       .trim(),
   );
-  expect(background).toBe("#101512");
+  expect(background).toBe("#eef3f5");
 });
 
 test("404 page provides explicit exits without redirecting", async ({
