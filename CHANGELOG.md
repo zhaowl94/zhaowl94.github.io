@@ -21,6 +21,7 @@ All notable changes to this project are documented here.
 
 ### Changed
 
+- Clarified the Market Pulse snapshot-loading copy and added a timeout-backed failure state instead of leaving the page on a misleading local-file message.
 - Redesigned the public home page as a compact dashboard launcher aligned with the child pages' panels, navigation, typography, and status patterns.
 - Reframed the former project portfolio as a privacy-aware market research desk and removed the legacy open-source project index from the home page.
 - Explicitly excluded local personal asset and investment ledgers from all public routes and deployment artifacts.

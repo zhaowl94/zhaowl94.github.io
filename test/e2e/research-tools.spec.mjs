@@ -61,6 +61,7 @@ test("published market snapshots render substantive data", async ({ page }) => {
   await page.goto("/market-pulse/");
   await expect(page.locator("#rankingRows tr")).toHaveCount(10);
   await expect(page.locator("#indexCards .index-card")).toHaveCount(2);
+  await expect(page.locator("#load-status")).toHaveText("网站发布快照已就绪");
   const coverage = await page.locator("#coverageCount").textContent();
   const [candidates, universe] = coverage.match(/\d+/gu).map(Number);
   expect(candidates).toBeGreaterThanOrEqual(60);
@@ -71,6 +72,20 @@ test("published market snapshots render substantive data", async ({ page }) => {
   await page.getByRole("button", { name: "刷新行情数据" }).click();
   await expect(page.locator("#chartsArea")).toBeVisible();
   await expect(page.locator("#metricCards .metric-card")).toHaveCount(8);
+});
+
+test("Market Pulse replaces loading copy with a useful failure state", async ({
+  page,
+}) => {
+  await page.route("**/market-pulse/data/state.json*", (route) =>
+    route.abort("failed"),
+  );
+  await page.goto("/market-pulse/");
+  await expect(page.locator("#sessionLabel")).toHaveText("快照暂不可用");
+  await expect(page.locator("#load-status")).toHaveText(
+    "暂时无法读取已发布快照，请点击“刷新最新快照”重试。",
+  );
+  await expect(page.locator("#refreshSnapshot")).toBeEnabled();
 });
 
 test("every tool exposes an appropriate refresh control", async ({ page }) => {

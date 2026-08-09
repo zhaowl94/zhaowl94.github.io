@@ -188,6 +188,11 @@ h1 {
   box-shadow: 0 0 0 0.3rem rgb(200 255 88 / 14%);
 }
 
+.session-dot.error {
+  background: var(--red);
+  box-shadow: 0 0 0 0.3rem rgb(255 123 120 / 14%);
+}
+
 .session-strip dl {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
