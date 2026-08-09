@@ -6,6 +6,8 @@
 
 上线地址：[https://zhaowl94.github.io/](https://zhaowl94.github.io/)
 
+跨境 ETF 溢价看板：[https://zhaowl94.github.io/etf-premium/](https://zhaowl94.github.io/etf-premium/)
+
 ## 设计边界
 
 - 只使用公开账号名 `zhaowl94`，不展示真实姓名、邮箱、电话、所在地或私人经历。
@@ -24,8 +26,15 @@
 │   ├── images/
 │   ├── scripts/
 │   └── styles/
+├── etf-premium/
+│   ├── data/
+│   ├── vendor/
+│   ├── app.js
+│   ├── index.html
+│   └── styles.css
 ├── scripts/
-│   └── Lighthouse 检查
+│   ├── Lighthouse 检查
+│   └── ETF 溢价快照生成器
 ├── test/
 │   ├── e2e/
 │   ├── scripts/
@@ -47,6 +56,8 @@ npm.cmd run serve
 ```
 
 然后访问 [http://127.0.0.1:4173/](http://127.0.0.1:4173/)。
+
+ETF 看板需通过本地 HTTP 读取 JSON 快照，访问 [http://127.0.0.1:4173/etf-premium/](http://127.0.0.1:4173/etf-premium/)。历史溢价率按“未复权收盘价 ÷ 同日官方单位净值 − 1”计算；GitHub Actions 在每个工作日北京时间 18:30 尝试更新静态数据，数据源暂时不可用时继续发布上次成功快照。
 
 项目要求 Node.js 24 LTS。所有工具均安装在仓库内，不要求全局 npm 包，也不会修改 Windows 环境变量、执行策略或全局 Git 配置。
 
@@ -73,7 +84,7 @@ Lighthouse 的 performance、accessibility、best practices 和 SEO 阈值均为
 
 ## 发布
 
-Pull Request 必须通过 Windows、Ubuntu、浏览器矩阵和 Lighthouse。合并到 `master` 后，GitHub Actions 会重新验证并将仓库中的静态源码直接部署到 GitHub Pages，不生成或提交另一份站点源码。
+Pull Request 必须通过 Windows、Ubuntu、浏览器矩阵和 Lighthouse。合并到 `master` 后，GitHub Actions 会重新验证并将仓库中的静态源码直接部署到 GitHub Pages，不生成或提交另一份站点源码。ETF 数据刷新工作流也可在 Actions 页面手动触发。
 
 ## 开发说明
 

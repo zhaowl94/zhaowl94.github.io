@@ -4,7 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-No unreleased changes.
+### Added
+
+- Static Nasdaq-100 and S&P 500 ETF premium dashboard at `/etf-premium/`, with historical charts, ranking, filters, and CSV export.
+- Weekday GitHub Actions refresh and Pages deployment for the generated ETF premium snapshot, with last-known-good fallback behavior.
+- Browser coverage for dashboard data loading, interaction, privacy, responsive layout, and WCAG accessibility.
+
+### Changed
+
+- Updated three transitive development dependencies to patched releases required by the repository security audit.
 
 ## [1.0.0] - 2026-07-31
 
