@@ -183,6 +183,24 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
+      - name: Restore latest Market Pulse snapshot
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: market-pulse/data/state.json
+          key: market-pulse-data-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            market-pulse-data-${{ runner.os }}-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+
+      - name: Rebuild home-page status from restored snapshots
+        run: |
+          node scripts/update-tool-status.mjs
+          node scripts/validate-site-data.mjs
+
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
         with:

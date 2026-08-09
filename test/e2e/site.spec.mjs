@@ -7,9 +7,10 @@ const toolRoutes = [
   "strategy-monitor",
   "backtest-lab",
   "qdii-similarity",
+  "market-pulse",
 ];
 
-test("home page presents the six-tool research desk", async ({ page }) => {
+test("home page presents the seven-tool research desk", async ({ page }) => {
   await page.goto("/index.html");
 
   await expect(page).toHaveTitle("zhaowl94 · 市场研究工具台");
@@ -17,7 +18,7 @@ test("home page presents the six-tool research desk", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
   ).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(6);
+  await expect(page.locator(".tool-card")).toHaveCount(7);
   await expect(page.locator(".project-list a")).toHaveCount(5);
   await expect(page.locator("#site-updated")).not.toContainText("正在读取");
 });

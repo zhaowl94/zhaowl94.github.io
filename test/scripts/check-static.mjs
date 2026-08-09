@@ -13,6 +13,7 @@ const toolRoutes = [
   "strategy-monitor",
   "backtest-lab",
   "qdii-similarity",
+  "market-pulse",
 ];
 const requiredFiles = [
   ".nojekyll",
@@ -38,6 +39,7 @@ const requiredFiles = [
   "strategy-monitor/strategy_data.js",
   "backtest-lab/backtest_lab_data.js",
   "qdii-similarity/data/dashboard.json",
+  "market-pulse/data/state.json",
 ];
 const criticalFiles = [
   "index.html",
@@ -93,8 +95,8 @@ function assertSafeRuntimeMarkup(pages) {
 }
 
 function assertHomeStructure(html) {
-  if ((html.match(/class="tool-card(?:\s|"|$)/gu) ?? []).length !== 6) {
-    throw new Error("The home page must contain exactly six tool cards.");
+  if ((html.match(/class="tool-card(?:\s|"|$)/gu) ?? []).length !== 7) {
+    throw new Error("The home page must contain exactly seven tool cards.");
   }
   for (const route of toolRoutes) {
     if (!html.includes(`href="${route}/"`))
@@ -113,10 +115,10 @@ function assertStructuredData(html) {
   const data = JSON.parse(match[1]);
   if (
     data["@type"] !== "CollectionPage" ||
-    data.mainEntity?.numberOfItems !== 6 ||
-    data.mainEntity?.itemListElement?.length !== 6
+    data.mainEntity?.numberOfItems !== 7 ||
+    data.mainEntity?.itemListElement?.length !== 7
   ) {
-    throw new Error("JSON-LD does not describe the six-tool collection.");
+    throw new Error("JSON-LD does not describe the seven-tool collection.");
   }
 }
 

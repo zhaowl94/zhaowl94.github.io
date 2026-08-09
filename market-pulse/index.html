@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="无需 LLM 的美股市场脉搏：纳指 100、标普 500、规则 Top 10、异动播报与数据源健康。"
+    />
+    <meta name="theme-color" content="#08110f" />
+    <link rel="canonical" href="https://zhaowl94.github.io/market-pulse/" />
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>美股市场脉搏 · 无 LLM 规则快照 · zhaowl94</title>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <nav class="hub-nav" aria-label="研究工具导航">
+      <a href="../">zhaowl94 研究工具台</a>
+      <span class="hub-nav-links"
+        ><a href="../bubble-monitor/">泡沫监控</a
+        ><a href="../strategy-monitor/">趋势策略</a
+        ><a href="../">全部工具</a></span
+      >
+    </nav>
+    <p class="snapshot-explainer">
+      页面不直连行情接口；GitHub Actions
+      生成延迟快照，按钮只绕过缓存读取最新发布版本。
+    </p>
+
+    <main id="main-content" class="pulse-shell">
+      <header class="masthead">
+        <div class="masthead-copy">
+          <p class="eyebrow"><span>MARKET PULSE / 07</span> STATIC · NO LLM</p>
+          <h1>美股市场脉搏</h1>
+          <p class="lede">
+            用四维确定性规则，从核心成分中筛出正在影响指数的十只股票；没有模型推理、没有密钥，也不保存访问者数据。
+          </p>
+        </div>
+        <div class="masthead-actions">
+          <button id="refreshSnapshot" class="refresh-button" type="button">
+            刷新最新快照 <span aria-hidden="true">↻</span>
+          </button>
+          <a href="#method">查看评分口径 ↓</a>
+        </div>
+      </header>
+
+      <section class="session-strip" aria-label="快照状态">
+        <div>
+          <span id="sessionDot" class="session-dot" aria-hidden="true"></span>
+          <strong id="sessionLabel">正在读取快照…</strong>
+        </div>
+        <dl>
+          <div>
+            <dt>行情时点</dt>
+            <dd id="marketTimestamp">--</dd>
+          </div>
+          <div>
+            <dt>快照生成</dt>
+            <dd id="generatedTimestamp">--</dd>
+          </div>
+          <div>
+            <dt>候选覆盖</dt>
+            <dd id="coverageCount">--</dd>
+          </div>
+        </dl>
+        <p id="load-status" role="status" aria-live="polite">
+          正在加载本地数据文件…
+        </p>
+      </section>
+
+      <section
+        id="indexCards"
+        class="index-grid"
+        aria-label="主要指数"
+      ></section>
+
+      <div class="dashboard-grid">
+        <section class="panel ranking-panel" aria-labelledby="ranking-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-code">01 / RULE-BASED TOP 10</p>
+              <h2 id="ranking-title">当前影响榜</h2>
+            </div>
+            <p>按指数影响、价格异动、成交节奏与日内振幅排序</p>
+          </div>
+          <div
+            class="table-scroll"
+            tabindex="0"
+            aria-label="横向滚动查看完整影响榜"
+          >
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">排名 / 股票</th>
+                  <th scope="col">现价</th>
+                  <th scope="col">日变动</th>
+                  <th scope="col">5 分钟</th>
+                  <th scope="col">指数权重</th>
+                  <th scope="col">规则分</th>
+                  <th scope="col">最近走势</th>
+                </tr>
+              </thead>
+              <tbody id="rankingRows"></tbody>
+            </table>
+          </div>
+          <p class="table-note">
+            “规则分”是本批候选的相对排序，不代表上涨概率或买卖建议。
+          </p>
+        </section>
+
+        <aside
+          id="method"
+          class="panel method-panel"
+          aria-labelledby="method-title"
+        >
+          <p class="section-code">02 / DETERMINISTIC METHOD</p>
+          <h2 id="method-title">四维规则，不调用模型</h2>
+          <p>
+            每个维度先转为候选池内百分位，再按固定权重合成；每次快照最多替换榜单中的三只股票，降低短时抖动。
+          </p>
+          <div id="methodWeights" class="weight-list"></div>
+          <dl class="method-facts">
+            <div>
+              <dt>模型调用</dt>
+              <dd id="modelUsed">--</dd>
+            </div>
+            <div>
+              <dt>榜单替换上限</dt>
+              <dd id="replacementLimit">--</dd>
+            </div>
+            <div>
+              <dt>计划刷新</dt>
+              <dd id="scheduledInterval">--</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+
+      <section class="panel bulletin-panel" aria-labelledby="bulletin-title">
+        <div class="panel-heading">
+          <div>
+            <p class="section-code">03 / ROLLING BULLETIN</p>
+            <h2 id="bulletin-title">市场播报</h2>
+          </div>
+          <p>仅保留派生结论与主要异动，不公开全量原始行情</p>
+        </div>
+        <ol id="bulletinFeed" class="bulletin-feed"></ol>
+      </section>
+
+      <section class="panel source-panel" aria-labelledby="source-title">
+        <div class="panel-heading">
+          <div>
+            <p class="section-code">04 / SOURCE HEALTH</p>
+            <h2 id="source-title">数据链路</h2>
+          </div>
+          <p>接口波动时优先沿用有效缓存，并在这里明确显示降级原因</p>
+        </div>
+        <div id="sourceGrid" class="source-grid"></div>
+      </section>
+
+      <footer class="page-footer">
+        <p>
+          数据为公开延迟行情与派生规则结果，可能存在延迟、缺失或调整；仅供个人研究，不构成投资建议。
+        </p>
+        <a href="../">← 返回研究工具台</a>
+      </footer>
+    </main>
+  </body>
+</html>

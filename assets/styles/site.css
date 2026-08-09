@@ -566,6 +566,73 @@ h1 em {
   color: rgb(255 255 255 / 84%);
 }
 
+.tool-card-pulse {
+  grid-column: 1 / -1;
+  min-height: 27rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.7fr);
+  column-gap: 4rem;
+  background: #101d19;
+}
+
+.tool-card-pulse .tool-topline,
+.tool-card-pulse .tool-footer {
+  grid-column: 1 / -1;
+}
+
+.tool-card-pulse .tool-copy > p:not(.tool-kicker),
+.tool-card-pulse .tool-footer span {
+  color: rgb(255 255 255 / 70%);
+}
+
+.tool-card-pulse .tool-kicker {
+  color: #c8ff58;
+}
+
+.tool-card-pulse .tool-tags li {
+  border-color: rgb(200 255 88 / 55%);
+}
+
+.pulse-motif {
+  display: flex;
+  min-height: 11rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 2rem 1rem;
+}
+
+.pulse-motif i {
+  width: 0.48rem;
+  height: 12%;
+  background: #c8ff58;
+}
+
+.pulse-motif i:nth-child(2),
+.pulse-motif i:nth-child(9) {
+  height: 28%;
+}
+
+.pulse-motif i:nth-child(3),
+.pulse-motif i:nth-child(7) {
+  height: 54%;
+}
+
+.pulse-motif i:nth-child(4) {
+  height: 90%;
+  background: #ff7654;
+}
+
+.pulse-motif i:nth-child(5),
+.pulse-motif i:nth-child(6) {
+  height: 40%;
+}
+
+.pulse-motif i:nth-child(8) {
+  height: 72%;
+  background: #6de0d1;
+}
+
 .thermometer {
   display: flex;
   align-items: end;
@@ -914,6 +981,11 @@ h1 em {
   }
 
   .tool-card-featured {
+    grid-column: auto;
+    display: flex;
+  }
+
+  .tool-card-pulse {
     grid-column: auto;
     display: flex;
   }

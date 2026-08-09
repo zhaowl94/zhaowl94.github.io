@@ -6,7 +6,9 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- Information-rich market research home page with direct navigation to six public tools.
+- Information-rich market research home page with direct navigation to seven public tools.
+- No-LLM Market Pulse at `/market-pulse/`, with delayed index snapshots, a deterministic four-factor Top 10, rolling bulletins, explicit source degradation, and cache-busting refresh.
+- Dedicated 15-minute GitHub Actions refresh and last-known-good cache handoff across every Pages deployment workflow.
 - Static GitHub Pages versions of the NDX valuation, bubble monitor, trend strategy, backtest lab, and QDII similarity dashboards.
 - Unified snapshot refresh workflow for ETF premium, NDX market data, bubble indicators, and weekly QDII similarity data.
 - Cache-busting refresh controls, shared tool navigation, compact home-page publication status, and cross-tool browser coverage.

@@ -15,6 +15,11 @@ const tools = [
     "QDII 基金相似度看板 · zhaowl94",
     /QDII 基金相似度看板/,
   ],
+  [
+    "/market-pulse/",
+    "美股市场脉搏 · 无 LLM 规则快照 · zhaowl94",
+    /美股市场脉搏/,
+  ],
 ];
 
 for (const [path, title, heading] of tools) {
@@ -47,6 +52,15 @@ test("published market snapshots render substantive data", async ({ page }) => {
 
   await page.goto("/ndx-valuation/");
   await expect(page.locator("#summary")).not.toBeEmpty();
+
+  await page.goto("/market-pulse/");
+  await expect(page.locator("#rankingRows tr")).toHaveCount(10);
+  await expect(page.locator("#indexCards .index-card")).toHaveCount(2);
+  const coverage = await page.locator("#coverageCount").textContent();
+  const [candidates, universe] = coverage.match(/\d+/gu).map(Number);
+  expect(candidates).toBeGreaterThanOrEqual(60);
+  expect(universe).toBeGreaterThanOrEqual(candidates);
+  await expect(page.locator("#modelUsed")).toHaveText("不使用");
 });
 
 test("every tool exposes an appropriate refresh control", async ({ page }) => {
@@ -57,6 +71,7 @@ test("every tool exposes an appropriate refresh control", async ({ page }) => {
     ["/strategy-monitor/", "刷新数据"],
     ["/backtest-lab/", "拉取最新数据"],
     ["/qdii-similarity/", "刷新最新快照"],
+    ["/market-pulse/", "刷新最新快照"],
   ];
   for (const [path, name] of controls) {
     await page.goto(path);
@@ -86,4 +101,8 @@ test("static refresh controls reload the newest published files", async ({
   await page.goto("/qdii-similarity/");
   await page.getByRole("button", { name: "刷新最新快照" }).click();
   await expect(page.locator("#progress-pct")).toHaveText("100%");
+
+  await page.goto("/market-pulse/");
+  await page.getByRole("button", { name: /刷新最新快照/ }).click();
+  await expect(page.locator("#load-status")).toContainText("已重新读取");
 });

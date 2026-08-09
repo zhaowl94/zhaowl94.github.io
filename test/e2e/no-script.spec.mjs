@@ -9,7 +9,7 @@ test("home exposes all tool and project links without JavaScript", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
   ).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(6);
+  await expect(page.locator(".tool-card")).toHaveCount(7);
   await expect(page.locator(".project-list a")).toHaveCount(5);
   await expect(page.locator(".noscript-note")).toBeVisible();
 });

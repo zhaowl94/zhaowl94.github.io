@@ -1,0 +1,391 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-09T08:48:11.617056Z",
+  "session": {
+    "status": "closed",
+    "label": "已收盘 · 展示最近有效快照",
+    "mode": "snapshot",
+    "timestamp": "2026-08-09T08:48:11.617056Z",
+    "market_timestamp": "2026-08-07T21:15:59Z",
+    "next_open": "2026-08-10T13:30:00Z",
+    "next_close": "2026-08-10T20:00:00Z",
+    "countdown_seconds": 103308,
+    "data_delay_seconds": 127932
+  },
+  "indices": [
+    {
+      "symbol": "^NDX",
+      "name": "纳指100",
+      "value": 29722.303,
+      "change_pct": 1.188,
+      "five_minute_change_pct": 0.0105,
+      "asof": "2026-08-07T21:15:59Z",
+      "source": "Yahoo Finance Spark · 公开延迟报价",
+      "is_proxy": false,
+      "stale": false
+    },
+    {
+      "symbol": "^GSPC",
+      "name": "标普500",
+      "value": 7757.64,
+      "change_pct": 0.6184,
+      "five_minute_change_pct": 0.0262,
+      "asof": "2026-08-07T20:50:24Z",
+      "source": "Yahoo Finance Spark · 公开延迟报价",
+      "is_proxy": false,
+      "stale": false
+    }
+  ],
+  "top10": [
+    {
+      "rank": 1,
+      "symbol": "PLTR",
+      "company_name": "PALANTIR TECHNOLOGIES INC A",
+      "chinese_name": "Palantir",
+      "price": 172.01,
+      "change_pct": 10.3194,
+      "five_minute_change_pct": 0.0058,
+      "volume_pace": null,
+      "index_weight": 1.258,
+      "score": 0.9471,
+      "tags": ["日内异动"],
+      "reason": "较前收变动+10.32%",
+      "sparkline": [
+        170.675, 170.6, 170.71, 170.545, 170.845, 170.92, 170.51, 170.1, 169.62,
+        169.325, 169.81, 170.42, 170.8, 170.7, 170.625, 170.855, 170.88, 170.77,
+        171.26, 171.025, 171.21, 172.025, 172.0, 172.01
+      ],
+      "asof": "2026-08-07T20:00:00Z",
+      "stale": false
+    },
+    {
+      "rank": 2,
+      "symbol": "STX",
+      "company_name": "SEAGATE TECHNOLOGY HOLDINGS",
+      "chinese_name": "SEAGATE TECHNOLOGY HOLDINGS",
+      "price": 812.76,
+      "change_pct": -4.7119,
+      "five_minute_change_pct": 0.0197,
+      "volume_pace": null,
+      "index_weight": 0.6723,
+      "score": 0.9061,
+      "tags": ["日内异动"],
+      "reason": "较前收变动-4.71%",
+      "sparkline": [
+        806.39, 806.01, 810.63, 810.21, 811.48, 812.035, 812.42, 811.612,
+        813.716, 814.97, 816.455, 815.735, 820.35, 820.505, 821.0, 821.955,
+        822.55, 823.63, 823.34, 817.25, 817.68, 816.834, 812.6, 812.76
+      ],
+      "asof": "2026-08-07T20:00:00Z",
+      "stale": false
+    },
+    {
+      "rank": 3,
+      "symbol": "TSLA",
+      "company_name": "TESLA INC",
+      "chinese_name": "特斯拉",
+      "price": 328.58,
+      "change_pct": 2.8323,
+      "five_minute_change_pct": -0.0015,
+      "volume_pace": null,
+      "index_weight": 3.1621,
+      "score": 0.8916,
+      "tags": ["指数高权重"],
+      "reason": "双指数代理权重约3.2%；较前收变动+2.83%",
+      "sparkline": [
+        328.003, 327.539, 327.1, 327.201, 327.005, 327.24, 327.05, 327.004,
+        327.32, 327.44, 327.6, 328.295, 328.99, 328.86, 328.54, 328.265, 328.36,
+        327.23, 327.22, 327.12, 327.4, 327.79, 328.585, 328.58
+      ],
+      "asof": "2026-08-07T20:00:00Z",
+      "stale": false
+    },
+    {
+      "rank": 4,
+      "symbol": "QCOM",
+      "company_name": "QUALCOMM INC",
+      "chinese_name": "高通",
+      "price": 167.86,
+      "change_pct": 4.6574,
+      "five_minute_change_pct": -0.006,
+      "volume_pace": null,
+      "index_weight": 0.5945,
+      "score": 0.8653,
+      "tags": ["日内异动"],
+      "reason": "较前收变动+4.66%",
+      "sparkline": [
+        167.615, 167.24, 167.109, 166.758, 166.485, 166.545, 166.715, 166.5,
+        166.52, 166.58, 166.72, 166.905, 167.35, 167.29, 167.12, 167.14,
+        167.215, 166.77, 167.05, 166.77, 166.84, 167.415, 167.87, 167.86
+      ],
+      "asof": "2026-08-07T20:00:00Z",
+      "stale": false
+    },
+    {
+      "rank": 5,
+      "symbol": "WDC",
+      "company_name": "WESTERN DIGITAL CORP",
+      "chinese_name": "WESTERN DIGITAL CORP",
+      "price": 434.3,
+      "change_pct": -3.8138,
+      "five_minute_change_pct": 0.0161,
+      "volume_pace": null,
+      "index_weight": 0.5471,
+      "score": 0.8435,
+      "tags": ["日内异动"],
+      "reason": "较前收变动-3.81%",
+      "sparkline": [
+        432.225, 431.18, 432.26, 432.203, 432.09, 432.575, 432.68, 431.865,
+        433.37, 433.005, 434.14, 434.05, 436.22, 436.215, 438.025, 439.06,
+        438.695, 436.27, 438.035, 437.175, 435.56, 433.26, 434.23, 434.3
+      ],
+      "asof": "2026-08-07T20:00:01Z",
+      "stale": false
+    },
+    {
+      "rank": 6,
+      "symbol": "SNDK",
+      "company_name": "SANDISK CORP",
+      "chinese_name": "SANDISK CORP",
+      "price": 1212.21,
+      "change_pct": -3.6843,
+      "five_minute_change_pct": -0.0989,
+      "volume_pace": null,
+      "index_weight": 0.655,
+      "score": 0.8382,
+      "tags": ["日内异动"],
+      "reason": "较前收变动-3.68%",
+      "sparkline": [
+        1228.365, 1224.47, 1228.37, 1226.25, 1224.355, 1227.86, 1224.925,
+        1222.5, 1226.99, 1226.42, 1230.345, 1228.67, 1232.83, 1226.78, 1224.75,
+        1223.53, 1224.455, 1213.77, 1216.64, 1212.453, 1212.89, 1215.96,
+        1213.41, 1212.21
+      ],
+      "asof": "2026-08-07T20:00:00Z",
+      "stale": false
+    },
+    {
+      "rank": 7,
+      "symbol": "MRVL",
+      "company_name": "MARVELL TECHNOLOGY INC",
+      "chinese_name": "迈威尔科技",
+      "price": 218.72,
+      "change_pct": 3.8852,
+      "five_minute_change_pct": 0.0274,
+      "volume_pace": null,
+      "index_weight": 0.648,
+      "score": 0.8334,
+      "tags": ["日内异动"],
+      "reason": "较前收变动+3.89%",
+      "sparkline": [
+        216.92, 217.26, 216.4, 216.59, 216.215, 215.96, 216.11, 216.23, 215.9,
+        216.767, 216.775, 217.035, 217.08, 218.18, 217.87, 217.875, 217.62,
+        217.93, 216.56, 216.98, 216.348, 216.5, 218.66, 218.72
+      ],
+      "asof": "2026-08-07T20:00:01Z",
+      "stale": false
+    },
+    {
+      "rank": 8,
+      "symbol": "V",
+      "company_name": "VISA INC CLASS A SHARES",
+      "chinese_name": "Visa",
+      "price": 362.5,
+      "change_pct": -2.1513,
+      "five_minute_change_pct": 0.0276,
+      "volume_pace": null,
+      "index_weight": 2.1613,
+      "score": 0.8157,
+      "tags": ["指数高权重"],
+      "reason": "双指数代理权重约2.2%；较前收变动-2.15%",
+      "sparkline": [
+        362.15, 362.065, 362.043, 362.275, 362.61, 362.455, 362.31, 362.33,
+        362.1, 362.265, 362.205, 362.36, 361.865, 362.14, 362.23, 362.359,
+        362.25, 363.015, 363.39, 363.19, 363.02, 362.16, 362.4, 362.5
+      ],
+      "asof": "2026-08-07T20:00:02Z",
+      "stale": false
+    },
+    {
+      "rank": 9,
+      "symbol": "NVDA",
+      "company_name": "NVIDIA CORP",
+      "chinese_name": "英伟达",
+      "price": 223.96,
+      "change_pct": 2.2695,
+      "five_minute_change_pct": -0.0089,
+      "volume_pace": null,
+      "index_weight": 18.6464,
+      "score": 0.8116,
+      "tags": ["指数高权重"],
+      "reason": "双指数代理权重约18.6%；较前收变动+2.27%",
+      "sparkline": [
+        222.165, 222.31, 221.945, 222.03, 221.975, 221.945, 221.88, 222.03,
+        221.89, 222.125, 222.28, 222.27, 222.33, 222.615, 222.85, 222.81,
+        223.04, 222.52, 222.985, 222.935, 222.862, 223.396, 223.98, 223.96
+      ],
+      "asof": "2026-08-07T20:00:00Z",
+      "stale": false
+    },
+    {
+      "rank": 10,
+      "symbol": "TXN",
+      "company_name": "TEXAS INSTRUMENTS INC",
+      "chinese_name": "德州仪器",
+      "price": 286.08,
+      "change_pct": 2.7586,
+      "five_minute_change_pct": 0.0,
+      "volume_pace": null,
+      "index_weight": 0.8909,
+      "score": 0.7785,
+      "tags": ["综合信号"],
+      "reason": "较前收变动+2.76%",
+      "sparkline": [
+        285.57, 285.19, 284.94, 284.51, 283.93, 284.25, 284.625, 284.245,
+        284.45, 284.62, 284.6, 284.92, 285.72, 285.622, 285.62, 285.195, 285.31,
+        284.765, 285.1, 284.96, 284.745, 285.575, 286.08, 286.08
+      ],
+      "asof": "2026-08-07T20:00:00Z",
+      "stale": false
+    }
+  ],
+  "feed": [
+    {
+      "timestamp": "2026-08-07T21:15:59Z",
+      "session_date": "2026-08-07",
+      "indices": [
+        {
+          "symbol": "^NDX",
+          "name": "纳指100",
+          "value": 29722.303,
+          "change_pct": 1.188,
+          "five_minute_change_pct": 0.0105,
+          "asof": "2026-08-07T21:15:59Z",
+          "source": "Yahoo Finance Spark · 公开延迟报价",
+          "is_proxy": false,
+          "stale": false
+        },
+        {
+          "symbol": "^GSPC",
+          "name": "标普500",
+          "value": 7757.64,
+          "change_pct": 0.6184,
+          "five_minute_change_pct": 0.0262,
+          "asof": "2026-08-07T20:50:24Z",
+          "source": "Yahoo Finance Spark · 公开延迟报价",
+          "is_proxy": false,
+          "stale": false
+        }
+      ],
+      "movers": [
+        {
+          "rank": 1,
+          "symbol": "PLTR",
+          "company_name": "PALANTIR TECHNOLOGIES INC A",
+          "chinese_name": "Palantir",
+          "price": 172.01,
+          "change_pct": 10.3194,
+          "five_minute_change_pct": 0.0058,
+          "volume_pace": null,
+          "index_weight": 1.258,
+          "score": 0.9471,
+          "tags": ["日内异动"],
+          "reason": "较前收变动+10.32%",
+          "sparkline": [
+            170.675, 170.6, 170.71, 170.545, 170.845, 170.92, 170.51, 170.1,
+            169.62, 169.325, 169.81, 170.42, 170.8, 170.7, 170.625, 170.855,
+            170.88, 170.77, 171.26, 171.025, 171.21, 172.025, 172.0, 172.01
+          ],
+          "asof": "2026-08-07T20:00:00Z",
+          "stale": false
+        },
+        {
+          "rank": 2,
+          "symbol": "STX",
+          "company_name": "SEAGATE TECHNOLOGY HOLDINGS",
+          "chinese_name": "SEAGATE TECHNOLOGY HOLDINGS",
+          "price": 812.76,
+          "change_pct": -4.7119,
+          "five_minute_change_pct": 0.0197,
+          "volume_pace": null,
+          "index_weight": 0.6723,
+          "score": 0.9061,
+          "tags": ["日内异动"],
+          "reason": "较前收变动-4.71%",
+          "sparkline": [
+            806.39, 806.01, 810.63, 810.21, 811.48, 812.035, 812.42, 811.612,
+            813.716, 814.97, 816.455, 815.735, 820.35, 820.505, 821.0, 821.955,
+            822.55, 823.63, 823.34, 817.25, 817.68, 816.834, 812.6, 812.76
+          ],
+          "asof": "2026-08-07T20:00:00Z",
+          "stale": false
+        },
+        {
+          "rank": 4,
+          "symbol": "QCOM",
+          "company_name": "QUALCOMM INC",
+          "chinese_name": "高通",
+          "price": 167.86,
+          "change_pct": 4.6574,
+          "five_minute_change_pct": -0.006,
+          "volume_pace": null,
+          "index_weight": 0.5945,
+          "score": 0.8653,
+          "tags": ["日内异动"],
+          "reason": "较前收变动+4.66%",
+          "sparkline": [
+            167.615, 167.24, 167.109, 166.758, 166.485, 166.545, 166.715, 166.5,
+            166.52, 166.58, 166.72, 166.905, 167.35, 167.29, 167.12, 167.14,
+            167.215, 166.77, 167.05, 166.77, 166.84, 167.415, 167.87, 167.86
+          ],
+          "asof": "2026-08-07T20:00:00Z",
+          "stale": false
+        }
+      ],
+      "state_line": "纳指100 +1.19%，标普500 +0.62%；规则榜首为Palantir（PLTR）。",
+      "major_event": false,
+      "trigger_reasons": [],
+      "data_status": "最近有效收盘"
+    }
+  ],
+  "sources": [
+    {
+      "source": "公开延迟行情",
+      "status": "ok",
+      "message": "覆盖80只成分；Yahoo Spark；可能延迟或限流",
+      "updated_at": "2026-08-09T08:48:11.617056Z"
+    },
+    {
+      "source": "SPY官方持仓",
+      "status": "ok",
+      "message": "503只；State Street官方权重",
+      "updated_at": "2026-08-09T08:48:11.617056Z"
+    },
+    {
+      "source": "纳指100成分",
+      "status": "degraded",
+      "message": "上游暂不可用，沿用缓存的100只成分",
+      "updated_at": "2026-08-09T08:48:11.617056Z"
+    },
+    {
+      "source": "确定性规则",
+      "status": "ok",
+      "message": "指数影响38% + 价格异动34% + 成交节奏18% + 日内振幅10%；不调用LLM",
+      "updated_at": "2026-08-09T08:48:11.617056Z"
+    }
+  ],
+  "candidate_count": 80,
+  "universe_count": 503,
+  "method": {
+    "name": "四维确定性规则",
+    "model_used": false,
+    "weights": {
+      "index_impact": 0.38,
+      "price_movement": 0.34,
+      "volume_pace": 0.18,
+      "intraday_range": 0.1
+    },
+    "replacement_limit": 3,
+    "scheduled_interval_minutes": 15
+  }
+}
