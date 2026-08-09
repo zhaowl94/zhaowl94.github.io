@@ -19,7 +19,8 @@ test("home page presents the seven-tool research desk", async ({ page }) => {
     page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
   ).toBeVisible();
   await expect(page.locator(".tool-card")).toHaveCount(7);
-  await expect(page.locator(".project-list a")).toHaveCount(5);
+  await expect(page.locator("#projects")).toHaveCount(0);
+  await expect(page.locator('.site-nav a[href="#projects"]')).toHaveCount(0);
   await expect(page.locator("#site-updated")).not.toContainText("正在读取");
 });
 

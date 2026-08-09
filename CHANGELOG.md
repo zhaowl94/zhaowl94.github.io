@@ -18,7 +18,7 @@ All notable changes to this project are documented here.
 
 ### Changed
 
-- Reframed the former project portfolio as a privacy-aware market research desk while retaining the public open-source project index.
+- Reframed the former project portfolio as a privacy-aware market research desk and removed the legacy open-source project index from the home page.
 - Explicitly excluded local personal asset and investment ledgers from all public routes and deployment artifacts.
 - Updated three transitive development dependencies to patched releases required by the repository security audit.
 - Added a Tencent daily-price fallback with non-destructive incremental merging when the primary historical-price endpoint is unavailable.
