@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="全市场 QDII 基金与三只参考基金的持仓、收益和指数相似度看板。"
+    />
+    <link rel="canonical" href="https://zhaowl94.github.io/qdii-similarity/" />
+    <title>QDII 基金相似度看板 · zhaowl94</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css" />
+  </head>
+  <body>
+    <nav class="hub-nav" aria-label="研究工具导航">
+      <a href="../">zhaowl94 研究工具台</a>
+      <span class="hub-nav-links"
+        ><a href="../etf-premium/">溢价温度计</a
+        ><a href="../strategy-monitor/">趋势策略</a
+        ><a href="../">全部工具</a></span
+      >
+    </nav>
+    <p class="snapshot-explainer">
+      刷新按钮会绕过浏览器缓存，读取 GitHub Actions
+      最近一次生成并发布的精简数据快照。
+    </p>
+    <header class="topbar">
+      <div class="brand">
+        <h1>QDII 基金相似度看板</h1>
+        <span class="subtitle"
+          >基准: 广发纳指(270042) · 易方达标普科技(161128) ·
+          景顺纳指科技(017091)</span
+        >
+      </div>
+      <div class="actions">
+        <button id="btn-update" class="btn btn-primary" type="button">
+          刷新最新快照
+        </button>
+        <button id="btn-refresh-view" class="btn" type="button">
+          重置筛选
+        </button>
+        <a
+          class="btn btn-ghost"
+          href="https://github.com/akfamily/akshare"
+          rel="noreferrer"
+          >数据工具: akshare ↗</a
+        >
+      </div>
+    </header>
+
+    <section class="panel sources-panel">
+      <div class="panel-title">数据源状态</div>
+      <div id="sources" class="sources-grid"></div>
+    </section>
+
+    <section class="panel refs-panel">
+      <div class="panel-title">基准基金加载状态</div>
+      <div id="refs-status" class="refs-grid"></div>
+    </section>
+
+    <section class="panel progress-panel" id="progress-panel">
+      <div class="progress-header">
+        <span id="progress-msg">就绪</span>
+        <span id="progress-pct" class="pct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <details class="error-log">
+        <summary>错误日志 <span id="err-count"></span></summary>
+        <pre id="error-log"></pre>
+      </details>
+    </section>
+
+    <section class="panel filters-panel">
+      <input
+        id="filter-q"
+        type="search"
+        aria-label="搜索基金"
+        placeholder="搜索代码 / 名称 / 类型 (如 纳指、270042、QDII-普通股票)"
+      />
+      <select id="filter-status" aria-label="按申购状态筛选">
+        <option value="">全部申购状态</option>
+        <option value="open">开放申购</option>
+        <option value="limited">限大额</option>
+        <option value="paused">暂停申购</option>
+      </select>
+      <select id="sort-key" aria-label="选择排序方式">
+        <option value="sim_avg">排序: 综合相似度</option>
+        <option value="sim_270042">排序: 相似 广发纳指</option>
+        <option value="sim_161128">排序: 相似 易方达标普科技</option>
+        <option value="sim_017091">排序: 相似 景顺纳指科技</option>
+        <option value="quota">排序: 每日额度 (高→低)</option>
+        <option value="quota_asc">排序: 每日额度 (低→高)</option>
+        <option value="nav">排序: 单位净值</option>
+        <option value="code">排序: 基金代码</option>
+        <option value="name">排序: 基金名称</option>
+        <option value="type">排序: 基金类型</option>
+      </select>
+      <span class="count-info">共 <b id="total-count">0</b> 只</span>
+    </section>
+
+    <section
+      class="table-wrap"
+      aria-label="QDII 基金相似度结果，可横向滚动"
+      tabindex="0"
+    >
+      <table id="funds-table">
+        <thead>
+          <tr>
+            <th class="col-code">代码</th>
+            <th class="col-name">基金简称</th>
+            <th class="col-type">类型</th>
+            <th class="num">单位净值</th>
+            <th class="num">每日限购额度</th>
+            <th>申赎状态</th>
+            <th>数据状态</th>
+            <th class="num sortable" data-sort="sim_270042">相似·广发纳指 ↕</th>
+            <th class="num sortable" data-sort="sim_161128">
+              相似·易方达标普科技 ↕
+            </th>
+            <th class="num sortable" data-sort="sim_017091">
+              相似·景顺纳指科技 ↕
+            </th>
+            <th class="num sortable" data-sort="sim_avg">综合 ↕</th>
+          </tr>
+        </thead>
+        <tbody id="funds-body"></tbody>
+      </table>
+    </section>
+
+    <aside id="detail-modal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <header class="modal-header">
+          <h2 id="modal-title">基金详情</h2>
+          <button
+            class="btn btn-ghost modal-close"
+            type="button"
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </header>
+        <div id="modal-body" class="modal-body"></div>
+      </div>
+    </aside>
+
+    <footer class="footer">
+      <span
+        >数据来自公开基金接口；页面只读取已发布的精简快照，不包含任何个人数据，也不构成投资建议。</span
+      >
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

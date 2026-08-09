@@ -1,47 +1,37 @@
 # Verification guide
 
-The site has one deployed source of truth: the root HTML, CSS, JavaScript, and local assets. Tests validate the same files through direct `file://` access, local HTTP, and GitHub Pages deployment.
+Tests exercise the same static files deployed to GitHub Pages. The homepage also supports direct `file://` use; data-driven subpages are tested through the local HTTP server used in CI.
 
 ## Test layers
 
-| Layer            | Command                        | Coverage                                                                                  |
-| ---------------- | ------------------------------ | ----------------------------------------------------------------------------------------- |
-| Static quality   | `npm run check`                | Formatting, HTML, CSS, JavaScript, local paths, metadata, payload, project order, privacy |
-| Unit             | `npm run test:unit`            | Language-query behavior and Lighthouse sampling                                           |
-| External links   | `npm run check:external-links` | Public project, Release, Pages, canonical, and social-preview URLs                        |
-| Windows browsers | `npm run test:e2e:windows`     | Chrome, Edge, Firefox, mobile Chromium, and direct-file Edge                              |
-| Linux browsers   | `npm run test:e2e:linux`       | Chromium, Firefox, WebKit, mobile Chromium, direct files, and visual snapshots            |
-| Lighthouse       | `npm run test:lighthouse`      | Chinese and English home-page budgets                                                     |
+| Layer               | Command                               | Coverage                                                                        |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------------------- |
+| Static quality      | `npm run check`                       | Formatting, HTML/CSS/JS, local paths, six-route metadata, payload size, privacy |
+| Snapshot validation | `node scripts/validate-site-data.mjs` | ETF, NDX, bubble, strategy, backtest, QDII, and home status completeness        |
+| Unit                | `npm run test:unit`                   | Six-tool status manifest and Lighthouse sampling logic                          |
+| External links      | `npm run check:external-links`        | Public project, canonical, source, and social-preview URLs                      |
+| Windows browsers    | `npm run test:e2e:windows`            | Chrome, Edge, Firefox, mobile Chromium, direct files, and all tool routes       |
+| Linux browsers      | `npm run test:e2e:linux`              | Chromium, Firefox, WebKit, mobile Chromium, accessibility and responsive layout |
+| Lighthouse          | `npm run test:lighthouse`             | Home-page performance, accessibility, best practices, and SEO budgets           |
 
 Browser tests cover:
 
-- Chinese and English content, metadata, shareable query parameters, and browser history;
-- five-project order, explicit status labels, repository and Release links;
-- keyboard skip navigation, reduced motion, forced colors, 400% zoom, light and dark themes;
-- no forms, cookies, storage, forced new tabs, console errors, or third-party runtime requests;
+- all six public tool routes and their return navigation;
+- substantive published data and a visible refresh control on every tool;
+- cache-busting static snapshot reloads for QDII, bubble, strategy, backtest, and ETF;
+- keyboard skip navigation, reduced motion, forced colors, 400% zoom, and dark mode;
+- no tracking storage, forced new tabs, console errors, or third-party runtime resources on the homepage;
 - automated WCAG 2.0/2.1/2.2 A and AA checks with Axe;
 - `index.html` and `404.html` through HTTP and direct filesystem URLs.
 
 ## Lighthouse policy
 
-The minimum score is `0.95` for performance, accessibility, best practices, and SEO.
+The minimum score is `0.95` for performance, accessibility, best practices, and SEO. A first-sample miss triggers two confirmation samples; the median must still pass. Reports are written under ignored `test-results/`.
 
-Each page normally receives one sample. If the first sample misses any budget, the runner collects two more samples for that page, preserves all raw reports, and evaluates the three-run median. A persistent regression still fails; retries do not lower the threshold.
+## Layout regression
 
-GitHub's ephemeral Linux runner starts Chromium with `--no-sandbox` and `--disable-dev-shm-usage` to avoid runner sandbox and shared-memory startup failures. Local runs retain Chromium's sandbox. The browser profile stays in the operating system's temporary directory and is cleaned only after the process exits. WSL launches the installed Linux Chromium directly because `chrome-launcher` otherwise assumes a Windows Chrome executable and rewrites Linux paths. If Chromium still cannot start, the final bounded stderr excerpt is saved with the Lighthouse artifacts.
-
-Reports are written under ignored `test-results/`.
-
-## Visual snapshots
-
-Ubuntu Chromium is the only visual baseline. Functional and accessibility behavior remains cross-platform, but Windows font rasterization is not compared pixel-by-pixel.
-
-Update snapshots only after reviewing an intentional visual change:
-
-```bash
-npm run test:visual:update
-```
+Responsive regression tests assert grid structure, overflow, dark-theme contrast, and 404 visibility without storing pixel screenshots. Functional and accessibility coverage remains cross-platform.
 
 ## Manual accessibility
 
-Automated checks cannot confirm the quality of spoken output. Follow [`manual-accessibility.md`](manual-accessibility.md) before the final release.
+Automated checks cannot confirm spoken-output quality. Follow [`manual-accessibility.md`](manual-accessibility.md) before a release.

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="基于长期对数趋势、MA200 偏离与历史分位的纳指 100 估值观察工具。"
+    />
+    <link rel="canonical" href="https://zhaowl94.github.io/ndx-valuation/" />
+    <title>NASDAQ-100 估值图 · zhaowl94</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css" />
+  </head>
+  <body>
+    <nav class="hub-nav" aria-label="研究工具导航">
+      <a href="../">zhaowl94 研究工具台</a>
+      <span class="hub-nav-links"
+        ><a href="../bubble-monitor/">泡沫监控</a
+        ><a href="../strategy-monitor/">趋势策略</a
+        ><a href="../">全部工具</a></span
+      >
+    </nav>
+    <p class="snapshot-explainer">
+      “更新数据”会优先尝试公开行情接口；失败时继续保留最近一次有效内置快照，也可自行导入
+      CSV。
+    </p>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">NASDAQ-100 Valuation</p>
+          <h1>纳指 100 估值图</h1>
+        </div>
+        <div class="actions">
+          <button id="updateButton" class="button" type="button">
+            更新数据
+          </button>
+          <label class="button">
+            <input id="csvInput" type="file" accept=".csv,text/csv" />
+            导入 CSV
+          </label>
+          <button id="resetButton" class="button ghost" type="button">
+            重置内置数据
+          </button>
+        </div>
+      </header>
+
+      <section class="summary" id="summary"></section>
+
+      <section class="layout">
+        <article class="panel">
+          <div class="panel-head">
+            <h2>长期对数趋势</h2>
+            <p id="trendCaption"></p>
+          </div>
+          <div class="chart" id="trendChart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>趋势偏离</h2>
+            <p>相对全周期对数回归线</p>
+          </div>
+          <div class="chart compact" id="deviationChart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>MA200 偏离</h2>
+            <p>相对 200 日均线</p>
+          </div>
+          <div class="chart compact" id="maChart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>全周期 MA200</h2>
+            <p>价格与 MA200</p>
+          </div>
+          <div class="chart" id="recentChart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <h2>分阶段回归</h2>
+            <p>每段单独拟合，观察当前点位相对该阶段趋势的位置</p>
+          </div>
+          <section
+            class="table-wrap"
+            aria-label="分阶段回归结果，可横向滚动"
+            tabindex="0"
+          >
+            <table id="periodTable"></table>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <div class="tooltip" id="tooltip"></div>
+    <div class="toast" id="toast"></div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

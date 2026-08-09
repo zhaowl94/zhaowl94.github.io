@@ -13,6 +13,7 @@
     <link rel="canonical" href="https://zhaowl94.github.io/etf-premium/" />
     <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css" />
     <title>跨境 ETF 溢价温度计 · zhaowl94</title>
 
     <meta property="og:type" content="website" />
@@ -33,6 +34,18 @@
     <script src="app.js" defer></script>
   </head>
   <body>
+    <nav class="hub-nav" aria-label="研究工具导航">
+      <a href="../">zhaowl94 研究工具台</a>
+      <span class="hub-nav-links"
+        ><a href="../ndx-valuation/">纳指估值</a
+        ><a href="../qdii-similarity/">QDII 相似度</a
+        ><a href="../">全部工具</a></span
+      >
+    </nav>
+    <p class="snapshot-explainer">
+      刷新按钮会绕过浏览器缓存，读取 GitHub Actions
+      最近一次生成并发布的数据快照。
+    </p>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
     <div class="progress-track" aria-hidden="true">
       <span id="global-progress"></span>
@@ -58,7 +71,7 @@
               type="button"
             >
               <span class="button-icon" aria-hidden="true">↻</span>
-              <span>重新载入</span>
+              <span>刷新最新快照</span>
             </button>
             <a id="export-link" class="button button-secondary" href="#">
               <span class="button-icon" aria-hidden="true">↓</span>

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="纳指 ETF 趋势信号、目标仓位与策略表现监控。"
+    />
+    <link rel="canonical" href="https://zhaowl94.github.io/strategy-monitor/" />
+    <title>纳指 ETF 趋势策略监控 · zhaowl94</title>
+    <link rel="stylesheet" href="styles.css?v=20260518b" />
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css" />
+  </head>
+  <body>
+    <nav class="hub-nav" aria-label="研究工具导航">
+      <a href="../">zhaowl94 研究工具台</a>
+      <span class="hub-nav-links"
+        ><a href="../backtest-lab/">动态回测</a
+        ><a href="../etf-premium/">溢价温度计</a
+        ><a href="../">全部工具</a></span
+      >
+    </nav>
+    <p class="snapshot-explainer">
+      刷新按钮会绕过浏览器缓存，读取 GitHub Actions
+      最近一次生成并发布的数据快照。
+    </p>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Domestic NDX ETF Trend Monitor</div>
+          <h1>纳指ETF趋势策略监控</h1>
+          <p id="dataStamp">数据载入中</p>
+        </div>
+        <div class="actions">
+          <button
+            id="refreshDataBtn"
+            class="primary-button"
+            type="button"
+            title="刷新行情和净值数据"
+          >
+            刷新数据
+          </button>
+          <button id="resetBtn" class="ghost-button" type="button">
+            恢复默认
+          </button>
+        </div>
+      </header>
+
+      <section class="hero-grid">
+        <article class="hero-card">
+          <div class="panel-title">当前状态</div>
+          <div class="hero-main">
+            <div>
+              <div id="signalBadge" class="signal-badge neutral">--</div>
+              <div id="actionText" class="hero-action">--</div>
+            </div>
+            <div class="target-box">
+              <div>
+                <span>目标ETF</span><strong id="targetEquity">--</strong>
+              </div>
+              <div>
+                <span>目标债券</span><strong id="targetBond">--</strong>
+              </div>
+            </div>
+          </div>
+          <div id="nextActionText" class="subtle hero-note">--</div>
+        </article>
+
+        <article class="panel stat-panel">
+          <div class="panel-title">信号读数</div>
+          <div class="stat-list">
+            <div><span>信号日期</span><strong id="signalDate">--</strong></div>
+            <div>
+              <span>拼接ETF收盘价</span><strong id="signalPrice">--</strong>
+            </div>
+            <div><span>偏离MA</span><strong id="maDeviation">--</strong></div>
+            <div><span>连续确认</span><strong id="confirmText">--</strong></div>
+            <div>
+              <span>MA / 下沿 / 上沿</span><strong id="bandText">--</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel stat-panel">
+          <div class="panel-title">最新数据</div>
+          <div class="stat-list">
+            <div><span>^NDX 收盘</span><strong id="ndxClose">--</strong></div>
+            <div><span>USD/CNY</span><strong id="fxClose">--</strong></div>
+            <div><span>场内ETF</span><strong id="equityClose">--</strong></div>
+            <div><span>100018</span><strong id="bondClose">--</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel controls">
+        <div class="section-head">
+          <div class="panel-title">参数设置</div>
+          <div id="refreshStatus" class="refresh-status"></div>
+        </div>
+        <div class="control-grid">
+          <label
+            >ETF标的
+            <select id="etfSelect"></select>
+          </label>
+          <label
+            >版本
+            <select id="preset">
+              <option value="balanced">均衡 60/0 · 6%/15日</option>
+              <option value="aggressive">进取 70/0 · 6%/15日</option>
+              <option value="custom">自定义</option>
+            </select>
+          </label>
+          <label
+            >MA天数
+            <input id="maLength" type="number" min="20" max="500" step="1" />
+          </label>
+          <label
+            >确认日
+            <input id="confirmDays" type="number" min="1" max="60" step="1" />
+          </label>
+          <label
+            >缓冲带 <span id="bufferValue" class="inline-value"></span>
+            <input id="bufferPct" type="range" min="0" max="10" step="0.5" />
+          </label>
+          <label
+            >高仓%
+            <input
+              id="highWeightPct"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+            />
+          </label>
+          <label
+            >低仓%
+            <input id="lowWeightPct" type="number" min="0" max="100" step="1" />
+          </label>
+          <label
+            >每月定投
+            <input
+              id="monthlyContribution"
+              type="number"
+              min="0.01"
+              step="0.01"
+            />
+          </label>
+          <label
+            >开始日期
+            <input id="startDate" type="date" />
+          </label>
+          <label
+            >结束日期
+            <input id="endDate" type="date" />
+          </label>
+          <button id="runBtn" class="primary-button" type="button">
+            重新计算
+          </button>
+        </div>
+      </section>
+
+      <section class="chart-grid">
+        <article class="panel chart-panel">
+          <div class="panel-title">信号趋势</div>
+          <canvas id="signalChart"></canvas>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-title">定投资产曲线</div>
+          <canvas id="portfolioChart"></canvas>
+        </article>
+      </section>
+
+      <section class="table-grid">
+        <article class="panel">
+          <div class="panel-title">月定投回测</div>
+          <section
+            class="table-wrap"
+            aria-label="月定投回测结果，可横向滚动"
+            tabindex="0"
+          >
+            <table id="dcaTable"></table>
+          </section>
+        </article>
+        <article class="panel">
+          <div class="panel-title">一次性投入回测</div>
+          <section
+            class="table-wrap"
+            aria-label="一次性投入回测结果，可横向滚动"
+            tabindex="0"
+          >
+            <table id="lumpTable"></table>
+          </section>
+        </article>
+      </section>
+
+      <article class="panel">
+        <div class="panel-title">历史信号</div>
+        <section
+          class="table-wrap"
+          aria-label="历史信号记录，可横向滚动"
+          tabindex="0"
+        >
+          <table id="tradeTable"></table>
+        </section>
+      </article>
+    </main>
+
+    <script src="strategy_data.js?v=20260518c"></script>
+    <script src="app.js?v=20260518g"></script>
+  </body>
+</html>

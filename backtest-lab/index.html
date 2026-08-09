@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="交互式纳指动态配置与定投回测工具。" />
+    <link rel="canonical" href="https://zhaowl94.github.io/backtest-lab/" />
+    <title>纳指动态配置回测台 · zhaowl94</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css" />
+  </head>
+  <body>
+    <nav class="hub-nav" aria-label="研究工具导航">
+      <a href="../">zhaowl94 研究工具台</a>
+      <span class="hub-nav-links"
+        ><a href="../strategy-monitor/">趋势策略</a
+        ><a href="../etf-premium/">溢价温度计</a
+        ><a href="../">全部工具</a></span
+      >
+    </nav>
+    <p class="snapshot-explainer">
+      刷新按钮会绕过浏览器缓存，读取 GitHub Actions
+      最近一次生成并发布的数据快照。
+    </p>
+    <main class="layout">
+      <aside class="side">
+        <header class="brand">
+          <h1>纳指动态配置回测台</h1>
+          <p>月定投、信号切换调仓、月度再平衡、XIRR 与趋势判定</p>
+        </header>
+
+        <section class="panel">
+          <label>数据口径<select id="dataset"></select></label>
+          <label>信号源<select id="signal"></select></label>
+          <label>
+            策略
+            <select id="strategy">
+              <option value="maConfirm">MA + 回撤/反弹确认</option>
+              <option value="adxEr">MA + ADX/ER 趋势有效</option>
+              <option value="fixed">固定仓位</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="panel grid">
+          <label
+            >MA周期<input
+              id="maLen"
+              type="number"
+              value="200"
+              min="20"
+              max="500"
+              step="5"
+          /></label>
+          <label
+            >每月投入<input
+              id="monthly"
+              type="number"
+              value="1"
+              min="0.01"
+              step="0.01"
+          /></label>
+          <label
+            >高仓%<input
+              id="high"
+              type="number"
+              value="70"
+              min="0"
+              max="100"
+              step="1"
+          /></label>
+          <label
+            >低仓%<input
+              id="low"
+              type="number"
+              value="5"
+              min="0"
+              max="100"
+              step="1"
+          /></label>
+          <label
+            >中性仓%<input
+              id="neutral"
+              type="number"
+              value="50"
+              min="0"
+              max="100"
+              step="1"
+          /></label>
+          <label
+            >固定仓%<input
+              id="fixed"
+              type="number"
+              value="60"
+              min="0"
+              max="100"
+              step="1"
+          /></label>
+          <label
+            >最小切换间隔<input
+              id="minSwitchDays"
+              type="number"
+              value="20"
+              min="0"
+              max="260"
+              step="1"
+          /></label>
+          <label
+            >再平衡阈值%<input
+              id="rebalanceBand"
+              type="number"
+              value="5"
+              min="0"
+              max="50"
+              step="1"
+          /></label>
+        </section>
+
+        <section class="panel strategy-fields" data-strategy="maConfirm">
+          <label
+            >降仓回撤确认%<input
+              id="ddConfirm"
+              type="number"
+              value="18"
+              min="0"
+              max="80"
+              step="1"
+          /></label>
+          <label
+            >升仓反弹确认%<input
+              id="rebConfirm"
+              type="number"
+              value="3"
+              min="0"
+              max="80"
+              step="1"
+          /></label>
+        </section>
+
+        <section class="panel strategy-fields" data-strategy="adxEr">
+          <div class="grid">
+            <label
+              >ADX/ER周期<input
+                id="indLen"
+                type="number"
+                value="14"
+                min="5"
+                max="80"
+                step="1"
+            /></label>
+            <label
+              >ADX阈值<input
+                id="adxTh"
+                type="number"
+                value="22"
+                min="1"
+                max="80"
+                step="1"
+            /></label>
+            <label
+              >ER阈值<input
+                id="erTh"
+                type="number"
+                value="0.20"
+                min="0"
+                max="1"
+                step="0.01"
+            /></label>
+            <label>
+              震荡处理
+              <select id="chopMode">
+                <option value="hold">保持原仓</option>
+                <option value="neutral">回到中性仓</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="actions">
+          <button id="run" type="button">重新回测</button>
+          <button id="refresh" type="button">拉取最新数据</button>
+          <button id="presetMa" type="button">70/5/18/3</button>
+          <button id="presetAdx" type="button">ADX/ER</button>
+        </section>
+        <p class="hint" id="refreshHint">
+          后台定时任务生成数据；此按钮读取最新已发布快照。
+        </p>
+
+        <section class="panel sweep-panel">
+          <h3>ADX/ER 参数遍历</h3>
+          <div class="grid">
+            <label
+              >高仓列表<input id="sweepHigh" type="text" value="60,65,70"
+            /></label>
+            <label
+              >低仓列表<input id="sweepLow" type="text" value="0,5,10"
+            /></label>
+            <label
+              >中性仓列表<input id="sweepNeutral" type="text" value="40,50"
+            /></label>
+            <label
+              >周期列表<input id="sweepLen" type="text" value="10,14,20"
+            /></label>
+            <label
+              >ADX阈值<input id="sweepAdx" type="text" value="18,20,22,25"
+            /></label>
+            <label
+              >ER阈值<input
+                id="sweepEr"
+                type="text"
+                value="0.10,0.15,0.20,0.25"
+            /></label>
+            <label
+              >最大回撤≤%<input
+                id="sweepMaxDd"
+                type="number"
+                value="25"
+                step="1"
+            /></label>
+            <label
+              >最低XIRR≥%<input
+                id="sweepMinXirr"
+                type="number"
+                value="0"
+                step="1"
+            /></label>
+            <label>
+              排序目标
+              <select id="sweepObjective">
+                <option value="xirr">最大化XIRR</option>
+                <option value="mdd">最小化回撤</option>
+                <option value="sharpe">最大化夏普</option>
+              </select>
+            </label>
+            <label>
+              震荡处理
+              <select id="sweepChop">
+                <option value="hold">保持原仓</option>
+                <option value="neutral">回到中性仓</option>
+                <option value="both">都遍历</option>
+              </select>
+            </label>
+          </div>
+          <button id="sweepAdxEr" type="button">开始遍历</button>
+          <p class="hint" id="sweepHint">列表用逗号分隔，例如 60,65,70。</p>
+        </section>
+      </aside>
+
+      <section class="main">
+        <div class="titlebar">
+          <div>
+            <h2 id="title">回测结果</h2>
+            <p id="subtitle"></p>
+          </div>
+          <span id="badge" class="badge">未运行</span>
+        </div>
+
+        <section id="metrics" class="metrics"></section>
+
+        <section class="current">
+          <h3>当前 MA / ADX / ER 判定</h3>
+          <div id="current" class="current-grid"></div>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-head">
+            <h3>资产/本金</h3>
+            <div class="legend">
+              <span><i class="a"></i>资产/本金</span>
+            </div>
+          </div>
+          <canvas id="chartMultiple" width="1300" height="360"></canvas>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-head">
+            <h3>账户回撤</h3>
+            <div class="legend">
+              <span><i class="b"></i>回撤</span>
+            </div>
+          </div>
+          <canvas id="chartDrawdown" width="1300" height="300"></canvas>
+        </section>
+
+        <section class="chart-card">
+          <div class="chart-head">
+            <h3>纳指仓位</h3>
+            <div class="legend">
+              <span><i class="c"></i>纳指仓位</span>
+            </div>
+          </div>
+          <canvas id="chartWeight" width="1300" height="260"></canvas>
+        </section>
+
+        <section class="table-card">
+          <h3>最近调仓</h3>
+          <section
+            class="table-wrap"
+            aria-label="最近调仓记录，可横向滚动"
+            tabindex="0"
+          >
+            <table>
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th>动作</th>
+                  <th>仓位</th>
+                  <th>原因</th>
+                </tr>
+              </thead>
+              <tbody id="trades"></tbody>
+            </table>
+          </section>
+        </section>
+
+        <section class="table-card">
+          <h3>参数遍历结果</h3>
+          <section
+            class="table-wrap"
+            aria-label="参数遍历结果，可横向滚动"
+            tabindex="0"
+          >
+            <table>
+              <thead>
+                <tr>
+                  <th>排名</th>
+                  <th>XIRR</th>
+                  <th>最大回撤</th>
+                  <th>波动率</th>
+                  <th>夏普</th>
+                  <th>调仓</th>
+                  <th>高/低/中</th>
+                  <th>周期</th>
+                  <th>ADX</th>
+                  <th>ER</th>
+                  <th>震荡</th>
+                </tr>
+              </thead>
+              <tbody id="sweepResults"></tbody>
+            </table>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="./backtest_lab_data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

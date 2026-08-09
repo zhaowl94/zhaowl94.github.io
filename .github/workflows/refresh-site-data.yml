@@ -1,0 +1,109 @@
+name: Refresh research data
+
+on:
+  schedule:
+    # A-share close + enough time for fund NAV/IOPV sources to settle.
+    - cron: "30 10 * * 1-5"
+    # Weekly full QDII similarity rebuild (Monday 06:30 Asia/Shanghai).
+    - cron: "30 22 * * 0"
+  workflow_dispatch:
+    inputs:
+      refresh_qdii:
+        description: "Run the slower full QDII refresh"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+  pages: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  refresh-and-deploy:
+    name: Refresh snapshots and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      RUN_QDII: ${{ github.event.schedule == '30 22 * * 0' || (github.event_name == 'workflow_dispatch' && inputs.refresh_qdii == true) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Restore latest QDII snapshot and collector cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            qdii-similarity/data/dashboard.json
+            scripts/qdii-cache
+          key: qdii-data-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            qdii-data-${{ runner.os }}-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      - name: Install daily data dependency
+        run: python -m pip install "requests>=2.31,<3.0"
+
+      - name: Refresh ETF premium snapshot
+        run: python scripts/update-etf-premium-data.py
+
+      - name: Refresh NDX strategy and backtest sources
+        run: |
+          node scripts/build-strategy-data.mjs --refresh
+          node scripts/build-backtest-data.mjs
+          node scripts/build-ndx-valuation-data.mjs
+
+      - name: Refresh NDX bubble snapshot
+        run: python scripts/bubble_data.py
+
+      - name: Install QDII collector dependencies
+        if: env.RUN_QDII == 'true'
+        run: python -m pip install akshare beautifulsoup4 lxml pandas numpy
+
+      - name: Refresh QDII similarity snapshot
+        if: env.RUN_QDII == 'true'
+        run: python scripts/update-qdii-similarity-data.py --refresh --workers 4
+
+      - name: Save refreshed QDII snapshot and collector cache
+        if: env.RUN_QDII == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            qdii-similarity/data/dashboard.json
+            scripts/qdii-cache
+          key: qdii-data-${{ runner.os }}-${{ github.run_id }}
+
+      - name: Update home-page status and validate snapshots
+        run: |
+          node scripts/update-tool-status.mjs
+          node scripts/validate-site-data.mjs
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+        with:
+          enablement: true
+
+      - name: Upload refreshed site
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: .
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

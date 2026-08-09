@@ -6,6 +6,14 @@ const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
+const toolRoutes = [
+  "etf-premium",
+  "ndx-valuation",
+  "bubble-monitor",
+  "strategy-monitor",
+  "backtest-lab",
+  "qdii-similarity",
+];
 const requiredFiles = [
   ".nojekyll",
   "404.html",
@@ -13,15 +21,23 @@ const requiredFiles = [
   "assets/images/social-preview.png",
   "assets/scripts/site.js",
   "assets/styles/site.css",
-  "etf-premium/app.js",
-  "etf-premium/data/dashboard.json",
-  "etf-premium/index.html",
-  "etf-premium/styles.css",
-  "etf-premium/vendor/chart.umd.min.js",
-  "etf-premium/vendor/LICENSE.chartjs.md",
+  "assets/styles/tool-shell.css",
+  "data/tool-status.json",
   "index.html",
   "robots.txt",
   "sitemap.xml",
+  ...toolRoutes.flatMap((route) => [
+    `${route}/index.html`,
+    `${route}/app.js`,
+    `${route}/styles.css`,
+  ]),
+  "etf-premium/data/dashboard.json",
+  "etf-premium/vendor/chart.umd.min.js",
+  "ndx-valuation/data.js",
+  "bubble-monitor/bubble_data.json",
+  "strategy-monitor/strategy_data.js",
+  "backtest-lab/backtest_lab_data.js",
+  "qdii-similarity/data/dashboard.json",
 ];
 const criticalFiles = [
   "index.html",
@@ -29,170 +45,118 @@ const criticalFiles = [
   "assets/scripts/site.js",
   "assets/images/favicon.svg",
 ];
-const projectOrder = [
-  "ttjjCrawler",
-  "ReadWechatMessage",
-  "yuanshen",
-  "html_sample",
-  "ProcessSqlData-TS",
-];
-const criticalBudget = 200 * 1024;
+const criticalBudget = 250 * 1024;
 
 function localReferences(html) {
   const references = [];
-  const attributePattern = /\b(?:href|src)="([^"]+)"/gu;
-
-  for (const match of html.matchAll(attributePattern)) {
+  for (const match of html.matchAll(/\b(?:href|src)="([^"]+)"/gu)) {
     const reference = match[1];
     if (
       reference.startsWith("#") ||
       reference.startsWith("http://") ||
       reference.startsWith("https://") ||
       reference.startsWith("data:")
-    ) {
+    )
       continue;
-    }
-
     const withoutFragment = reference.split("#", 1)[0].split("?", 1)[0];
-    if (withoutFragment) {
-      references.push(decodeURIComponent(withoutFragment));
-    }
+    if (withoutFragment) references.push(decodeURIComponent(withoutFragment));
   }
-
   return references;
 }
 
 async function assertRequiredFiles() {
-  for (const relativePath of requiredFiles) {
+  for (const relativePath of requiredFiles)
     await access(path.join(projectRoot, relativePath));
-  }
 }
 
 async function assertLocalReferences(relativePage) {
   const absolutePage = path.join(projectRoot, relativePage);
   const html = await readFile(absolutePage, "utf8");
-
   for (const reference of localReferences(html)) {
     await access(path.resolve(path.dirname(absolutePage), reference));
   }
-
   return html;
 }
 
-function assertProjectOrder(html) {
-  let previousPosition = -1;
-
-  for (const project of projectOrder) {
-    const position = html.indexOf(`<h3>${project}</h3>`);
-    if (position < 0 || position <= previousPosition) {
-      throw new Error(`Project order is invalid at ${project}.`);
-    }
-    previousPosition = position;
-  }
-}
-
-function assertSafeMarkup(indexHtml, notFoundHtml, browserScript) {
-  const combinedHtml = `${indexHtml}\n${notFoundHtml}`;
-  const forbiddenMarkup = [
-    [/<form\b/iu, "forms"],
+function assertSafeRuntimeMarkup(pages) {
+  const combinedHtml = pages.join("\n");
+  const forbidden = [
     [/<iframe\b/iu, "iframes"],
     [/\btarget="_blank"/iu, "forced new tabs"],
     [/<script[^>]+src="https?:/iu, "remote scripts"],
     [/<link[^>]+href="https?:[^>]+stylesheet/iu, "remote stylesheets"],
   ];
-
-  for (const [pattern, label] of forbiddenMarkup) {
-    if (pattern.test(combinedHtml)) {
+  for (const [pattern, label] of forbidden) {
+    if (pattern.test(combinedHtml))
       throw new Error(`Public HTML unexpectedly contains ${label}.`);
-    }
   }
+}
 
-  const forbiddenBrowserApis = [
-    "document.cookie",
-    "localStorage",
-    "sessionStorage",
-    "XMLHttpRequest",
-    "WebSocket",
-    "fetch(",
-  ];
-
-  for (const api of forbiddenBrowserApis) {
-    if (browserScript.includes(api)) {
-      throw new Error(`Browser script unexpectedly uses ${api}.`);
-    }
+function assertHomeStructure(html) {
+  if ((html.match(/class="tool-card(?:\s|"|$)/gu) ?? []).length !== 6) {
+    throw new Error("The home page must contain exactly six tool cards.");
   }
-
-  if ((indexHtml.match(/class="project-card/gu) ?? []).length !== 5) {
-    throw new Error("The home page must contain exactly five project cards.");
+  for (const route of toolRoutes) {
+    if (!html.includes(`href="${route}/"`))
+      throw new Error(`Home page is missing ${route}/.`);
   }
-
-  if (!indexHtml.includes('content="index, follow"')) {
+  if (!html.includes('content="index, follow"'))
     throw new Error("The home page must remain indexable.");
-  }
-
-  if (!notFoundHtml.includes('content="noindex, follow"')) {
-    throw new Error("The 404 page must remain excluded from search results.");
-  }
 }
 
 function assertStructuredData(html) {
   const match = html.match(
     /<script type="application\/ld\+json">([\s\S]*?)<\/script>/u,
   );
-
-  if (!match) {
+  if (!match)
     throw new Error("The home page is missing JSON-LD structured data.");
-  }
-
-  const structuredData = JSON.parse(match[1]);
+  const data = JSON.parse(match[1]);
   if (
-    structuredData["@type"] !== "ProfilePage" ||
-    structuredData.hasPart?.itemListElement?.length !== 5
+    data["@type"] !== "CollectionPage" ||
+    data.mainEntity?.numberOfItems !== 6 ||
+    data.mainEntity?.itemListElement?.length !== 6
   ) {
-    throw new Error("JSON-LD does not describe the five-project profile.");
+    throw new Error("JSON-LD does not describe the six-tool collection.");
   }
 }
 
 async function criticalPayloadSize() {
   let total = 0;
-
-  for (const relativePath of criticalFiles) {
+  for (const relativePath of criticalFiles)
     total += (await stat(path.join(projectRoot, relativePath))).size;
-  }
-
-  if (total > criticalBudget) {
+  if (total > criticalBudget)
     throw new Error(
       `Critical payload ${total} bytes exceeds ${criticalBudget} bytes.`,
     );
-  }
-
   return total;
 }
 
 await assertRequiredFiles();
-const [indexHtml, notFoundHtml, premiumHtml, browserScript, robots, sitemap] =
-  await Promise.all([
-    assertLocalReferences("index.html"),
-    assertLocalReferences("404.html"),
-    assertLocalReferences("etf-premium/index.html"),
-    readFile(path.join(projectRoot, "assets/scripts/site.js"), "utf8"),
-    readFile(path.join(projectRoot, "robots.txt"), "utf8"),
-    readFile(path.join(projectRoot, "sitemap.xml"), "utf8"),
-  ]);
+const pagePaths = [
+  "index.html",
+  "404.html",
+  ...toolRoutes.map((route) => `${route}/index.html`),
+];
+const pages = await Promise.all(pagePaths.map(assertLocalReferences));
+const [indexHtml, notFoundHtml] = pages;
+const [robots, sitemap] = await Promise.all([
+  readFile(path.join(projectRoot, "robots.txt"), "utf8"),
+  readFile(path.join(projectRoot, "sitemap.xml"), "utf8"),
+]);
 
-assertProjectOrder(indexHtml);
-assertSafeMarkup(`${indexHtml}\n${premiumHtml}`, notFoundHtml, browserScript);
+assertSafeRuntimeMarkup(pages);
+assertHomeStructure(indexHtml);
 assertStructuredData(indexHtml);
-
-if (
-  !robots.includes("https://zhaowl94.github.io/sitemap.xml") ||
-  !sitemap.includes("<loc>https://zhaowl94.github.io/</loc>")
-) {
-  throw new Error("robots.txt and sitemap.xml are not aligned.");
+if (!notFoundHtml.includes('content="noindex, follow"'))
+  throw new Error("The 404 page must remain noindex.");
+if (!robots.includes("https://zhaowl94.github.io/sitemap.xml"))
+  throw new Error("robots.txt is missing the sitemap.");
+for (const route of ["", ...toolRoutes.map((item) => `${item}/`)]) {
+  if (!sitemap.includes(`<loc>https://zhaowl94.github.io/${route}</loc>`))
+    throw new Error(`sitemap.xml is missing /${route}`);
 }
 
 const payload = await criticalPayloadSize();
 console.log(
-  `Static checks passed: ${requiredFiles.length} required files, ` +
-    `5 ordered projects, ${payload} critical bytes.`,
+  `Static checks passed: ${toolRoutes.length} tools, ${requiredFiles.length} required files, ${payload} critical bytes.`,
 );

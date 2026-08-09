@@ -1,5 +1,13 @@
 assets/images/social-preview.png
 etf-premium/data/
 etf-premium/vendor/
+backtest-lab/backtest_lab_data.js
+bubble-monitor/bubble_data.json
+data/tool-status.json
+ndx-valuation/data.js
+qdii-similarity/data/
+scripts/ndx_full_history.csv
+scripts/research-data/
+strategy-monitor/strategy_data.js
 test/snapshots/
 test-results/

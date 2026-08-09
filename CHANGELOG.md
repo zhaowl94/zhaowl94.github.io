@@ -6,12 +6,18 @@ All notable changes to this project are documented here.
 
 ### Added
 
+- Information-rich market research home page with direct navigation to six public tools.
+- Static GitHub Pages versions of the NDX valuation, bubble monitor, trend strategy, backtest lab, and QDII similarity dashboards.
+- Unified snapshot refresh workflow for ETF premium, NDX market data, bubble indicators, and weekly QDII similarity data.
+- Cache-busting refresh controls, shared tool navigation, compact home-page publication status, and cross-tool browser coverage.
 - Static Nasdaq-100 and S&P 500 ETF premium dashboard at `/etf-premium/`, with historical charts, ranking, filters, and CSV export.
 - Weekday GitHub Actions refresh and Pages deployment for the generated ETF premium snapshot, with last-known-good fallback behavior.
 - Browser coverage for dashboard data loading, interaction, privacy, responsive layout, and WCAG accessibility.
 
 ### Changed
 
+- Reframed the former project portfolio as a privacy-aware market research desk while retaining the public open-source project index.
+- Explicitly excluded local personal asset and investment ledgers from all public routes and deployment artifacts.
 - Updated three transitive development dependencies to patched releases required by the repository security audit.
 - Added a Tencent daily-price fallback with non-destructive incremental merging when the primary historical-price endpoint is unavailable.
 

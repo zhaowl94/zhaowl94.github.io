@@ -1,0 +1,256 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: #18202b;
+  background: #f4f6f8;
+  font:
+    14px/1.45 system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+.layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+}
+.side {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  padding: 20px;
+  background: #ffffff;
+  border-right: 1px solid #d8dee7;
+}
+.brand h1 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: 0;
+}
+.brand p {
+  margin: 6px 0 0;
+  color: #687385;
+}
+.panel h3 {
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+.panel {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e1e6ee;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+label {
+  display: grid;
+  gap: 6px;
+  color: #4f5b6c;
+  font-size: 12px;
+  font-weight: 650;
+}
+input,
+select,
+button {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #c9d1dc;
+  border-radius: 6px;
+  background: #fff;
+  color: #17202c;
+  padding: 7px 9px;
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  font-weight: 700;
+  background: #18324a;
+  color: #fff;
+  border-color: #18324a;
+}
+button:nth-child(n + 2) {
+  background: #eef3f7;
+  color: #17202c;
+  border-color: #c9d1dc;
+}
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.actions button:first-child {
+  grid-column: span 2;
+}
+.sweep-panel button {
+  margin-top: 12px;
+}
+.hint {
+  color: #697587;
+  font-size: 12px;
+}
+.main {
+  padding: 22px;
+  min-width: 0;
+}
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+h2,
+h3 {
+  margin: 0;
+  letter-spacing: 0;
+}
+#subtitle {
+  margin: 6px 0 0;
+  color: #617082;
+}
+.badge {
+  border: 1px solid #cfd7e3;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #fff;
+  color: #526071;
+  white-space: nowrap;
+}
+.metrics {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(120px, 1fr));
+  gap: 12px;
+}
+.metric,
+.current-item {
+  background: #fff;
+  border: 1px solid #dce2ea;
+  border-radius: 8px;
+  padding: 13px;
+}
+.metric span,
+.current-item span {
+  display: block;
+  color: #6a7584;
+  font-size: 12px;
+}
+.metric strong,
+.current-item strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 20px;
+}
+.current {
+  margin-top: 18px;
+  background: #fff;
+  border: 1px solid #dce2ea;
+  border-radius: 8px;
+  padding: 16px;
+}
+.current-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(130px, 1fr));
+  gap: 10px;
+}
+.chart-card,
+.table-card {
+  margin-top: 18px;
+  background: #fff;
+  border: 1px solid #dce2ea;
+  border-radius: 8px;
+  padding: 16px;
+}
+.chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.legend {
+  display: flex;
+  gap: 14px;
+  color: #687385;
+  font-size: 12px;
+}
+.legend i {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.legend .a {
+  background: #1261a6;
+}
+.legend .b {
+  background: #b94040;
+}
+.legend .c {
+  background: #22835f;
+}
+canvas {
+  width: 100%;
+  display: block;
+}
+#chartMultiple {
+  height: 320px;
+}
+#chartDrawdown {
+  height: 260px;
+}
+#chartWeight {
+  height: 220px;
+}
+.table-wrap {
+  max-height: 320px;
+  overflow: auto;
+  margin-top: 10px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th,
+td {
+  text-align: left;
+  padding: 9px 8px;
+  border-bottom: 1px solid #edf1f5;
+}
+th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  color: #526071;
+}
+.good {
+  color: #11704a;
+}
+.bad {
+  color: #a22d2d;
+}
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .side {
+    position: static;
+    height: auto;
+  }
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .current-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
