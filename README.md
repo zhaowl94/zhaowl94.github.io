@@ -1,6 +1,6 @@
 # zhaowl94.github.io
 
-一个无框架、无追踪的个人市场研究工具台。主页统一导航 7 个公开工具，数据型页面通过 GitHub Actions 生成静态快照，再部署到 GitHub Pages。
+一个无框架、无追踪的个人研究与游乐工具台。主页统一导航 8 个公开研究工具和 5 个浏览器小游戏；数据型页面通过 GitHub Actions 生成静态快照，再部署到 GitHub Pages。
 
 上线地址：[https://zhaowl94.github.io/](https://zhaowl94.github.io/)
 
@@ -15,8 +15,19 @@
 | [`/backtest-lab/`](https://zhaowl94.github.io/backtest-lab/)         | 动态仓位、月定投、再平衡、XIRR、回撤、夏普及参数遍历        | 读取最新发布快照                     |
 | [`/qdii-similarity/`](https://zhaowl94.github.io/qdii-similarity/)   | QDII 搜索、申购状态、额度、净值及与三只基准基金的相似度     | 读取每周发布快照                     |
 | [`/market-pulse/`](https://zhaowl94.github.io/market-pulse/)         | 纳指 100、标普 500、规则 Top 10、滚动播报与来源健康         | 读取美股时段约 15 分钟快照           |
+| [`/ndx100-dashboard/`](https://zhaowl94.github.io/ndx100-dashboard/) | 成份股趋势、风险回报、相对强弱和绩效指标                    | 读取每个美股交易日快照               |
 
 GitHub Pages 不能运行常驻 Python/Node 服务，因此按钮负责绕过浏览器缓存、读取最近一次成功发布的数据；真正的抓取、计算与降级处理在 Actions 中执行。上游失败时保留最近有效值。
+
+## 浏览器小游戏
+
+| 子页面                                                       | 内容                       |
+| ------------------------------------------------------------ | -------------------------- |
+| [`/doudizhu/`](https://zhaowl94.github.io/doudizhu/)         | 单机斗地主                 |
+| [`/guandan/`](https://zhaowl94.github.io/guandan/)           | 四人组队掼蛋               |
+| [`/tank-battle/`](https://zhaowl94.github.io/tank-battle/)   | 键盘控制的复古坦克大战     |
+| [`/auction-king/`](https://zhaowl94.github.io/auction-king/) | 拍品估值与竞价模拟         |
+| [`/cultivation/`](https://zhaowl94.github.io/cultivation/)   | 支持本地存档的剧情修仙游戏 |
 
 ## 隐私边界
 
@@ -38,6 +49,12 @@ GitHub Pages 不能运行常驻 Python/Node 服务，因此按钮负责绕过浏
 ├── backtest-lab/                  # 动态配置回测
 ├── qdii-similarity/               # QDII 相似度
 ├── market-pulse/                  # 无 LLM 美股市场脉搏
+├── ndx100-dashboard/              # 纳指 100 成份股量化仪表盘
+├── doudizhu/                      # 斗地主
+├── guandan/                       # 掼蛋
+├── tank-battle/                   # 坦克大战
+├── auction-king/                  # 竞拍之王
+├── cultivation/                   # 问道凡尘
 ├── data/tool-status.json          # 主页更新时间清单
 ├── scripts/                       # 数据生成、校验脚本与源数据
 ├── test/                          # 单元、浏览器、可访问性和隐私测试
@@ -69,7 +86,7 @@ CI 同时覆盖 Ubuntu、Windows、Chromium、Firefox、WebKit、Chrome 与 Edge
 
 ## 发布与更新
 
-Pull Request 通过全部质量门后合并到 `master`，CI 部署 GitHub Pages。`Refresh research data` 工作流在工作日更新日频市场快照，并按周更新完整 QDII 相似度；`Refresh Market Pulse` 在覆盖美股常规交易时段的 UTC 窗口约每 15 分钟执行。两个工作流都可在 GitHub 的 Actions 页面手动触发。
+Pull Request 通过全部质量门后合并到 `master`，CI 部署 GitHub Pages。`Refresh research data` 工作流在工作日更新日频市场快照、北京时间工作日 06:20 更新纳指 100 成份股数据，并按周更新完整 QDII 相似度；`Refresh Market Pulse` 在覆盖美股常规交易时段的 UTC 窗口约每 15 分钟执行。两个工作流都可在 GitHub 的 Actions 页面手动触发。
 
 本地也可一键重建无 LLM 快照：
 

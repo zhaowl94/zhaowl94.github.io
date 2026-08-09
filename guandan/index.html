@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>掼蛋 · zhaowl94 小游戏</title>
+    <meta name="description" content="在浏览器中与三位电脑玩家进行一局单机掼蛋。">
+    <link rel="canonical" href="https://zhaowl94.github.io/guandan/">
+    <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a class="hub-home-chip" href="../" aria-label="返回 zhaowl94 主页">← 主页</a>
+    <div id="game-container">
+        <div id="top-area">
+            <div id="player2-hand" class="hand-area opponent-hand"></div>
+            <div id="player2-info" class="player-info">对家 (AI)</div>
+        </div>
+        <div id="middle-area">
+            <div id="left-area">
+                <div id="player1-info" class="player-info">左家 (AI)</div>
+                <div id="player1-hand" class="hand-area opponent-hand vertical-hand"></div>
+            </div>
+            <div id="center-area">
+                <div id="played-cards-area">
+                    <div id="player1-played" class="played-zone"></div>
+                    <div id="player2-played" class="played-zone"></div>
+                    <div id="player0-played" class="played-zone"></div>
+                    <div id="player3-played" class="played-zone"></div>
+                </div>
+                <div id="game-info">
+                    <div id="round-info"></div>
+                    <div id="current-level-info"></div>
+                </div>
+                <div id="action-area">
+                    <button id="btn-play" class="action-btn" disabled>出牌</button>
+                    <button id="btn-pass" class="action-btn" disabled>过</button>
+                    <button id="btn-hint" class="action-btn" disabled>提示</button>
+                    <button id="btn-auto" class="action-btn">托管</button>
+                </div>
+            </div>
+            <div id="right-area">
+                <div id="player3-info" class="player-info">右家 (AI)</div>
+                <div id="player3-hand" class="hand-area opponent-hand vertical-hand"></div>
+            </div>
+        </div>
+        <div id="bottom-area">
+            <div id="player0-info" class="player-info">我</div>
+            <div id="player0-hand" class="hand-area my-hand"></div>
+        </div>
+    </div>
+    <div id="tribute-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="tribute-title">进贡</h2>
+            <p id="tribute-desc">请选择一张牌进贡</p>
+            <div id="tribute-cards"></div>
+            <button id="btn-tribute-confirm" class="action-btn" disabled>确认进贡</button>
+        </div>
+    </div>
+    <div id="return-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>还贡</h2>
+            <p id="return-desc">请选择一张牌还贡</p>
+            <div id="return-cards"></div>
+            <button id="btn-return-confirm" class="action-btn" disabled>确认还贡</button>
+        </div>
+    </div>
+    <div id="result-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="result-title">游戏结束</h2>
+            <p id="result-desc"></p>
+            <button id="btn-restart" class="action-btn">再来一局</button>
+        </div>
+    </div>
+    <div id="start-screen" class="modal">
+        <div class="modal-content start-content">
+            <h1 class="game-title">掼 蛋</h1>
+            <div class="rules-summary">
+                <p>四人两副牌，升级制扑克游戏</p>
+                <p>你与对家为搭档，对抗左右两家</p>
+                <p>先出完所有牌的一方获胜</p>
+            </div>
+            <button id="btn-start" class="action-btn start-btn">开始游戏</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+    <script src="ui.js"></script>
+</body>
+</html>

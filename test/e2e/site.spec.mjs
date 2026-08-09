@@ -8,17 +8,28 @@ const toolRoutes = [
   "backtest-lab",
   "qdii-similarity",
   "market-pulse",
+  "ndx100-dashboard",
+];
+const gameRoutes = [
+  "doudizhu",
+  "guandan",
+  "tank-battle",
+  "auction-king",
+  "cultivation",
 ];
 
-test("home page presents the seven-tool research desk", async ({ page }) => {
+test("home page presents eight research tools and five games", async ({
+  page,
+}) => {
   await page.goto("/index.html");
 
-  await expect(page).toHaveTitle("zhaowl94 · 市场研究工具台");
+  await expect(page).toHaveTitle("zhaowl94 · 研究与游戏工具台");
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   await expect(
-    page.getByRole("heading", { level: 1, name: /把市场噪音/ }),
+    page.getByRole("heading", { level: 1, name: /研究市场/ }),
   ).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(7);
+  await expect(page.locator(".tool-card")).toHaveCount(8);
+  await expect(page.locator(".game-card")).toHaveCount(5);
   await expect(page.locator("#projects")).toHaveCount(0);
   await expect(page.locator('.site-nav a[href="#projects"]')).toHaveCount(0);
   await expect(page.locator("#site-updated")).not.toContainText("正在读取");
@@ -28,6 +39,13 @@ test("every research tool is directly linked from home", async ({ page }) => {
   await page.goto("/index.html");
   for (const route of toolRoutes) {
     await expect(page.locator(`.tool-card[href="${route}/"]`)).toHaveCount(1);
+  }
+});
+
+test("every game is directly linked from home", async ({ page }) => {
+  await page.goto("/index.html");
+  for (const route of gameRoutes) {
+    await expect(page.locator(`.game-card[href="${route}/"]`)).toHaveCount(1);
   }
 });
 
@@ -75,7 +93,7 @@ test("reduced motion disables meaningful transition duration", async ({
   expect(Number.parseFloat(duration)).toBeLessThanOrEqual(0.001);
 });
 
-test("dark color scheme uses the research-desk dark token", async ({
+test("system dark preference keeps the shared dashboard palette", async ({
   page,
 }) => {
   await page.emulateMedia({ colorScheme: "dark" });
@@ -85,7 +103,7 @@ test("dark color scheme uses the research-desk dark token", async ({
       .getPropertyValue("--paper")
       .trim(),
   );
-  expect(background).toBe("#101512");
+  expect(background).toBe("#eef3f5");
 });
 
 test("404 page provides explicit exits without redirecting", async ({

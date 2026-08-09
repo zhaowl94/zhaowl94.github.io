@@ -6,7 +6,7 @@ const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
-const toolRoutes = [
+const existingResearchRoutes = [
   "etf-premium",
   "ndx-valuation",
   "bubble-monitor",
@@ -15,6 +15,15 @@ const toolRoutes = [
   "qdii-similarity",
   "market-pulse",
 ];
+const researchRoutes = [...existingResearchRoutes, "ndx100-dashboard"];
+const gameRoutes = [
+  "doudizhu",
+  "guandan",
+  "tank-battle",
+  "auction-king",
+  "cultivation",
+];
+const publicRoutes = [...researchRoutes, ...gameRoutes];
 const requiredFiles = [
   ".nojekyll",
   "404.html",
@@ -27,11 +36,25 @@ const requiredFiles = [
   "index.html",
   "robots.txt",
   "sitemap.xml",
-  ...toolRoutes.flatMap((route) => [
+  ...existingResearchRoutes.flatMap((route) => [
     `${route}/index.html`,
     `${route}/app.js`,
     `${route}/styles.css`,
   ]),
+  "ndx100-dashboard/index.html",
+  "ndx100-dashboard/app.js",
+  "ndx100-dashboard/style.css",
+  "ndx100-dashboard/vendor/echarts.min.js",
+  "ndx100-dashboard/data/meta.json",
+  "ndx100-dashboard/data/quotes.json",
+  "doudizhu/index.html",
+  "guandan/index.html",
+  "guandan/game.js",
+  "guandan/ui.js",
+  "guandan/style.css",
+  "tank-battle/index.html",
+  "auction-king/index.html",
+  "cultivation/index.html",
   "etf-premium/data/dashboard.json",
   "etf-premium/vendor/chart.umd.min.js",
   "ndx-valuation/data.js",
@@ -95,10 +118,13 @@ function assertSafeRuntimeMarkup(pages) {
 }
 
 function assertHomeStructure(html) {
-  if ((html.match(/class="tool-card(?:\s|"|$)/gu) ?? []).length !== 7) {
-    throw new Error("The home page must contain exactly seven tool cards.");
+  if ((html.match(/class="tool-card(?:\s|"|$)/gu) ?? []).length !== 8) {
+    throw new Error("The home page must contain exactly eight research cards.");
   }
-  for (const route of toolRoutes) {
+  if ((html.match(/class="game-card(?:\s|"|$)/gu) ?? []).length !== 5) {
+    throw new Error("The home page must contain exactly five game cards.");
+  }
+  for (const route of publicRoutes) {
     if (!html.includes(`href="${route}/"`))
       throw new Error(`Home page is missing ${route}/.`);
   }
@@ -115,10 +141,10 @@ function assertStructuredData(html) {
   const data = JSON.parse(match[1]);
   if (
     data["@type"] !== "CollectionPage" ||
-    data.mainEntity?.numberOfItems !== 7 ||
-    data.mainEntity?.itemListElement?.length !== 7
+    data.mainEntity?.numberOfItems !== 13 ||
+    data.mainEntity?.itemListElement?.length !== 13
   ) {
-    throw new Error("JSON-LD does not describe the seven-tool collection.");
+    throw new Error("JSON-LD does not describe the 13-page collection.");
   }
 }
 
@@ -137,7 +163,7 @@ await assertRequiredFiles();
 const pagePaths = [
   "index.html",
   "404.html",
-  ...toolRoutes.map((route) => `${route}/index.html`),
+  ...publicRoutes.map((route) => `${route}/index.html`),
 ];
 const pages = await Promise.all(pagePaths.map(assertLocalReferences));
 const [indexHtml, notFoundHtml] = pages;
@@ -153,12 +179,12 @@ if (!notFoundHtml.includes('content="noindex, follow"'))
   throw new Error("The 404 page must remain noindex.");
 if (!robots.includes("https://zhaowl94.github.io/sitemap.xml"))
   throw new Error("robots.txt is missing the sitemap.");
-for (const route of ["", ...toolRoutes.map((item) => `${item}/`)]) {
+for (const route of ["", ...publicRoutes.map((item) => `${item}/`)]) {
   if (!sitemap.includes(`<loc>https://zhaowl94.github.io/${route}</loc>`))
     throw new Error(`sitemap.xml is missing /${route}`);
 }
 
 const payload = await criticalPayloadSize();
 console.log(
-  `Static checks passed: ${toolRoutes.length} tools, ${requiredFiles.length} required files, ${payload} critical bytes.`,
+  `Static checks passed: ${researchRoutes.length} research tools, ${gameRoutes.length} games, ${requiredFiles.length} required files, ${payload} critical bytes.`,
 );

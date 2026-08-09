@@ -16,13 +16,14 @@ const siteScript = await readFile(
   "utf8",
 );
 
-test("home status enumerates the seven public tools", () => {
+test("home status enumerates the eight public research tools", () => {
   assert.deepEqual(Object.keys(status.tools).sort(), [
     "backtest-lab",
     "bubble-monitor",
     "etf-premium",
     "market-pulse",
     "ndx-valuation",
+    "ndx100-dashboard",
     "qdii-similarity",
     "strategy-monitor",
   ]);

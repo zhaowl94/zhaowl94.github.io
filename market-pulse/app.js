@@ -95,6 +95,7 @@ function buildSparkline(values, isPositive) {
 function renderSession(state) {
   const session = state.session || {};
   elements.sessionLabel.textContent = session.label || "快照状态未知";
+  elements.sessionDot.classList.remove("error");
   elements.sessionDot.classList.toggle("open", session.status === "open");
   elements.marketTimestamp.textContent = formatDate(session.market_timestamp);
   elements.generatedTimestamp.textContent = formatDate(state.generated_at);
@@ -276,18 +277,21 @@ function render(state, refreshed) {
   renderSources(state.sources);
   elements.loadStatus.textContent = refreshed
     ? `已重新读取 · ${new Date().toLocaleTimeString("zh-CN", { hour12: false })}`
-    : "已读取当前发布快照";
+    : "网站发布快照已就绪";
 }
 
 async function loadSnapshot({ refreshed = false } = {}) {
   elements.refresh.disabled = true;
   elements.loadStatus.textContent = refreshed
     ? "正在绕过缓存重新读取…"
-    : "正在加载本地数据文件…";
+    : "正在读取已发布快照…";
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 15_000);
   try {
     const separator = DATA_URL.includes("?") ? "&" : "?";
     const response = await fetch(`${DATA_URL}${separator}t=${Date.now()}`, {
       cache: "no-store",
+      signal: controller.signal,
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const state = await response.json();
@@ -300,8 +304,15 @@ async function loadSnapshot({ refreshed = false } = {}) {
     }
     render(state, refreshed);
   } catch (error) {
-    elements.loadStatus.textContent = `读取失败：${error.message}。请稍后重试。`;
+    elements.sessionLabel.textContent = "快照暂不可用";
+    elements.sessionDot.classList.remove("open");
+    elements.sessionDot.classList.add("error");
+    elements.loadStatus.textContent =
+      error instanceof Error && error.name === "AbortError"
+        ? "读取超时，请点击“刷新最新快照”重试。"
+        : "暂时无法读取已发布快照，请点击“刷新最新快照”重试。";
   } finally {
+    window.clearTimeout(timeout);
     elements.refresh.disabled = false;
   }
 }

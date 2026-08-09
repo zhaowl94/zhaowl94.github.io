@@ -20,6 +20,11 @@ const tools = [
     "美股市场脉搏 · 无 LLM 规则快照 · zhaowl94",
     /美股市场脉搏/,
   ],
+  [
+    "/ndx100-dashboard/",
+    "纳指 100 量化仪表盘 · zhaowl94",
+    /纳指100 · 量化仪表盘/,
+  ],
 ];
 
 for (const [path, title, heading] of tools) {
@@ -56,11 +61,31 @@ test("published market snapshots render substantive data", async ({ page }) => {
   await page.goto("/market-pulse/");
   await expect(page.locator("#rankingRows tr")).toHaveCount(10);
   await expect(page.locator("#indexCards .index-card")).toHaveCount(2);
+  await expect(page.locator("#load-status")).toHaveText("网站发布快照已就绪");
   const coverage = await page.locator("#coverageCount").textContent();
   const [candidates, universe] = coverage.match(/\d+/gu).map(Number);
   expect(candidates).toBeGreaterThanOrEqual(60);
   expect(universe).toBeGreaterThanOrEqual(candidates);
   await expect(page.locator("#modelUsed")).toHaveText("不使用");
+
+  await page.goto("/ndx100-dashboard/");
+  await page.getByRole("button", { name: "刷新行情数据" }).click();
+  await expect(page.locator("#chartsArea")).toBeVisible();
+  await expect(page.locator("#metricCards .metric-card")).toHaveCount(8);
+});
+
+test("Market Pulse replaces loading copy with a useful failure state", async ({
+  page,
+}) => {
+  await page.route("**/market-pulse/data/state.json*", (route) =>
+    route.abort("failed"),
+  );
+  await page.goto("/market-pulse/");
+  await expect(page.locator("#sessionLabel")).toHaveText("快照暂不可用");
+  await expect(page.locator("#load-status")).toHaveText(
+    "暂时无法读取已发布快照，请点击“刷新最新快照”重试。",
+  );
+  await expect(page.locator("#refreshSnapshot")).toBeEnabled();
 });
 
 test("every tool exposes an appropriate refresh control", async ({ page }) => {
@@ -72,6 +97,7 @@ test("every tool exposes an appropriate refresh control", async ({ page }) => {
     ["/backtest-lab/", "拉取最新数据"],
     ["/qdii-similarity/", "刷新最新快照"],
     ["/market-pulse/", "刷新最新快照"],
+    ["/ndx100-dashboard/", "刷新行情数据"],
   ];
   for (const [path, name] of controls) {
     await page.goto(path);

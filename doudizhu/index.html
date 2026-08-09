@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>斗地主 · zhaowl94 小游戏</title>
+<meta name="description" content="无需安装、直接在浏览器中游玩的单机斗地主小游戏。">
+<link rel="canonical" href="https://zhaowl94.github.io/doudizhu/">
+<link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/styles/tool-shell.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #1a6b3c;
+    background-image: radial-gradient(ellipse at center, #2d8b4e 0%, #0d4a25 70%, #062a15 100%);
+    font-family: 'Microsoft YaHei', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+}
+#game {
+    width: 100vw; height: 100vh;
+    position: relative;
+    display: flex; flex-direction: column;
+}
+
+.top-area {
+    height: 140px; display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 30px;
+}
+.ai-info {
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 200px;
+}
+.ai-name {
+    color: #fff; font-size: 16px; font-weight: bold;
+    background: rgba(0,0,0,0.4); padding: 4px 16px; border-radius: 12px;
+    margin-bottom: 4px;
+}
+.ai-cards-count {
+    color: #ffd700; font-size: 14px;
+    margin-bottom: 4px;
+}
+.ai-role {
+    font-size: 13px; padding: 2px 10px; border-radius: 8px;
+    display: none;
+}
+.ai-role.landlord { background: #e74c3c; color: #fff; display: inline-block; }
+.ai-role.farmer { background: #3498db; color: #fff; display: inline-block; }
+.ai-play-area {
+    min-height: 60px; display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap;
+}
+.ai-play-area .card { margin: 0 -8px; }
+
+.center-area {
+    flex: 1; display: flex; justify-content: center; align-items: center;
+    position: relative;
+}
+.bottom-cards-area {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 4px; padding: 4px 12px;
+    background: rgba(0,0,0,0.3); border-radius: 8px;
+    opacity: 0; transition: opacity 0.5s;
+}
+.bottom-cards-area.show { opacity: 1; }
+.bottom-cards-area .card { width: 36px; height: 50px; font-size: 10px; line-height: 1.1; }
+
+.play-info {
+    color: #fff; font-size: 18px; text-align: center;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    min-height: 40px; display: flex; align-items: center; justify-content: center;
+}
+.play-info .msg {
+    background: rgba(0,0,0,0.5); padding: 6px 24px; border-radius: 20px;
+    font-size: 16px;
+}
+
+.player-area {
+    padding: 0 30px 10px;
+    display: flex; flex-direction: column; align-items: center;
+}
+.player-info {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+}
+.player-name {
+    color: #fff; font-size: 16px; font-weight: bold;
+    background: rgba(0,0,0,0.4); padding: 4px 16px; border-radius: 12px;
+}
+.player-role {
+    font-size: 13px; padding: 2px 10px; border-radius: 8px;
+    display: none;
+}
+.player-role.landlord { background: #e74c3c; color: #fff; display: inline-block; }
+.player-role.farmer { background: #3498db; color: #fff; display: inline-block; }
+.player-play-area {
+    min-height: 70px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+}
+.player-play-area .card { margin: 0 -8px; }
+.player-play-area .pass-text {
+    color: #aaa; font-size: 20px; font-weight: bold;
+}
+
+.hand-area {
+    display: flex; justify-content: center; align-items: flex-end;
+    min-height: 100px; padding: 0 20px;
+    position: relative;
+}
+
+.card {
+    width: 56px; height: 78px;
+    background: #fff;
+    border: 1px solid #999;
+    border-radius: 5px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    padding-top: 4px;
+    font-weight: bold;
+    cursor: default;
+    position: relative;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+    transition: transform 0.15s, margin-top 0.15s;
+    flex-shrink: 0;
+}
+.card.red { color: #d32f2f; }
+.card.black { color: #222; }
+.card.joker-red { color: #d32f2f; }
+.card.joker-black { color: #333; }
+
+.card .rank { font-size: 14px; line-height: 1; }
+.card .suit { font-size: 16px; line-height: 1; margin-top: 2px; }
+.card .joker-text { font-size: 9px; writing-mode: vertical-rl; letter-spacing: 2px; margin-top: 4px; font-weight: bold; }
+
+.hand-area .card {
+    margin: 0 -10px;
+    cursor: pointer;
+}
+.hand-area .card:hover { transform: translateY(-4px); z-index: 10; }
+.hand-area .card.selected { transform: translateY(-16px); }
+.hand-area .card.selected:hover { transform: translateY(-18px); }
+
+.card-back {
+    width: 40px; height: 56px;
+    background: linear-gradient(135deg, #1a3a8a, #2a5ab8);
+    border: 2px solid #ffd700;
+    border-radius: 4px;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+    display: flex; align-items: center; justify-content: center;
+}
+.card-back::after {
+    content: '斗'; color: #ffd700; font-size: 18px; font-weight: bold;
+}
+
+.btn-area {
+    display: flex; gap: 12px; margin-top: 8px; justify-content: center;
+}
+.btn {
+    padding: 8px 28px; font-size: 15px; border: none; border-radius: 6px;
+    cursor: pointer; font-weight: bold; transition: all 0.2s;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+.btn:hover { transform: scale(1.05); }
+.btn:active { transform: scale(0.95); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-primary { background: linear-gradient(to bottom, #f0c040, #d4a020); color: #333; }
+.btn-secondary { background: linear-gradient(to bottom, #666, #444); color: #fff; }
+.btn-danger { background: linear-gradient(to bottom, #e74c3c, #c0392b); color: #fff; }
+.btn-success { background: linear-gradient(to bottom, #2ecc71, #27ae60); color: #fff; }
+
+#start-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 100;
+}
+#start-screen h1 {
+    color: #ffd700; font-size: 60px; text-shadow: 0 0 20px rgba(255,215,0,0.5);
+    margin-bottom: 10px;
+}
+#start-screen .subtitle {
+    color: #fff; font-size: 18px; margin-bottom: 40px; opacity: 0.7;
+}
+#start-screen .btn { font-size: 20px; padding: 12px 48px; }
+
+#result-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75);
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 100;
+}
+#result-screen h2 {
+    font-size: 48px; margin-bottom: 20px; text-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+#result-screen .btn { font-size: 18px; padding: 10px 40px; }
+
+.bomb-effect {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 50;
+    background: radial-gradient(circle, rgba(255,100,0,0.4), transparent 70%);
+    animation: bomb-anim 0.6s ease-out forwards;
+}
+@keyframes bomb-anim {
+    0% { opacity: 1; transform: scale(0.5); }
+    100% { opacity: 0; transform: scale(2); }
+}
+
+.clock-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 3px solid #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: bold; color: #fff;
+    animation: clock-pulse 1s infinite;
+}
+@keyframes clock-pulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(255,255,255,0.3); }
+    50% { box-shadow: 0 0 15px rgba(255,255,255,0.7); }
+}
+
+.landlord-badge {
+    background: #e74c3c; color: #ffd700; padding: 2px 6px; border-radius: 50%;
+    font-size: 11px; font-weight: bold; position: absolute; top: -4px; right: -4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+</style>
+</head>
+<body>
+<a class="hub-home-chip" href="../" aria-label="返回 zhaowl94 主页">← 主页</a>
+<div id="game">
+    <div class="top-area">
+        <div class="ai-info" id="ai-left-info">
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span class="ai-name">电脑左</span>
+                <span class="ai-role" id="ai-left-role"></span>
+            </div>
+            <div class="ai-cards-count" id="ai-left-count">17张</div>
+            <div class="ai-play-area" id="ai-left-play"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="bottom-cards-area" id="bottom-cards"></div>
+        </div>
+        <div class="ai-info" id="ai-right-info">
+            <div style="display:flex;align-items:center;gap:6px;">
+                <span class="ai-name">电脑右</span>
+                <span class="ai-role" id="ai-right-role"></span>
+            </div>
+            <div class="ai-cards-count" id="ai-right-count">17张</div>
+            <div class="ai-play-area" id="ai-right-play"></div>
+        </div>
+    </div>
+    <div class="center-area">
+        <div class="play-info" id="play-info"></div>
+    </div>
+    <div class="player-area">
+        <div class="player-info">
+            <span class="player-name">你</span>
+            <span class="player-role" id="player-role"></span>
+            <div class="clock-icon" id="clock" style="display:none;">0</div>
+        </div>
+        <div class="player-play-area" id="player-play"></div>
+        <div class="hand-area" id="hand"></div>
+        <div class="btn-area" id="btn-area"></div>
+    </div>
+</div>
+
+<div id="start-screen">
+    <h1>斗 地 主</h1>
+    <div class="subtitle">经典三人扑克牌游戏</div>
+    <button class="btn btn-primary" onclick="startGame()">开始游戏</button>
+</div>
+
+<div id="result-screen">
+    <h2 id="result-text"></h2>
+    <button class="btn btn-primary" onclick="startGame()">再来一局</button>
+</div>
+
+<script>
+const SUITS = ['♠','♥','♣','♦'];
+const SUIT_COLORS = {'♠':'black','♥':'red','♣':'black','♦':'red'};
+const RANKS = ['3','4','5','6','7','8','9','10','J','Q','K','A','2'];
+const RANK_VALUES = {'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'A':14,'2':15};
+
+function createDeck() {
+    let deck = [];
+    for (let s of SUITS) {
+        for (let r of RANKS) {
+            deck.push({ suit: s, rank: r, value: RANK_VALUES[r], id: s+r });
+        }
+    }
+    deck.push({ suit: 'joker', rank: '小王', value: 16, id: 'SJ' });
+    deck.push({ suit: 'joker', rank: '大王', value: 17, id: 'BJ' });
+    return deck;
+}
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function sortCards(cards) {
+    return cards.sort((a, b) => {
+        if (a.value !== b.value) return a.value - b.value;
+        return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
+    });
+}
+
+function cardHTML(card, small=false) {
+    if (card.suit === 'joker') {
+        const isB = card.value === 17;
+        const cls = isB ? 'joker-red' : 'joker-black';
+        return `<div class="card ${cls}" data-id="${card.id}"><span class="rank">${isB ? '大' : '小'}</span><span class="joker-text">${isB ? 'JOKER' : 'joker'}</span></div>`;
+    }
+    const cls = SUIT_COLORS[card.suit];
+    return `<div class="card ${cls}" data-id="${card.id}"><span class="rank">${card.rank}</span><span class="suit">${card.suit}</span></div>`;
+}
+
+function cardBackHTML() {
+    return '<div class="card-back"></div>';
+}
+
+const COMBO = {
+    INVALID: 0, SINGLE: 1, PAIR: 2, TRIO: 3, TRIO1: 4, TRIO2: 5,
+    STRAIGHT: 6, STRAIGHT_PAIR: 7, PLANE: 8, PLANE1: 9, PLANE2: 10,
+    FOUR2: 11, BOMB: 12, ROCKET: 13
+};
+
+const COMBO_NAMES = {
+    [COMBO.INVALID]: '无效', [COMBO.SINGLE]: '单', [COMBO.PAIR]: '对',
+    [COMBO.TRIO]: '三条', [COMBO.TRIO1]: '三带一', [COMBO.TRIO2]: '三带二',
+    [COMBO.STRAIGHT]: '顺子', [COMBO.STRAIGHT_PAIR]: '连对',
+    [COMBO.PLANE]: '飞机', [COMBO.PLANE1]: '飞机带单', [COMBO.PLANE2]: '飞机带对',
+    [COMBO.FOUR2]: '四带二', [COMBO.BOMB]: '炸弹', [COMBO.ROCKET]: '火箭'
+};
+
+function analyzeCombo(cards) {
+    if (!cards || cards.length === 0) return { type: COMBO.INVALID };
+    const n = cards.length;
+    const values = cards.map(c => c.value).sort((a, b) => a - b);
+
+    if (n === 2 && values[0] === 16 && values[1] === 17) {
+        return { type: COMBO.ROCKET, main: 17 };
+    }
+
+    const countMap = {};
+    values.forEach(v => countMap[v] = (countMap[v] || 0) + 1);
+    const groups = {};
+    for (let [v, c] of Object.entries(countMap)) {
+        if (!groups[c]) groups[c] = [];
+        groups[c].push(Number(v));
+    }
+    for (let k in groups) groups[k].sort((a, b) => a - b);
+
+    if (n === 1) return { type: COMBO.SINGLE, main: values[0] };
+    if (n === 2 && groups[2] && groups[2].length === 1) return { type: COMBO.PAIR, main: groups[2][0] };
+    if (n === 3 && groups[3] && groups[3].length === 1) return { type: COMBO.TRIO, main: groups[3][0] };
+    if (n === 4 && groups[3] && groups[3].length === 1 && groups[1] && groups[1].length === 1) {
+        return { type: COMBO.TRIO1, main: groups[3][0] };
+    }
+    if (n === 5 && groups[3] && groups[3].length === 1 && groups[2] && groups[2].length === 1) {
+        return { type: COMBO.TRIO2, main: groups[3][0] };
+    }
+    if (n === 4 && groups[4] && groups[4].length === 1) return { type: COMBO.BOMB, main: groups[4][0] };
+    if (n === 6 && groups[4] && groups[4].length === 1) {
+        return { type: COMBO.FOUR2, main: groups[4][0] };
+    }
+    if (n === 8 && groups[4] && groups[4].length === 1 && groups[2] && groups[2].length === 2) {
+        return { type: COMBO.FOUR2, main: groups[4][0] };
+    }
+
+    if (n >= 5 && groups[1] && groups[1].length === n) {
+        const vs = groups[1];
+        if (isConsecutive(vs) && vs[vs.length - 1] <= 14) {
+            return { type: COMBO.STRAIGHT, main: vs[vs.length - 1], length: n };
+        }
+    }
+
+    if (n >= 6 && n % 2 === 0 && groups[2] && groups[2].length === n / 2) {
+        const vs = groups[2];
+        if (isConsecutive(vs) && vs[vs.length - 1] <= 14) {
+            return { type: COMBO.STRAIGHT_PAIR, main: vs[vs.length - 1], length: vs.length };
+        }
+    }
+
+    if (groups[3] && groups[3].length >= 2) {
+        const trios = groups[3].filter(v => v <= 14);
+        if (trios.length === groups[3].length || (groups[3].length >= 2)) {
+            const allTrios = groups[3].filter(v => v <= 14);
+            for (let len = allTrios.length; len >= 2; len--) {
+                for (let start = 0; start <= allTrios.length - len; start++) {
+                    const sub = allTrios.slice(start, start + len);
+                    if (isConsecutive(sub)) {
+                        const mainCount = len;
+                        const extra = n - mainCount * 3;
+                        if (extra === 0) return { type: COMBO.PLANE, main: sub[sub.length - 1], length: len };
+                        if (extra === len) return { type: COMBO.PLANE1, main: sub[sub.length - 1], length: len };
+                        if (extra === len * 2) {
+                            const remaining = {};
+                            values.forEach(v => remaining[v] = (remaining[v] || 0) + 1);
+                            sub.forEach(v => { remaining[v] -= 3; if (remaining[v] === 0) delete remaining[v]; });
+                            const allPairs = Object.values(remaining).every(c => c === 2);
+                            if (allPairs && Object.keys(remaining).length === len) {
+                                return { type: COMBO.PLANE2, main: sub[sub.length - 1], length: len };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (n >= 6 && groups[4]) {
+        for (let quadVal of groups[4]) {
+            const remaining = n - 4;
+            if (remaining === 2 || remaining === 4) {
+                return { type: COMBO.FOUR2, main: quadVal };
+            }
+        }
+    }
+
+    return { type: COMBO.INVALID };
+}
+
+function isConsecutive(arr) {
+    if (arr.length < 2) return false;
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] !== arr[i - 1] + 1) return false;
+    }
+    return true;
+}
+
+function canBeat(combo, lastCombo) {
+    if (combo.type === COMBO.INVALID) return false;
+    if (combo.type === COMBO.ROCKET) return true;
+    if (lastCombo.type === COMBO.ROCKET) return false;
+    if (combo.type === COMBO.BOMB && lastCombo.type !== COMBO.BOMB) return true;
+    if (combo.type === COMBO.BOMB && lastCombo.type === COMBO.BOMB) return combo.main > lastCombo.main;
+    if (combo.type !== lastCombo.type) return false;
+    if (combo.length !== undefined && combo.length !== lastCombo.length) return false;
+    return combo.main > lastCombo.main;
+}
+
+let G = {};
+
+function startGame() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'none';
+
+    let deck = shuffle(createDeck());
+    G = {
+        hands: [
+            sortCards(deck.slice(0, 17)),
+            sortCards(deck.slice(17, 34)),
+            sortCards(deck.slice(34, 51))
+        ],
+        bottomCards: deck.slice(51, 54),
+        landlord: -1,
+        currentPlayer: -1,
+        lastPlay: null,
+        lastPlayBy: -1,
+        passCount: 0,
+        phase: 'bid',
+        bidIndex: 0,
+        bidStartPlayer: Math.floor(Math.random() * 3),
+        selected: new Set(),
+        playedCards: [[], [], []],
+        multiplier: 1,
+    };
+    G.bidIndex = G.bidStartPlayer;
+
+    renderAll();
+    renderButtons();
+    startBidding();
+}
+
+function renderAll() {
+    renderHand();
+    renderAI();
+    renderRoles();
+    renderBottomCards();
+}
+
+function renderHand() {
+    const el = document.getElementById('hand');
+    el.innerHTML = '';
+    G.hands[0].forEach(card => {
+        const div = document.createElement('div');
+        div.innerHTML = cardHTML(card);
+        const cardEl = div.firstElementChild;
+        if (G.selected.has(card.id)) cardEl.classList.add('selected');
+        cardEl.addEventListener('click', () => toggleCard(card.id));
+        el.appendChild(cardEl);
+    });
+}
+
+function renderAI() {
+    document.getElementById('ai-left-count').textContent = G.hands[1].length + '张';
+    document.getElementById('ai-right-count').textContent = G.hands[2].length + '张';
+}
+
+function renderRoles() {
+    ['ai-left', 'ai-right', 'player'].forEach((prefix, i) => {
+        const roleEl = document.getElementById(prefix + '-role');
+        if (G.landlord === i) {
+            roleEl.textContent = '地主';
+            roleEl.className = (i === 0 ? 'player' : 'ai') + '-role landlord';
+        } else if (G.landlord >= 0) {
+            roleEl.textContent = '农民';
+            roleEl.className = (i === 0 ? 'player' : 'ai') + '-role farmer';
+        } else {
+            roleEl.className = 'ai-role';
+        }
+    });
+}
+
+function renderBottomCards() {
+    const el = document.getElementById('bottom-cards');
+    if (G.landlord >= 0) {
+        el.innerHTML = G.bottomCards.map(c => cardHTML(c)).join('');
+        el.classList.add('show');
+    } else {
+        el.innerHTML = '';
+        el.classList.remove('show');
+    }
+}
+
+function renderButtons() {
+    const area = document.getElementById('btn-area');
+    area.innerHTML = '';
+    if (G.phase === 'bid' && G.bidIndex === 0) {
+        addBtn(area, '叫地主', 'btn-primary', () => doBid(0, true));
+        addBtn(area, '不叫', 'btn-secondary', () => doBid(0, false));
+    } else if (G.phase === 'play' && G.currentPlayer === 0) {
+        addBtn(area, '出牌', 'btn-primary', () => doPlay(), !canPlaySelected());
+        addBtn(area, '不出', 'btn-secondary', () => doPass(), G.lastPlayBy === 0 || G.lastPlay === null);
+        addBtn(area, '提示', 'btn-success', () => doHint());
+    }
+}
+
+function addBtn(area, text, cls, fn, disabled = false) {
+    const btn = document.createElement('button');
+    btn.className = 'btn ' + cls;
+    btn.textContent = text;
+    btn.onclick = fn;
+    btn.disabled = disabled;
+    area.appendChild(btn);
+}
+
+function toggleCard(id) {
+    if (G.phase !== 'play' || G.currentPlayer !== 0) return;
+    if (G.selected.has(id)) G.selected.delete(id);
+    else G.selected.add(id);
+    renderHand();
+    renderButtons();
+}
+
+function canPlaySelected() {
+    const cards = getSelectedCards();
+    if (cards.length === 0) return false;
+    const combo = analyzeCombo(cards);
+    if (combo.type === COMBO.INVALID) return false;
+    if (G.lastPlay && G.lastPlayBy !== 0) return canBeat(combo, G.lastPlay);
+    return true;
+}
+
+function getSelectedCards() {
+    return G.hands[0].filter(c => G.selected.has(c.id));
+}
+
+function showPlay(playId, cards, isPass = false) {
+    const el = document.getElementById(playId);
+    if (isPass) {
+        el.innerHTML = '<span class="pass-text">不出</span>';
+    } else {
+        el.innerHTML = cards.map(c => cardHTML(c)).join('');
+    }
+}
+
+function clearPlays() {
+    ['player-play', 'ai-left-play', 'ai-right-play'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+    });
+}
+
+function startBidding() {
+    G.phase = 'bid';
+    showInfo('叫地主阶段');
+    if (G.bidIndex !== 0) {
+        setTimeout(() => aiBid(G.bidIndex), 1000);
+    } else {
+        renderButtons();
+    }
+}
+
+function doBid(playerIdx, wantLandlord) {
+    if (wantLandlord) {
+        G.landlord = playerIdx;
+        G.hands[playerIdx] = sortCards([...G.hands[playerIdx], ...G.bottomCards]);
+        G.currentPlayer = playerIdx;
+        G.phase = 'play';
+        G.lastPlay = null;
+        G.lastPlayBy = -1;
+        G.passCount = 0;
+        renderAll();
+        showInfo(playerIdx === 0 ? '你是地主，请出牌' : `电脑${playerIdx === 1 ? '左' : '右'}是地主`);
+        clearPlays();
+        renderButtons();
+        if (G.currentPlayer !== 0) {
+            setTimeout(() => aiPlay(G.currentPlayer), 1200);
+        }
+    } else {
+        showInfo(playerIdx === 0 ? '你选择不叫' : `电脑${playerIdx === 1 ? '左' : '右'}不叫`);
+        G.bidIndex = (G.bidIndex + 1) % 3;
+        if (G.bidIndex === G.bidStartPlayer) {
+            showInfo('没人叫地主，重新发牌');
+            setTimeout(startGame, 1500);
+            return;
+        }
+        if (G.bidIndex !== 0) {
+            setTimeout(() => aiBid(G.bidIndex), 1000);
+        } else {
+            renderButtons();
+        }
+    }
+}
+
+function aiBid(idx) {
+    const hand = G.hands[idx];
+    let strength = 0;
+    hand.forEach(c => {
+        if (c.value >= 15) strength += 3;
+        if (c.value === 17) strength += 2;
+    });
+    const countMap = {};
+    hand.forEach(c => countMap[c.value] = (countMap[c.value] || 0) + 1);
+    for (let cnt of Object.values(countMap)) {
+        if (cnt === 4) strength += 4;
+    }
+    doBid(idx, strength >= 7);
+}
+
+function doPlay() {
+    const cards = getSelectedCards();
+    const combo = analyzeCombo(cards);
+    if (combo.type === COMBO.INVALID) return;
+    if (G.lastPlay && G.lastPlayBy !== 0 && !canBeat(combo, G.lastPlay)) return;
+
+    playCards(0, cards, combo);
+}
+
+function doPass() {
+    if (G.lastPlayBy === 0 || G.lastPlay === null) return;
+    G.passCount++;
+    showPlay('player-play', [], true);
+    G.selected.clear();
+    nextPlayer();
+}
+
+function playCards(playerIdx, cards, combo) {
+    cards.forEach(c => {
+        const idx = G.hands[playerIdx].findIndex(h => h.id === c.id);
+        if (idx >= 0) G.hands[playerIdx].splice(idx, 1);
+    });
+
+    G.lastPlay = combo;
+    G.lastPlayBy = playerIdx;
+    G.passCount = 0;
+    G.multiplier = 1;
+
+    if (combo.type === COMBO.BOMB) {
+        G.multiplier *= 2;
+        showBombEffect();
+    } else if (combo.type === COMBO.ROCKET) {
+        G.multiplier *= 4;
+        showBombEffect();
+    }
+
+    clearPlays();
+    const playIds = ['player-play', 'ai-left-play', 'ai-right-play'];
+    showPlay(playIds[playerIdx], cards);
+
+    if (combo.type === COMBO.BOMB || combo.type === COMBO.ROCKET) {
+        showInfo(COMBO_NAMES[combo.type] + '!');
+    } else {
+        showInfo('');
+    }
+
+    G.selected.clear();
+    renderAll();
+
+    if (G.hands[playerIdx].length === 0) {
+        setTimeout(() => gameOver(playerIdx), 800);
+        return;
+    }
+
+    nextPlayer();
+}
+
+function nextPlayer() {
+    G.currentPlayer = (G.currentPlayer + 1) % 3;
+    renderButtons();
+    if (G.currentPlayer !== 0) {
+        setTimeout(() => aiPlay(G.currentPlayer), 800 + Math.random() * 600);
+    }
+}
+
+function aiPlay(idx) {
+    const hand = G.hands[idx];
+    if (hand.length === 0) return;
+
+    let cardsToPlay = null;
+    let comboResult = null;
+
+    if (G.lastPlay === null || G.lastPlayBy === idx) {
+        G.lastPlay = null;
+        G.lastPlayBy = -1;
+        clearPlays();
+        const result = aiLeadPlay(hand);
+        cardsToPlay = result.cards;
+        comboResult = result.combo;
+    } else {
+        const result = aiFollowPlay(hand, G.lastPlay);
+        if (result) {
+            cardsToPlay = result.cards;
+            comboResult = result.combo;
+        }
+    }
+
+    if (cardsToPlay && comboResult) {
+        playCards(idx, cardsToPlay, comboResult);
+    } else {
+        G.passCount++;
+        const playIds = ['player-play', 'ai-left-play', 'ai-right-play'];
+        showPlay(playIds[idx], [], true);
+        nextPlayer();
+    }
+}
+
+function aiLeadPlay(hand) {
+    const countMap = {};
+    hand.forEach(c => countMap[c.value] = (countMap[c.value] || 0) + 1);
+
+    const vals = Object.keys(countMap).map(Number).sort((a, b) => a - b);
+
+    for (let v of vals) {
+        if (countMap[v] === 1 && v < 16) {
+            const c = hand.find(x => x.value === v);
+            return { cards: [c], combo: { type: COMBO.SINGLE, main: v } };
+        }
+    }
+    for (let v of vals) {
+        if (countMap[v] === 2) {
+            const cs = hand.filter(x => x.value === v);
+            return { cards: cs, combo: { type: COMBO.PAIR, main: v } };
+        }
+    }
+
+    for (let v of vals) {
+        if (countMap[v] === 3) {
+            const cs = hand.filter(x => x.value === v);
+            const extra = hand.find(x => x.value !== v);
+            if (extra) {
+                return { cards: [...cs, extra], combo: { type: COMBO.TRIO1, main: v } };
+            }
+            return { cards: cs, combo: { type: COMBO.TRIO, main: v } };
+        }
+    }
+
+    for (let len = 5; len <= 12; len++) {
+        for (let start = 3; start + len - 1 <= 14; start++) {
+            let ok = true;
+            for (let j = 0; j < len; j++) {
+                if (!countMap[start + j] || countMap[start + j] < 1) { ok = false; break; }
+            }
+            if (ok) {
+                const cards = [];
+                for (let j = 0; j < len; j++) {
+                    cards.push(hand.find(c => c.value === start + j && !cards.includes(c)));
+                }
+                return { cards, combo: { type: COMBO.STRAIGHT, main: start + len - 1, length: len } };
+            }
+        }
+    }
+
+    if (hand.length <= 2) {
+        return { cards: [hand[0]], combo: { type: COMBO.SINGLE, main: hand[0].value } };
+    }
+
+    const c = hand[0];
+    return { cards: [c], combo: { type: COMBO.SINGLE, main: c.value } };
+}
+
+function aiFollowPlay(hand, lastCombo) {
+    const countMap = {};
+    hand.forEach(c => countMap[c.value] = (countMap[c.value] || 0) + 1);
+    const vals = Object.keys(countMap).map(Number).sort((a, b) => a - b);
+
+    if (lastCombo.type === COMBO.SINGLE) {
+        for (let v of vals) {
+            if (v > lastCombo.main) {
+                return { cards: [hand.find(c => c.value === v)], combo: { type: COMBO.SINGLE, main: v } };
+            }
+        }
+    } else if (lastCombo.type === COMBO.PAIR) {
+        for (let v of vals) {
+            if (v > lastCombo.main && countMap[v] >= 2) {
+                const cs = hand.filter(c => c.value === v).slice(0, 2);
+                return { cards: cs, combo: { type: COMBO.PAIR, main: v } };
+            }
+        }
+    } else if (lastCombo.type === COMBO.TRIO || lastCombo.type === COMBO.TRIO1 || lastCombo.type === COMBO.TRIO2) {
+        for (let v of vals) {
+            if (v > lastCombo.main && countMap[v] >= 3) {
+                const cs = hand.filter(c => c.value === v).slice(0, 3);
+                if (lastCombo.type === COMBO.TRIO) {
+                    return { cards: cs, combo: { type: COMBO.TRIO, main: v } };
+                } else if (lastCombo.type === COMBO.TRIO1) {
+                    const extra = hand.find(c => c.value !== v);
+                    if (extra) return { cards: [...cs, extra], combo: { type: COMBO.TRIO1, main: v } };
+                } else {
+                    for (let v2 of vals) {
+                        if (v2 !== v && countMap[v2] >= 2) {
+                            const ex = hand.filter(c => c.value === v2).slice(0, 2);
+                            return { cards: [...cs, ...ex], combo: { type: COMBO.TRIO2, main: v } };
+                        }
+                    }
+                }
+            }
+        }
+    } else if (lastCombo.type === COMBO.STRAIGHT) {
+        const len = lastCombo.length;
+        for (let start = lastCombo.main - len + 2; start + len - 1 <= 14; start++) {
+            if (start + len - 1 <= lastCombo.main) continue;
+            let ok = true;
+            for (let j = 0; j < len; j++) {
+                if (!countMap[start + j]) { ok = false; break; }
+            }
+            if (ok) {
+                const cards = [];
+                const used = new Set();
+                for (let j = 0; j < len; j++) {
+                    const c = hand.find(x => x.value === start + j && !used.has(x.id));
+                    cards.push(c);
+                    used.add(c.id);
+                }
+                return { cards, combo: { type: COMBO.STRAIGHT, main: start + len - 1, length: len } };
+            }
+        }
+    } else if (lastCombo.type === COMBO.STRAIGHT_PAIR) {
+        const len = lastCombo.length;
+        for (let start = lastCombo.main - len + 2; start + len - 1 <= 14; start++) {
+            if (start + len - 1 <= lastCombo.main) continue;
+            let ok = true;
+            for (let j = 0; j < len; j++) {
+                if (!countMap[start + j] || countMap[start + j] < 2) { ok = false; break; }
+            }
+            if (ok) {
+                const cards = [];
+                for (let j = 0; j < len; j++) {
+                    cards.push(...hand.filter(c => c.value === start + j).slice(0, 2));
+                }
+                return { cards, combo: { type: COMBO.STRAIGHT_PAIR, main: start + len - 1, length: len } };
+            }
+        }
+    } else if (lastCombo.type === COMBO.BOMB) {
+        for (let v of vals) {
+            if (v > lastCombo.main && countMap[v] >= 4) {
+                const cs = hand.filter(c => c.value === v);
+                return { cards: cs, combo: { type: COMBO.BOMB, main: v } };
+            }
+        }
+    }
+
+    if (lastCombo.type !== COMBO.BOMB && lastCombo.type !== COMBO.ROCKET) {
+        for (let v of vals) {
+            if (countMap[v] >= 4 && hand.length <= 8) {
+                const cs = hand.filter(c => c.value === v);
+                return { cards: cs, combo: { type: COMBO.BOMB, main: v } };
+            }
+        }
+        const sj = hand.find(c => c.value === 16);
+        const bj = hand.find(c => c.value === 17);
+        if (sj && bj && hand.length <= 6) {
+            return { cards: [sj, bj], combo: { type: COMBO.ROCKET, main: 17 } };
+        }
+    }
+
+    return null;
+}
+
+function doHint() {
+    const hand = G.hands[0];
+    G.selected.clear();
+
+    if (G.lastPlay === null || G.lastPlayBy === 0) {
+        const countMap = {};
+        hand.forEach(c => countMap[c.value] = (countMap[c.value] || 0) + 1);
+        const vals = Object.keys(countMap).map(Number).sort((a, b) => a - b);
+        for (let v of vals) {
+            if (countMap[v] === 1) {
+                hand.filter(c => c.value === v).forEach(c => G.selected.add(c.id));
+                renderHand(); renderButtons();
+                return;
+            }
+        }
+        hand[0] && G.selected.add(hand[0].id);
+    } else {
+        const result = aiFollowPlay(hand, G.lastPlay);
+        if (result) {
+            result.cards.forEach(c => G.selected.add(c.id));
+        }
+    }
+    renderHand();
+    renderButtons();
+}
+
+function gameOver(winner) {
+    const screen = document.getElementById('result-screen');
+    const text = document.getElementById('result-text');
+    const landlordWon = winner === G.landlord;
+    const playerIsLandlord = G.landlord === 0;
+
+    if (winner === 0) {
+        text.textContent = '你赢了!';
+        text.style.color = '#ffd700';
+    } else if ((winner === 1 || winner === 2) && G.landlord === 0) {
+        text.textContent = '你输了...';
+        text.style.color = '#e74c3c';
+    } else if (playerIsLandlord && !landlordWon) {
+        text.textContent = '你输了...';
+        text.style.color = '#e74c3c';
+    } else if (!playerIsLandlord && landlordWon) {
+        text.textContent = '你输了...';
+        text.style.color = '#e74c3c';
+    } else {
+        text.textContent = '你赢了!';
+        text.style.color = '#ffd700';
+    }
+
+    screen.style.display = 'flex';
+}
+
+function showInfo(msg) {
+    document.getElementById('play-info').innerHTML = msg ? `<span class="msg">${msg}</span>` : '';
+}
+
+function showBombEffect() {
+    const el = document.createElement('div');
+    el.className = 'bomb-effect';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 700);
+}
+</script>
+</body>
+</html>

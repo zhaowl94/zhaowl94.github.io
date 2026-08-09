@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>竞拍之王 · zhaowl94 小游戏</title>
+    <meta name="description" content="判断拍品价值、与对手竞价并经营收藏的浏览器模拟游戏。">
+    <link rel="canonical" href="https://zhaowl94.github.io/auction-king/">
+    <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../assets/styles/tool-shell.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --wood-dark: #2c1810;
+            --wood-mid: #5c3a21;
+            --wood-light: #8b6239;
+            --gold: #d4a843;
+            --gold-light: #f0d878;
+            --gold-dark: #8a6e1c;
+            --cream: #f5f0e1;
+            --red: #c0392b;
+            --green: #27ae60;
+            --blue: #2980b9;
+        }
+
+        body {
+            font-family: "Songti SC", "STSong", "SimSun", serif;
+            background: var(--wood-dark);
+            color: var(--cream);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== 顶部状态栏 ===== */
+        .top-bar {
+            background: var(--wood-mid);
+            border-bottom: 3px solid var(--gold);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .game-title {
+            font-size: 1.6em;
+            font-weight: 900;
+            color: var(--gold-light);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 3px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(0,0,0,0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--gold-dark);
+            font-size: 0.95em;
+        }
+
+        .stat-item .label {
+            color: var(--gold);
+            font-size: 0.8em;
+        }
+
+        .stat-item .value {
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .money { color: var(--gold-light); }
+        .round { color: var(--blue); }
+        .items { color: var(--green); }
+
+        /* ===== 主游戏区 ===== */
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ===== 开始画面 ===== */
+        .start-screen {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeIn 1s ease;
+        }
+
+        .start-screen h1 {
+            font-size: 3.5em;
+            color: var(--gold-light);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
+            margin-bottom: 10px;
+        }
+
+        .start-screen .subtitle {
+            font-size: 1.3em;
+            color: var(--gold);
+            margin-bottom: 40px;
+        }
+
+        .rules-box {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid var(--gold-dark);
+            border-radius: 12px;
+            padding: 25px 30px;
+            max-width: 650px;
+            margin: 0 auto 40px;
+            text-align: left;
+        }
+
+        .rules-box h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3em;
+        }
+
+        .rules-box ul {
+            list-style: none;
+            line-height: 2;
+        }
+
+        .rules-box li::before {
+            content: "◆ ";
+            color: var(--gold);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 40px;
+            font-size: 1.2em;
+            font-family: inherit;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--wood-dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212,168,67,0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ===== 竞拍主舞台 ===== */
+        .auction-stage {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .stage-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .stage-header h2 {
+            color: var(--gold-light);
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .stage-header .round-info {
+            color: var(--gold);
+            font-size: 1em;
+        }
+
+        /* 对手信息 */
+        .opponents-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .opponent-card {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid var(--wood-light);
+            border-radius: 10px;
+            padding: 12px 18px;
+            min-width: 150px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .opponent-card.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212,168,67,0.3);
+        }
+
+        .opponent-card.winner {
+            border-color: var(--red);
+            animation: pulse 0.5s ease 3;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .opponent-avatar {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .opponent-name {
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 4px;
+        }
+
+        .opponent-type {
+            font-size: 0.75em;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+
+        .opponent-money {
+            font-size: 0.9em;
+            color: var(--gold-light);
+        }
+
+        .opponent-status {
+            font-size: 0.8em;
+            margin-top: 6px;
+            min-height: 20px;
+        }
+
+        .status-bidding { color: var(--green); }
+        .status-pass { color: #888; }
+        .status-thinking { color: var(--blue); }
+
+        /* 拍品展示台 */
+        .item-showcase {
+            background: rgba(0,0,0,0.25);
+            border: 2px solid var(--gold-dark);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .item-rarity {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .rarity-common { background: #666; color: #fff; }
+        .rarity-uncommon { background: var(--green); color: #fff; }
+        .rarity-rare { background: var(--blue); color: #fff; }
+        .rarity-epic { background: #8e44ad; color: #fff; }
+        .rarity-legendary { background: var(--gold); color: var(--wood-dark); }
+
+        .item-icon {
+            font-size: 5em;
+            margin: 10px 0 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+
+        .item-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+        }
+
+        .item-desc {
+            color: #bbb;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+
+        .item-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .item-stat {
+            text-align: center;
+        }
+
+        .item-stat .number {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+
+        .item-stat .label {
+            font-size: 0.8em;
+            color: var(--gold);
+        }
+
+        .appraisal-hint {
+            color: var(--green);
+            font-size: 0.9em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .appraised-value {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* 出价控制台 */
+        .bid-console {
+            background: var(--wood-mid);
+            border: 2px solid var(--gold-dark);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .current-bid {
+            font-size: 2em;
+            color: var(--gold-light);
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .current-bid .label {
+            font-size: 0.5em;
+            color: var(--gold);
+            font-weight: 400;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .bid-leader {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .bid-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .bid-btn {
+            padding: 10px 22px;
+            font-size: 1em;
+            font-family: inherit;
+            font-weight: 700;
+            border: 2px solid var(--gold-dark);
+            background: var(--wood-dark);
+            color: var(--gold-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bid-btn:hover {
+            background: var(--gold);
+            color: var(--wood-dark);
+            border-color: var(--gold);
+        }
+
+        .bid-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pass-btn {
+            padding: 10px 30px;
+            font-size: 1em;
+            font-family: inherit;
+            font-weight: 700;
+            border: 2px solid var(--red);
+            background: transparent;
+            color: var(--red);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pass-btn:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .pass-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .appraise-btn {
+            padding: 8px 18px;
+            font-size: 0.9em;
+            font-family: inherit;
+            border: 2px dashed var(--green);
+            background: transparent;
+            color: var(--green);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .appraise-btn:hover {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .appraise-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* 拍卖记录 */
+        .auction-log {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .auction-log h4 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .log-entry {
+            font-size: 0.85em;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-entry .bidder {
+            font-weight: 700;
+        }
+
+        .log-entry .amount {
+            color: var(--gold-light);
+        }
+
+        .log-system {
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        /* ===== 回合结算 ===== */
+        .round-end {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-card {
+            background: rgba(0,0,0,0.25);
+            border: 2px solid var(--gold-dark);
+            border-radius: 16px;
+            padding: 35px;
+            max-width: 600px;
+            margin: 0 auto 25px;
+            text-align: center;
+        }
+
+        .result-card h2 {
+            color: var(--gold-light);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .sold-items-list {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .sold-item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profit-positive { color: var(--green); }
+        .profit-negative { color: var(--red); }
+
+        .result-summary {
+            font-size: 1.3em;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--gold-dark);
+        }
+
+        /* ===== 游戏结束 ===== */
+        .game-over {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+            animation: fadeIn 1s ease;
+        }
+
+        .game-over h1 {
+            font-size: 2.8em;
+            color: var(--gold-light);
+            margin-bottom: 10px;
+        }
+
+        .final-rankings {
+            max-width: 500px;
+            margin: 30px auto;
+            text-align: left;
+        }
+
+        .rank-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 10px;
+            border: 1px solid var(--wood-light);
+        }
+
+        .rank-row.rank-1 {
+            border-color: var(--gold);
+            background: rgba(212,168,67,0.1);
+        }
+
+        .rank-number {
+            font-size: 1.5em;
+            font-weight: 900;
+            width: 40px;
+            color: var(--gold);
+        }
+
+        .rank-name {
+            flex: 1;
+            font-weight: 700;
+        }
+
+        .rank-money {
+            font-size: 1.1em;
+            color: var(--gold-light);
+        }
+
+        /* ===== 库存面板 ===== */
+        .inventory-panel {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .inv-item {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--wood-light);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .inv-item:hover {
+            border-color: var(--gold);
+        }
+
+        .inv-item .icon {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+        }
+
+        .inv-item .name {
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 4px;
+        }
+
+        .inv-item .value {
+            color: var(--green);
+            font-size: 0.9em;
+        }
+
+        .inv-item .action-btns {
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 14px;
+            font-size: 0.8em;
+            font-family: inherit;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            font-weight: 700;
+            margin: 0 3px;
+        }
+
+        .btn-sell {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .btn-keep {
+            background: var(--wood-light);
+            color: var(--cream);
+        }
+
+        /* ===== 提示消息 ===== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--wood-mid);
+            border: 2px solid var(--gold);
+            color: var(--cream);
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-weight: 700;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-color: var(--green); color: var(--green); }
+        .toast.error { border-color: var(--red); color: var(--red); }
+        .toast.info { border-color: var(--blue); color: var(--blue); }
+
+        /* ===== 底部操作栏 ===== */
+        .bottom-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        /* 隐藏类 */
+        .hidden { display: none !important; }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .game-title { font-size: 1.1em; }
+            .start-screen h1 { font-size: 2.2em; }
+            .item-icon { font-size: 3.5em; }
+            .current-bid { font-size: 1.5em; }
+            .bid-controls { gap: 8px; }
+            .bid-btn { padding: 8px 14px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <a class="hub-home-chip" href="../" aria-label="返回 zhaowl94 主页">← 主页</a>
+    <!-- Toast 提示 -->
+    <div id="toast" class="toast"></div>
+
+    <!-- 顶部栏 -->
+    <div class="top-bar">
+        <div class="game-title">竞拍之王</div>
+        <div class="stats-bar">
+            <div class="stat-item"><span class="label">回合</span><span id="stat-round" class="value round">-</span></div>
+            <div class="stat-item"><span class="label">资金</span><span id="stat-money" class="value money">-</span></div>
+            <div class="stat-item"><span class="label">库存</span><span id="stat-inventory" class="value items">-</span></div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <!-- 开始画面 -->
+        <div id="start-screen" class="start-screen">
+            <h1>竞拍之王</h1>
+            <div class="subtitle">成为最富有的拍卖大亨！</div>
+            <div class="rules-box">
+                <h3>游戏规则</h3>
+                <ul>
+                    <li>你将有 <strong>10 轮</strong>拍卖机会，与 3 位AI对手竞争</li>
+                    <li>每轮出现 <strong>2 件</strong>神秘拍品，各有<strong>隐藏真实价值</strong></li>
+                    <li>你可以花费 $200 鉴定物品，获取真实价值提示</li>
+                    <li>拍得物品后可以选择<strong>立即转卖</strong>获利，或<strong>保留收藏</strong></li>
+                    <li>10轮结束后，<strong>资金最多者</strong>加冕为竞拍之王！</li>
+                </ul>
+            </div>
+            <button class="btn btn-primary" onclick="game.start()">开始游戏</button>
+        </div>
+
+        <!-- 竞拍舞台 -->
+        <div id="auction-stage" class="auction-stage">
+            <div class="stage-header">
+                <h2>正在拍卖</h2>
+                <div class="round-info">第 <span id="current-round">1</span> 轮 | 第 <span id="current-item-num">1</span> / <span id="total-item-num">2</span> 件拍品</div>
+            </div>
+
+            <!-- 对手状态 -->
+            <div class="opponents-bar" id="opponents-bar"></div>
+
+            <!-- 拍品展示 -->
+            <div class="item-showcase" id="item-showcase"></div>
+
+            <!-- 出价控制台 -->
+            <div class="bid-console">
+                <div class="current-bid">
+                    <span class="label">当前最高价</span>
+                    $<span id="current-bid-amount">0</span>
+                </div>
+                <div class="bid-leader">领先者: <span id="bid-leader-name">暂无</span></div>
+                <div class="bid-controls">
+                    <button class="bid-btn" onclick="game.bid(50)">+$50</button>
+                    <button class="bid-btn" onclick="game.bid(100)">+$100</button>
+                    <button class="bid-btn" onclick="game.bid(200)">+$200</button>
+                    <button class="bid-btn" onclick="game.bid(500)">+$500</button>
+                    <button class="bid-btn" onclick="game.bidCustom()">自定义</button>
+                </div>
+                <button class="pass-btn" onclick="game.pass()">放弃竞拍</button>
+                <div>
+                    <button class="appraise-btn" id="appraise-btn" onclick="game.appraise()">鉴定物品 ($200)</button>
+                </div>
+            </div>
+
+            <!-- 拍卖记录 -->
+            <div class="auction-log">
+                <h4>拍卖记录</h4>
+                <div id="auction-log-content"></div>
+            </div>
+        </div>
+
+        <!-- 回合结算（出售库存） -->
+        <div id="round-end" class="round-end">
+            <div class="result-card">
+                <h2>第 <span id="end-round-num">1</span> 轮结束</h2>
+                <p style="color:#aaa; margin-bottom:15px;">你拍得的物品，现在可以选择出售或保留</p>
+                <div id="round-end-items"></div>
+                <div class="result-summary">
+                    当前资金: <strong style="color:var(--gold-light);">$<span id="end-round-money">0</span></strong>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn btn-primary" onclick="game.nextRound()">下一轮</button>
+            </div>
+        </div>
+
+        <!-- 游戏结束 -->
+        <div id="game-over" class="game-over">
+            <h1>游戏结束</h1>
+            <p style="color:var(--gold); font-size:1.2em; margin-bottom:20px;">最终排名</p>
+            <div class="final-rankings" id="final-rankings"></div>
+            <button class="btn btn-primary" onclick="location.reload()">再来一局</button>
+        </div>
+    </div>
+
+    <script>
+    // ======================
+    // 游戏数据
+    // ======================
+    const ITEMS = [
+        // 普通
+        { name: "古董铜灯", desc: "一件布满铜绿的古董灯，据说来自19世纪", icon: "🪔", rarity: "common", min: 300, max: 800 },
+        { name: "旧皮箱", desc: "磨损严重的旅行箱，角落有神秘标签", icon: "🧳", rarity: "common", min: 200, max: 600 },
+        { name: "瓷茶壶", desc: "缺了把手的瓷茶壶，底部有模糊印记", icon: "🫖", rarity: "common", min: 150, max: 500 },
+        { name: "旧怀表", desc: "指针停走的怀表，外壳有些凹陷", icon: "⌚", rarity: "common", min: 250, max: 700 },
+        { name: "油画风景", desc: "无名画家的风景写生，画布泛黄", icon: "🖼️", rarity: "common", min: 400, max: 900 },
+        { name: "黄铜指南针", desc: "航海用的老指南针，玻璃有裂痕", icon: "🧭", rarity: "common", min: 200, max: 550 },
+        // 精良
+        { name: "银质餐具套", desc: "雕花的银质刀叉套装，略有氧化", icon: "🍴", rarity: "uncommon", min: 600, max: 1400 },
+        { name: "古董显微镜", desc: "黄铜显微镜，镜片依然清晰", icon: "🔬", rarity: "uncommon", min: 700, max: 1600 },
+        { name: "手织波斯毯", desc: "小尺寸的精美地毯，图案复杂", icon: "🧶", rarity: "uncommon", min: 800, max: 1800 },
+        { name: "黑胶唱片集", desc: "一叠爵士乐黑胶，保存完好", icon: "💿", rarity: "uncommon", min: 500, max: 1300 },
+        // 稀有
+        { name: "玉石印章", desc: "温润的和田玉印章，篆文古朴", icon: "🟢", rarity: "rare", min: 1500, max: 3500 },
+        { name: "镀金怀表", desc: "18K金壳怀表，机芯上刻着瑞士标记", icon: "⏱️", rarity: "rare", min: 1800, max: 4000 },
+        { name: "明代青花瓷", desc: "青花缠枝莲纹小碗，釉色莹润", icon: "🏺", rarity: "rare", min: 2000, max: 4500 },
+        // 史诗
+        { name: "钻石胸针", desc: "维多利亚时代的钻石花型胸针", icon: "💎", rarity: "epic", min: 4000, max: 9000 },
+        { name: "罗马金币", desc: "古罗马皇帝头像金币，金光夺目", icon: "🪙", rarity: "epic", min: 3500, max: 8000 },
+        // 传说
+        { name: "翡翠白菜", desc: "巧夺天工的翡翠雕刻， legendary 藏品", icon: "🥬", rarity: "legendary", min: 8000, max: 20000 },
+        { name: "达芬奇手稿", desc: "泛黄的素描草图，角落有神秘签名", icon: "📜", rarity: "legendary", min: 10000, max: 25000 }
+    ];
+
+    const RARITY_WEIGHTS = {
+        common: 0.45,
+        uncommon: 0.30,
+        rare: 0.18,
+        epic: 0.06,
+        legendary: 0.01
+    };
+
+    const RARITY_NAMES = {
+        common: "普通",
+        uncommon: "精良",
+        rare: "稀有",
+        epic: "史诗",
+        legendary: "传说"
+    };
+
+    const OPPONENT_CONFIGS = [
+        { name: "老张", avatar: "👴", type: "conservative", style: "谨慎型" },
+        { name: "马老板", avatar: "🤵", type: "aggressive", style: "激进型" },
+        { name: "李婶", avatar: "👩", type: "random", style: "随心型" }
+    ];
+
+    // ======================
+    // 工具函数
+    // ======================
+    function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function pickWeighted(items) {
+        const total = Object.values(items).reduce((a,b) => a+b, 0);
+        let r = Math.random() * total;
+        for (const [key, weight] of Object.entries(items)) {
+            r -= weight;
+            if (r <= 0) return key;
+        }
+        return Object.keys(items)[0];
+    }
+
+    function formatMoney(n) {
+        return n.toLocaleString();
+    }
+
+    function showToast(msg, type="info") {
+        const toast = document.getElementById("toast");
+        toast.textContent = msg;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    // ======================
+    // 核心游戏类
+    // ======================
+    class AuctionGame {
+        constructor() {
+            this.round = 1;
+            this.maxRounds = 10;
+            this.itemsPerRound = 2;
+            this.playerMoney = 10000;
+            this.playerInventory = [];
+            this.opponents = [];
+            this.currentItem = null;
+            this.currentItemIndex = 0;
+            this.currentBid = 0;
+            this.bidLeader = null;
+            this.bidLeaderName = "暂无";
+            this.passedBidders = new Set();
+            this.logEntries = [];
+            this.isPlayerTurn = true;
+            this.roundItems = [];
+            this.currentRoundWonItems = [];
+            this.auctionLocked = false;
+        }
+
+        start() {
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("auction-stage").style.display = "block";
+
+            // 初始化对手
+            this.opponents = OPPONENT_CONFIGS.map(cfg => ({
+                ...cfg,
+                money: rand(8000, 12000),
+                inventory: [],
+                passed: false
+            }));
+
+            this.startRound();
+        }
+
+        startRound() {
+            this.currentItemIndex = 0;
+            this.roundItems = this.generateItems();
+            this.currentRoundWonItems = [];
+            this.updateStats();
+            this.startItemAuction();
+        }
+
+        generateItems() {
+            const items = [];
+            for (let i = 0; i < this.itemsPerRound; i++) {
+                const rarity = pickWeighted(RARITY_WEIGHTS);
+                const pool = ITEMS.filter(it => it.rarity === rarity);
+                const template = pool[Math.floor(Math.random() * pool.length)];
+                const trueValue = rand(template.min, template.max);
+                const startPrice = Math.max(100, Math.floor(trueValue * rand(10, 25) / 100));
+                items.push({
+                    ...template,
+                    trueValue,
+                    startPrice,
+                    appraised: false,
+                    appraisalHint: null
+                });
+            }
+            return items;
+        }
+
+        startItemAuction() {
+            if (this.currentItemIndex >= this.roundItems.length) {
+                this.endRound();
+                return;
+            }
+
+            this.currentItem = this.roundItems[this.currentItemIndex];
+            this.currentBid = this.currentItem.startPrice;
+            this.bidLeader = null;
+            this.bidLeaderName = "暂无";
+            this.passedBidders = new Set();
+            this.logEntries = [];
+            this.isPlayerTurn = true;
+            this.auctionLocked = false;
+
+            // 重置对手passed状态
+            this.opponents.forEach(o => o.passed = false);
+
+            this.renderOpponents();
+            this.renderItem();
+            this.renderBidConsole();
+            this.renderLog();
+            this.updateStats();
+
+            document.getElementById("current-round").textContent = this.round;
+            document.getElementById("current-item-num").textContent = this.currentItemIndex + 1;
+            document.getElementById("total-item-num").textContent = this.itemsPerRound;
+
+            this.addLog(`拍卖开始！${this.currentItem.name} 起拍价 $${formatMoney(this.currentItem.startPrice)}`, "system");
+        }
+
+        renderOpponents() {
+            const container = document.getElementById("opponents-bar");
+            container.innerHTML = this.opponents.map((opp, idx) => `
+                <div class="opponent-card ${opp.passed ? '' : 'active'}" id="opp-${idx}">
+                    <div class="opponent-avatar">${opp.avatar}</div>
+                    <div class="opponent-name">${opp.name}</div>
+                    <div class="opponent-type">${opp.style}</div>
+                    <div class="opponent-money">$${formatMoney(opp.money)}</div>
+                    <div class="opponent-status ${opp.passed ? 'status-pass' : 'status-bidding'}">
+                        ${opp.passed ? '已放弃' : '竞拍中'}
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        renderItem() {
+            const item = this.currentItem;
+            const container = document.getElementById("item-showcase");
+            const rarityClass = `rarity-${item.rarity}`;
+            const rarityName = RARITY_NAMES[item.rarity];
+            const appraisalHtml = item.appraised
+                ? `<div class="appraisal-hint">鉴定结果: 此物价值约 <span class="appraised-value">$${item.appraisalHint}</span></div>`
+                : "";
+
+            container.innerHTML = `
+                <div class="item-rarity ${rarityClass}">${rarityName}</div>
+                <div class="item-icon">${item.icon}</div>
+                <div class="item-name">${item.name}</div>
+                <div class="item-desc">${item.desc}</div>
+                <div class="item-stats">
+                    <div class="item-stat">
+                        <div class="number">$${formatMoney(item.startPrice)}</div>
+                        <div class="label">起拍价</div>
+                    </div>
+                    <div class="item-stat">
+                        <div class="number">$${formatMoney(item.trueValue)}</div>
+                        <div class="label">预估价值</div>
+                    </div>
+                </div>
+                ${appraisalHtml}
+            `;
+        }
+
+        renderBidConsole() {
+            document.getElementById("current-bid-amount").textContent = formatMoney(this.currentBid);
+            document.getElementById("bid-leader-name").textContent = this.bidLeaderName;
+
+            // 若拍卖已锁定，全部禁用
+            if (this.auctionLocked) {
+                document.querySelectorAll(".bid-btn, .pass-btn, .appraise-btn").forEach(btn => btn.disabled = true);
+                return;
+            }
+
+            const appraiseBtn = document.getElementById("appraise-btn");
+            appraiseBtn.disabled = this.currentItem.appraised || this.playerMoney < 200;
+            if (this.currentItem.appraised) {
+                appraiseBtn.textContent = "已鉴定";
+            } else {
+                appraiseBtn.textContent = `鉴定物品 ($200)`;
+            }
+
+            // 禁用超出资金的出价按钮
+            const bidBtns = document.querySelectorAll(".bid-btn");
+            const increments = [50, 100, 200, 500, 0]; // 0 是自定义
+            bidBtns.forEach((btn, idx) => {
+                if (increments[idx] === 0) {
+                    btn.disabled = this.playerMoney < this.currentBid + 50 || this.passedBidders.has("player");
+                } else {
+                    btn.disabled = this.playerMoney < this.currentBid + increments[idx] || this.passedBidders.has("player");
+                }
+            });
+
+            document.querySelector(".pass-btn").disabled = this.passedBidders.has("player");
+        }
+
+        renderLog() {
+            const container = document.getElementById("auction-log-content");
+            container.innerHTML = this.logEntries.map(entry => {
+                if (entry.type === "system") {
+                    return `<div class="log-entry log-system">${entry.text}</div>`;
+                }
+                return `<div class="log-entry"><span class="bidder" style="color:${entry.color}">${entry.bidder}</span> 出价 <span class="amount">$${formatMoney(entry.amount)}</span></div>`;
+            }).join("");
+            container.scrollTop = container.scrollHeight;
+        }
+
+        addLog(text, type="normal", bidder="", amount=0, color="#fff") {
+            if (type === "system") {
+                this.logEntries.push({ type, text });
+            } else {
+                this.logEntries.push({ type, bidder, amount, color });
+            }
+            this.renderLog();
+        }
+
+        updateStats() {
+            document.getElementById("stat-round").textContent = `${this.round} / ${this.maxRounds}`;
+            document.getElementById("stat-money").textContent = formatMoney(this.playerMoney);
+            document.getElementById("stat-inventory").textContent = this.playerInventory.length;
+        }
+
+        // ======================
+        // 玩家操作
+        // ======================
+        bid(increment) {
+            if (this.auctionLocked || this.passedBidders.has("player")) return;
+
+            const newBid = this.currentBid + increment;
+            if (newBid > this.playerMoney) {
+                showToast("资金不足！", "error");
+                return;
+            }
+
+            this.currentBid = newBid;
+            this.bidLeader = "player";
+            this.bidLeaderName = "你";
+            this.addLog("", "bid", "你", newBid, "#f0d878");
+            this.renderBidConsole();
+
+            this.aiTurn();
+        }
+
+        bidCustom() {
+            if (this.auctionLocked || this.passedBidders.has("player")) return;
+            const input = prompt(`输入你的出价（必须高于 $${formatMoney(this.currentBid)}）：`);
+            if (!input) return;
+            const val = parseInt(input.replace(/[^0-9]/g, ""), 10);
+            if (isNaN(val) || val <= this.currentBid) {
+                showToast("出价无效或不够高！", "error");
+                return;
+            }
+            if (val > this.playerMoney) {
+                showToast("资金不足！", "error");
+                return;
+            }
+            this.currentBid = val;
+            this.bidLeader = "player";
+            this.bidLeaderName = "你";
+            this.addLog("", "bid", "你", val, "#f0d878");
+            this.renderBidConsole();
+            this.aiTurn();
+        }
+
+        pass() {
+            if (this.auctionLocked || this.passedBidders.has("player")) return;
+            this.passedBidders.add("player");
+            this.addLog("你放弃了竞拍", "system");
+            this.renderBidConsole();
+            this.disableBidControls(true);
+            this.aiTurn();
+        }
+
+        appraise() {
+            if (this.currentItem.appraised) return;
+            if (this.playerMoney < 200) {
+                showToast("资金不足，无法鉴定", "error");
+                return;
+            }
+            this.playerMoney -= 200;
+            this.currentItem.appraised = true;
+            // 鉴定给出真实值的 ±15% 范围
+            const variance = Math.floor(this.currentItem.trueValue * 0.15);
+            const low = this.currentItem.trueValue - variance;
+            const high = this.currentItem.trueValue + variance;
+            this.currentItem.appraisalHint = `${formatMoney(low)} - ${formatMoney(high)}`;
+            this.renderItem();
+            this.renderBidConsole();
+            this.updateStats();
+            showToast(`鉴定完成！花费 $200`, "success");
+        }
+
+        // ======================
+        // AI 逻辑
+        // ======================
+        disableBidControls(disabled) {
+            document.querySelectorAll(".bid-btn, .pass-btn, .appraise-btn").forEach(btn => {
+                btn.disabled = disabled;
+            });
+        }
+
+        getActiveBidders() {
+            return ["player", ...this.opponents.map((_, i) => i)].filter(id => {
+                if (id === "player") return !this.passedBidders.has("player");
+                return !this.opponents[id].passed && !this.passedBidders.has(id);
+            });
+        }
+
+        aiTurn() {
+            if (this.auctionLocked) return;
+            this.auctionLocked = true;
+            this.disableBidControls(true);
+
+            const active = this.getActiveBidders();
+            if (active.length <= 1) {
+                setTimeout(() => this.finalizeAuction(), 600);
+                return;
+            }
+
+            const runAiRound = (callback) => {
+                let delay = 0;
+                this.opponents.forEach((opp, idx) => {
+                    if (opp.passed || this.passedBidders.has(idx)) return;
+                    delay += 500;
+                    setTimeout(() => this.aiBid(idx), delay);
+                });
+                setTimeout(callback, delay + 300);
+            };
+
+            runAiRound(() => {
+                const stillActive = this.getActiveBidders();
+                if (stillActive.length <= 1) {
+                    this.finalizeAuction();
+                    return;
+                }
+
+                // 若玩家已放弃但仍有多个AI活跃，继续AI互拍
+                if (this.passedBidders.has("player")) {
+                    const aiDuel = () => {
+                        const duelActive = this.getActiveBidders();
+                        if (duelActive.length <= 1) {
+                            this.finalizeAuction();
+                            return;
+                        }
+                        runAiRound(() => {
+                            const after = this.getActiveBidders();
+                            if (after.length <= 1) {
+                                this.finalizeAuction();
+                            } else {
+                                setTimeout(aiDuel, 400);
+                            }
+                        });
+                    };
+                    setTimeout(aiDuel, 400);
+                } else {
+                    // 玩家还在，解锁等待玩家继续出价
+                    this.auctionLocked = false;
+                    this.disableBidControls(false);
+                    this.renderBidConsole();
+                }
+            });
+        }
+
+        aiBid(idx) {
+            const opp = this.opponents[idx];
+            if (opp.passed || this.passedBidders.has(idx)) return;
+
+            const item = this.currentItem;
+            const margin = item.trueValue - this.currentBid; // 利润空间
+
+            let shouldBid = false;
+            let maxBid = 0;
+
+            switch (opp.type) {
+                case "conservative": {
+                    // 谨慎型：只拍高利润，出价保守
+                    const confidence = item.appraised ? 1.2 : 0.8;
+                    maxBid = Math.floor(item.trueValue * 0.75 * confidence);
+                    shouldBid = margin > 300 && this.currentBid < maxBid && opp.money > this.currentBid + 50;
+                    // 随机放弃
+                    if (Math.random() < 0.15) shouldBid = false;
+                    break;
+                }
+                case "aggressive": {
+                    // 激进型：经常出价，甚至溢价
+                    const confidence = item.appraised ? 1.0 : 1.1;
+                    maxBid = Math.floor(item.trueValue * 1.05 * confidence);
+                    shouldBid = margin > -500 && this.currentBid < maxBid && opp.money > this.currentBid + 50;
+                    // 如果领先者是玩家，更容易跟拍
+                    if (this.bidLeader === "player" && Math.random() < 0.6) shouldBid = true;
+                    break;
+                }
+                case "random": {
+                    // 随心型：随机
+                    maxBid = Math.floor(item.trueValue * rand(70, 110) / 100);
+                    shouldBid = Math.random() < 0.6 && opp.money > this.currentBid + 50;
+                    break;
+                }
+            }
+
+            // 资金检查
+            if (this.currentBid >= opp.money - 100) {
+                shouldBid = false;
+            }
+
+            if (!shouldBid) {
+                opp.passed = true;
+                this.passedBidders.add(idx);
+                this.addLog(`${opp.name} 放弃了`, "system");
+                this.renderOpponents();
+                return;
+            }
+
+            // 决定出价金额
+            let increment = 50;
+            const diff = maxBid - this.currentBid;
+            if (diff > 500) increment = rand(2,5) * 50;
+            else if (diff > 200) increment = rand(1,3) * 50;
+            else increment = 50;
+
+            // 激进型偶尔大加价
+            if (opp.type === "aggressive" && Math.random() < 0.25) {
+                increment = rand(3,8) * 50;
+            }
+
+            let newBid = this.currentBid + increment;
+            if (newBid > maxBid) newBid = maxBid;
+            if (newBid > opp.money - 50) newBid = opp.money - 50;
+            if (newBid <= this.currentBid) {
+                opp.passed = true;
+                this.passedBidders.add(idx);
+                this.addLog(`${opp.name} 放弃了`, "system");
+                this.renderOpponents();
+                return;
+            }
+
+            this.currentBid = newBid;
+            this.bidLeader = idx;
+            this.bidLeaderName = opp.name;
+            this.addLog("", "bid", opp.name, newBid, "#d4a843");
+            this.renderBidConsole();
+            this.renderOpponents();
+        }
+
+        // ======================
+        // 拍卖结算
+        // ======================
+        finalizeAuction() {
+            if (!this.auctionLocked) {
+                this.auctionLocked = true;
+                this.disableBidControls(true);
+            }
+            const winner = this.bidLeader;
+            const item = this.currentItem;
+
+            if (winner === null) {
+                this.addLog(`${item.name} 流拍了...`, "system");
+                showToast("流拍！", "info");
+            } else if (winner === "player") {
+                this.playerMoney -= this.currentBid;
+                const wonItem = { ...item, boughtAt: this.currentBid };
+                this.currentRoundWonItems.push(wonItem);
+                this.addLog(`你以 $${formatMoney(this.currentBid)} 拍得 ${item.name}！`, "system");
+                showToast(`拍得 ${item.name}！`, "success");
+            } else {
+                const opp = this.opponents[winner];
+                opp.money -= this.currentBid;
+                opp.inventory.push({ ...item, boughtAt: this.currentBid });
+                this.addLog(`${opp.name} 以 $${formatMoney(this.currentBid)} 拍得 ${item.name}`, "system");
+            }
+
+            this.updateStats();
+            this.renderOpponents();
+
+            // 高亮获胜者
+            if (winner !== null) {
+                const card = winner === "player" ? null : document.getElementById(`opp-${winner}`);
+                if (card) card.classList.add("winner");
+            }
+
+            setTimeout(() => {
+                this.auctionLocked = false;
+                this.currentItemIndex++;
+                this.startItemAuction();
+            }, 1800);
+        }
+
+        // ======================
+        // 回合结算
+        // ======================
+        endRound() {
+            document.getElementById("auction-stage").style.display = "none";
+            document.getElementById("round-end").style.display = "block";
+            document.getElementById("end-round-num").textContent = this.round;
+            document.getElementById("end-round-money").textContent = formatMoney(this.playerMoney);
+
+            const container = document.getElementById("round-end-items");
+
+            if (this.currentRoundWonItems.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#888;">本轮你没有拍到任何物品</p>`;
+            } else {
+                container.innerHTML = `
+                    <div class="sold-items-list">
+                        ${this.currentRoundWonItems.map((item, idx) => `
+                            <div class="sold-item-row">
+                                <span>${item.icon} ${item.name}</span>
+                                <span>
+                                    <span style="color:#aaa;">买入 $${formatMoney(item.boughtAt)}</span>
+                                    <span style="margin:0 8px;">→</span>
+                                    <span class="${item.trueValue >= item.boughtAt ? 'profit-positive' : 'profit-negative'}">
+                                        价值 $${formatMoney(item.trueValue)}
+                                    </span>
+                                </span>
+                            </div>
+                            <div style="text-align:right; margin-bottom:12px;">
+                                <button class="btn-small btn-sell" onclick="game.sellItem(${idx})">出售 (+$${formatMoney(item.trueValue)})</button>
+                                <button class="btn-small btn-keep" onclick="game.keepItem(${idx})">保留</button>
+                            </div>
+                        `).join("")}
+                    </div>
+                `;
+            }
+        }
+
+        sellItem(idx) {
+            const item = this.currentRoundWonItems[idx];
+            this.playerMoney += item.trueValue;
+            const profit = item.trueValue - item.boughtAt;
+            const profitText = profit >= 0 ? `盈利 $${formatMoney(profit)}` : `亏损 $${formatMoney(Math.abs(profit))}`;
+            showToast(`出售 ${item.name}，${profitText}`, profit >= 0 ? "success" : "error");
+            this.currentRoundWonItems.splice(idx, 1);
+            this.endRound(); // 刷新界面
+        }
+
+        keepItem(idx) {
+            const item = this.currentRoundWonItems[idx];
+            this.playerInventory.push(item);
+            showToast(`${item.name} 已收入库存`, "info");
+            this.currentRoundWonItems.splice(idx, 1);
+            this.endRound();
+        }
+
+        nextRound() {
+            // 把未处理的全部保留
+            this.currentRoundWonItems.forEach(item => this.playerInventory.push(item));
+            this.currentRoundWonItems = [];
+
+            // AI卖出逻辑（简化：AI自动以真实价值卖出库存的一半，保留一半）
+            this.opponents.forEach(opp => {
+                opp.inventory.forEach(item => {
+                    if (Math.random() < 0.6) {
+                        opp.money += item.trueValue;
+                    }
+                });
+                opp.inventory = [];
+            });
+
+            this.round++;
+            if (this.round > this.maxRounds) {
+                this.endGame();
+                return;
+            }
+
+            document.getElementById("round-end").style.display = "none";
+            document.getElementById("auction-stage").style.display = "block";
+            this.startRound();
+        }
+
+        // ======================
+        // 游戏结束
+        // ======================
+        endGame() {
+            document.getElementById("round-end").style.display = "none";
+            document.getElementById("game-over").style.display = "block";
+
+            // 清算玩家库存
+            let finalPlayerMoney = this.playerMoney;
+            this.playerInventory.forEach(item => {
+                finalPlayerMoney += item.trueValue;
+            });
+
+            // 清算AI库存
+            this.opponents.forEach(opp => {
+                opp.inventory.forEach(item => {
+                    opp.money += item.trueValue;
+                });
+            });
+
+            const allPlayers = [
+                { name: "你", money: finalPlayerMoney, isPlayer: true },
+                ...this.opponents.map(o => ({ name: o.name, money: o.money, isPlayer: false }))
+            ];
+
+            allPlayers.sort((a, b) => b.money - a.money);
+
+            const container = document.getElementById("final-rankings");
+            container.innerHTML = allPlayers.map((p, idx) => `
+                <div class="rank-row ${idx === 0 ? 'rank-1' : ''}">
+                    <div class="rank-number">${idx + 1}</div>
+                    <div class="rank-name">${p.name} ${p.isPlayer ? '(你)' : ''}</div>
+                    <div class="rank-money">$${formatMoney(p.money)}</div>
+                </div>
+            `).join("");
+
+            const winner = allPlayers[0];
+            const title = document.querySelector(".game-over h1");
+            if (winner.isPlayer) {
+                title.textContent = "恭喜你，竞拍之王！";
+                title.style.color = "var(--gold-light)";
+            } else {
+                title.textContent = "游戏结束";
+                title.style.color = "#aaa";
+            }
+        }
+    }
+
+    const game = new AuctionGame();
+    </script>
+</body>
+</html>

@@ -54,7 +54,8 @@ test("home reflows at the 400 percent zoom equivalent", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/index.html");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator(".tool-card")).toHaveCount(7);
+  await expect(page.locator(".tool-card")).toHaveCount(8);
+  await expect(page.locator(".game-card")).toHaveCount(5);
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,
@@ -88,7 +89,7 @@ test("public hub pages do not overflow at 320 CSS pixels", async ({ page }) => {
 test("forced colors preserve the primary home control", async ({ page }) => {
   await page.emulateMedia({ forcedColors: "active" });
   await page.goto("/index.html");
-  await expect(page.getByRole("link", { name: "打开研究工具" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "浏览全部工具" })).toBeVisible();
   await expect(
     page.getByRole("link", { name: /GitHub/ }).first(),
   ).toBeVisible();

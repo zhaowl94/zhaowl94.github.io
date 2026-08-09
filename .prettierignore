@@ -11,3 +11,14 @@ scripts/research-data/
 strategy-monitor/strategy_data.js
 test/snapshots/
 test-results/
+
+# Imported standalone experiences keep their original source layout.
+ndx100-dashboard/app.js
+ndx100-dashboard/style.css
+ndx100-dashboard/vendor/
+ndx100-dashboard/data/
+doudizhu/
+guandan/
+tank-battle/
+auction-king/
+cultivation/

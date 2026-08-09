@@ -2,16 +2,16 @@
   position: sticky;
   z-index: 1000;
   top: 0;
-  min-height: 3.15rem;
+  min-height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   padding: 0.65rem max(1rem, calc((100vw - 1280px) / 2));
-  border-bottom: 1px solid rgb(112 123 118 / 38%);
-  color: #17211d;
-  background: rgb(247 245 238 / 94%);
-  box-shadow: 0 4px 16px rgb(18 29 25 / 6%);
+  border-bottom: 1px solid #d5e0e6;
+  color: #0f1f2c;
+  background: rgb(255 255 255 / 95%);
+  box-shadow: 0 4px 18px rgb(24 50 74 / 7%);
   font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
   backdrop-filter: blur(12px);
 }
@@ -35,8 +35,9 @@
   width: 1.75rem;
   height: 1.75rem;
   place-items: center;
-  border: 1px solid currentcolor;
-  border-radius: 50%;
+  border-radius: 0.5rem;
+  color: #fff;
+  background: #18324a;
   content: "Z94";
   font:
     700 0.48rem ui-monospace,
@@ -51,13 +52,13 @@
 }
 
 .hub-nav-links a {
-  color: #58645e;
+  color: #5d6c77;
   font-size: 0.72rem;
 }
 
 .hub-nav a:hover,
 .hub-nav a:focus-visible {
-  color: #d74429;
+  color: #0a526a;
   text-decoration: underline;
   text-underline-offset: 0.25rem;
 }
@@ -65,9 +66,9 @@
 .snapshot-explainer {
   margin: 0;
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid rgb(112 123 118 / 25%);
-  color: #55615b;
-  background: #fff8d8;
+  border-bottom: 1px solid #d4e6eb;
+  color: #405863;
+  background: #edf7fa;
   font:
     0.72rem/1.45 "Segoe UI",
     "Microsoft YaHei",
@@ -76,20 +77,37 @@
   text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-  .hub-nav {
-    color: #f0f4ed;
-    background: rgb(20 27 23 / 94%);
-  }
+.hub-home-chip {
+  position: fixed;
+  z-index: 10000;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #b8c8d0;
+  border-radius: 999px;
+  color: #18324a;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 8px 24px rgb(15 31 44 / 18%);
+  font:
+    750 0.75rem/1 "Segoe UI",
+    "Microsoft YaHei",
+    system-ui,
+    sans-serif;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+}
 
-  .hub-nav-links a {
-    color: #abb6b0;
-  }
-
-  .snapshot-explainer {
-    color: #e4ddbc;
-    background: #332f1e;
-  }
+.hub-home-chip:hover,
+.hub-home-chip:focus-visible {
+  border-color: #fff;
+  color: #fff;
+  background: #0f6f8e;
+  outline: 3px solid rgb(255 255 255 / 45%);
+  outline-offset: 2px;
 }
 
 @media (max-width: 620px) {
@@ -103,7 +121,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hub-nav {
+  .hub-nav,
+  .hub-home-chip {
     backdrop-filter: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .hub-home-chip {
+    border: 1px solid ButtonText;
   }
 }
