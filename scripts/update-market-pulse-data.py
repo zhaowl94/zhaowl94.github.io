@@ -782,6 +782,8 @@ def build_state(
     previous_feed = (previous or {}).get("feed") or []
     feed = [item for item in previous_feed if item.get("session_date") == session_date][-35:]
     previous_market = (previous or {}).get("session", {}).get("market_timestamp")
+    if previous_market and market_timestamp < datetime.fromisoformat(previous_market):
+        raise RuntimeError(f"Quote timestamp {iso(market_timestamp)} precedes {previous_market}")
     triggers = []
     for item in indices:
         if abs(item.get("five_minute_change_pct") or 0) >= 0.25:

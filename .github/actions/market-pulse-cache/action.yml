@@ -1,0 +1,37 @@
+name: Market Pulse cache
+description: Restore or save the Market Pulse snapshot and its build cache.
+inputs:
+  save:
+    description: Save the validated snapshot after a refresh.
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Restore Market Pulse cache
+      id: cache
+      if: inputs.save != 'true'
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        # GitHub includes every path in the cache version. Match the save step.
+        path: |
+          market-pulse/data/state.json
+          ${{ runner.temp }}/market-pulse-cache
+        key: market-pulse-data-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: |
+          market-pulse-data-${{ runner.os }}-
+
+    - name: Check the latest published Market Pulse snapshot
+      if: inputs.save != 'true'
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/restore-snapshot.mjs"
+      env:
+        MARKET_PULSE_CACHE_KEY: ${{ steps.cache.outputs.cache-matched-key }}
+
+    - name: Save Market Pulse cache
+      if: inputs.save == 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          market-pulse/data/state.json
+          ${{ runner.temp }}/market-pulse-cache
+        key: market-pulse-data-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
