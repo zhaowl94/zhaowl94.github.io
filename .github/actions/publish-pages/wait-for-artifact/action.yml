@@ -1,9 +1,0 @@
-name: Wait for the uploaded Pages artifact
-description: Wait for the Actions artifact list used by deploy-pages to include the uploaded artifact.
-inputs:
-  artifact_id:
-    description: The artifact ID returned by upload-pages-artifact.
-    required: true
-runs:
-  using: node24
-  main: index.mjs
