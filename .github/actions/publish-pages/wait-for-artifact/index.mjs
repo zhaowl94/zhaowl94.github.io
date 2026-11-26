@@ -35,14 +35,20 @@ async function waitForArtifact() {
         authorization: `Bearer ${runtimeToken}`,
         "content-type": "application/json",
       },
-      body: JSON.stringify({ workflowRunBackendId, workflowJobRunBackendId }),
+      body: JSON.stringify({
+        workflow_run_backend_id: workflowRunBackendId,
+        workflow_job_run_backend_id: workflowJobRunBackendId,
+      }),
       signal: AbortSignal.timeout(5000),
     }).catch(() => null);
 
     if (response?.ok) {
       const { artifacts = [] } = await response.json();
       if (
-        artifacts.some((artifact) => String(artifact.databaseId) === artifactId)
+        artifacts.some(
+          (artifact) =>
+            String(artifact.database_id ?? artifact.databaseId) === artifactId,
+        )
       ) {
         console.log(`Pages artifact ${artifactId} is visible to deploy-pages`);
         return;
